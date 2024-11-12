@@ -1,1 +1,1 @@
-# sijarta-dti
+Samuella Putri Nadia Pauntu - 2306170446 
