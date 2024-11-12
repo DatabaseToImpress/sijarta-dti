@@ -1,3 +1,4 @@
 - Samuella Putri Nadia Pauntu - 2306170446
 - Kezia Salsalina Agtyra Sebayang - 2306172086
 - Syifa Ananda Widyati - 2306173656
+- Serafina Nala Putri Setiawan - 2306173435
