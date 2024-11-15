@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyPay Transaction</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+
+  <div class="bg-gray-800 text-white p-8 rounded-lg shadow-lg max-w-md mx-auto my-8">
+    <h2 class="text-2xl font-semibold mb-6">MyPay Transaction</h2>
+    
+    <!-- User Info Section -->
+    <div class="mb-4">
+      <p><strong>User's Name:</strong> John Doe</p> <!-- Placeholder for Username -->
+      <p><strong>Transaction Date:</strong> {{ current_date | date:"m/d/Y" }}</p> <!-- Use JS to insert current date if needed -->
+      <p><strong>MyPay Balance:</strong> $500</p> <!-- Placeholder for Balance -->
+    </div>
+
+    <!-- Transaction Form -->
+    <form method="post">
+      {% csrf_token %}
+      
+      <!-- Transaction Category Selection -->
+      <div class="mb-4">
+        {{ form.transaction_category.label_tag }}
+        {{ form.transaction_category }}
+      </div>
+
+      <!-- Top-Up Amount -->
+      <div id="topupFields" class="hidden mb-4">
+        {{ form.topup_amount.label_tag }}
+        {{ form.topup_amount }}
+      </div>
+
+      <!-- Service Payment Fields -->
+      <div id="paymentFields" class="hidden mb-4">
+        {{ form.service_session.label_tag }}
+        {{ form.service_session }}
+        {{ form.service_price.label_tag }}
+        {{ form.service_price }}
+      </div>
+
+      <!-- Transfer Fields -->
+      <div id="transferFields" class="hidden mb-4">
+        {{ form.recipient_phone.label_tag }}
+        {{ form.recipient_phone }}
+        {{ form.transfer_amount.label_tag }}
+        {{ form.transfer_amount }}
+      </div>
+
+      <!-- Withdrawal Fields -->
+      <div id="withdrawalFields" class="hidden mb-4">
+        {{ form.bank_name.label_tag }}
+        {{ form.bank_name }}
+        {{ form.bank_account_number.label_tag }}
+        {{ form.bank_account_number }}
+        {{ form.withdrawal_amount.label_tag }}
+        {{ form.withdrawal_amount }}
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const transactionCategory = document.getElementById('id_transaction_category');
+      toggleFields(); // Initial check
+
+      transactionCategory.addEventListener('change', toggleFields);
+
+      function toggleFields() {
+        document.getElementById('topupFields').classList.add('hidden');
+        document.getElementById('paymentFields').classList.add('hidden');
+        document.getElementById('transferFields').classList.add('hidden');
+        document.getElementById('withdrawalFields').classList.add('hidden');
+
+        const selectedCategory = transactionCategory.value;
+
+        if (selectedCategory === 'topup') {
+          document.getElementById('topupFields').classList.remove('hidden');
+        } else if (selectedCategory === 'payment') {
+          document.getElementById('paymentFields').classList.remove('hidden');
+        } else if (selectedCategory === 'transfer') {
+          document.getElementById('transferFields').classList.remove('hidden');
+        } else if (selectedCategory === 'withdrawal') {
+          document.getElementById('withdrawalFields').classList.remove('hidden');
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
