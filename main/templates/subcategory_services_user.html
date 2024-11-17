@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subcategory Services</title>
+    <script>
+        // Mapping of subcategories to their service categories, workers, and session prices
+        const subcategories = {
+            "1": {
+                name: "Kitchen and Refrigerator Cleaning",
+                serviceCategory: "Home Cleaning",
+                description: "Detailed cleaning for kitchens and refrigerators, ensuring freshness and hygiene.",
+                workers: [
+                    { name: "Luffy", profileLink: "/worker/luffy" },
+                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" }
+                ],
+                sessions: [
+                    { session: 1, price: 65000 },
+                    { session: 2, price: 115000 },
+                    { session: 3, price: 165000 },
+                    { session: 4, price: 215000 }
+                ]
+            },
+            "2": {
+                name: "Daily Cleaning",
+                serviceCategory: "Home Cleaning",
+                description: "Regular cleaning to maintain a hygienic and fresh environment at home.",
+                workers: [
+                    { name: "Aleo", profileLink: "/worker/aleo" },
+                    { name: "Nanda", profileLink: "/worker/nanda" }
+                ],
+                sessions: [
+                    { session: 2, price: 65000 },
+                    { session: 3, price: 115000 }
+                ]
+            },
+            "3": {
+                name: "Sofa Washing",
+                serviceCategory: "Deep Cleaning",
+                description: "Thorough cleaning of sofas to remove dirt, stains, and allergens.",
+                workers: [
+                    { name: "Nara", profileLink: "/worker/nara" },
+                    { name: "Luffy", profileLink: "/worker/luffy" }
+                ],
+                sessions: [
+                    { session: 1, price: 98500 },
+                    { session: 2, price: 162500 },
+                    { session: 3, price: 230000 }
+                ]
+            },
+            "4": {
+                name: "Carpet Washing",
+                serviceCategory: "Deep Cleaning",
+                description: "Deep cleaning for carpets to remove dust, stains, and bacteria.",
+                workers: [
+                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" },
+                    { name: "Aleo", profileLink: "/worker/aleo" }
+                ],
+                sessions: [
+                    { session: 1, price: 98500 },
+                    { session: 2, price: 162500 },
+                    { session: 3, price: 230000 }
+                ]
+            },
+            "5": {
+                name: "AC Chemical Service",
+                serviceCategory: "Air Conditioning Service",
+                description: "Chemical cleaning of AC units to ensure optimal cooling performance.",
+                workers: [
+                    { name: "Nanda", profileLink: "/worker/nanda" },
+                    { name: "Nara", profileLink: "/worker/nara" }
+                ],
+                sessions: [
+                    { session: 1, price: 450000 },
+                    { session: 2, price: 650000 },
+                    { session: 3, price: 850000 }
+                ]
+            },
+            "6": {
+                name: "AC Freon Fixing",
+                serviceCategory: "Air Conditioning Service",
+                description: "Fixing Freon leaks and recharging to restore your AC's cooling capacity.",
+                workers: [
+                    { name: "Luffy", profileLink: "/worker/luffy" },
+                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" }
+                ],
+                sessions: [
+                    { session: 1, price: 200000 },
+                    { session: 2, price: 300000 },
+                    { session: 3, price: 400000 }
+                ]
+            },
+            "7": {
+                name: "House Massage",
+                serviceCategory: "Massage",
+                description: "Relaxing massage services offered in the comfort of your home.",
+                workers: [
+                    { name: "Aleo", profileLink: "/worker/aleo" },
+                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" }
+                ],
+                sessions: [
+                    { session: 1, price: 140000 },
+                    { session: 2, price: 240000 },
+                    { session: 3, price: 340000 }
+                ]
+            },
+            "8": {
+                name: "Swedish Massage",
+                serviceCategory: "Massage",
+                description: "A soothing full-body massage that promotes relaxation and stress relief.",
+                workers: [
+                    { name: "Nara", profileLink: "/worker/nara" },
+                    { name: "Nanda", profileLink: "/worker/nanda" }
+                ],
+                sessions: [
+                    { session: 1, price: 500000 },
+                    { session: 2, price: 700000 },
+                    { session: 3, price: 900000 }
+                ]
+            },
+            "9": {
+                name: "Hairwash",
+                serviceCategory: "Hair Care",
+                description: "A refreshing hair cleaning service that nourishes your hair and scalp with shampoo, conditioner, and optional treatments for a revitalized look.",
+                workers: [
+                    { name: "Aleo", profileLink: "/worker/aleo" },
+                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" }
+                ],
+                sessions: [
+                    { session: 1, price: 180000 },
+                    { session: 2, price: 280000 },
+                    { session: 3, price: 380000 }
+                ]
+            },
+            "10": {
+                name: "Creambath",
+                serviceCategory: "Hair Care",
+                description: "A relaxing hair treatment that combines a nourishing cream mask with a soothing scalp massage for soft, healthy hair.",
+                workers: [
+                    { name: "Luffy", profileLink: "/worker/luffy" },
+                    { name: "Nara", profileLink: "/worker/nara" }
+                ],
+                sessions: [
+                    { session: 1, price: 400000 },
+                    { session: 2, price: 600000 },
+                    { session: 3, price: 800000 }
+                ]
+            }
+        };
+
+        // Function to set the page title dynamically
+        function setPageTitle(subcategoryId) {
+            const subcategory = subcategories[subcategoryId];
+            document.title = `${subcategory.serviceCategory} - Subcategory Services`;
+        }
+
+        // Function to load subcategory details
+        function loadSubcategory(subcategoryId) {
+            const subcategory = subcategories[subcategoryId];
+
+            if (subcategory) {
+                setPageTitle(subcategoryId);
+
+                // Display subcategory name and description in the content section
+                let workerHtml = '';
+                subcategory.workers.forEach(worker => {
+                    workerHtml += `<li><a href="${worker.profileLink}" class="worker-link">${worker.name}</a></li>`;
+                });
+
+                // Display session prices for the selected subcategory and a "Book" button for each session
+                let sessionHtml = '';
+                subcategory.sessions.forEach(session => {
+                    sessionHtml += `
+                        <li>Session ${session.session}: ${session.price.toLocaleString()}
+                            <button class="booking-button" onclick="bookService(${session.session}, ${session.price})">Booking</button>
+                        </li>
+                    `;
+                });
+
+                document.getElementById("subcategoryInfo").innerHTML = `
+                    <h1 class="title">${subcategory.serviceCategory}</h1>
+                    <h2 class="subtitle">${subcategory.name}</h2>
+                    <p class="description">${subcategory.description || "No description available for this subcategory."}</p>
+                    <h3 class="section-title">Available Workers:</h3>
+                    <ul class="worker-list">${workerHtml}</ul>
+                    <h3 class="section-title">Session Prices:</h3>
+                    <ul class="session-list">${sessionHtml}</ul>
+                `;
+            } else {
+                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-center text-red-500'>Subcategory not found.</p>";
+            }
+        }
+
+        // Function to get the subcategory ID from the URL
+        function getSubcategoryIdFromUrl() {
+            const urlPath = window.location.pathname;
+            const parts = urlPath.split('/'); // Split by slashes
+
+            // Ensure that the last part is a valid subcategory number
+            const subcategoryId = parts[parts.length - 2]; // Get the second last part (before the trailing slash)
+            return subcategoryId;
+        }
+
+        // Function to simulate booking a service
+        function bookService(session, price) {
+            window.location.href = `/booking/?session=${session}&price=${price}`;
+        }
+
+        // Load the subcategory based on the URL parameter
+        window.onload = function() {
+            const subcategoryId = getSubcategoryIdFromUrl();
+            if (subcategories[subcategoryId]) {
+                loadSubcategory(subcategoryId);
+            } else {
+                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-center text-red-500'>Invalid subcategory ID.</p>";
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .worker-link {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .worker-link:hover {
+            text-decoration: underline;
+        }
+
+        .booking-button {
+            background-color: #2d3748; /* Gray-800 */
+            color: white;
+            font-size: 14px;
+            padding: 0.625rem 1.25rem;
+            border-radius: 9999px; /* Fully rounded button */
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: 20px; /* Add margin to space the button from the session text */
+        }
+
+        .booking-button:hover {
+            background-color: #1a202c; /* Gray-900 */
+        }
+
+        .booking-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(156, 163, 175, 0.5); /* Gray-300 */
+        }
+
+        .booking-button:active {
+            background-color: #4a5568; /* Darker gray for active state */
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        .session-list li {
+            display: flex;
+            align-items: center; /* Align the button with the session text */
+            margin-bottom: 15px; /* Add space between sessions */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="subcategoryInfo">
+            <!-- Subcategory info will be dynamically inserted here -->
+        </div>
+    </div>
+</body>
+</html>

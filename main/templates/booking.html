@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+
+    <!-- Modal Container -->
+    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-6">Book Service</h2>
+        <form id="bookingForm" action="booking.html" method="POST">
+            <!-- Order Date -->
+            <div class="mb-4">
+                <label for="orderDate" class="block text-gray-700 font-semibold mb-2">Order Date</label>
+                <input 
+                    type="date" 
+                    id="orderDate" 
+                    name="orderDate" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 focus:outline-none"
+                    required>
+            </div>
+
+            <!-- Total Payment -->
+            <div class="mb-4">
+                <label for="totalPayment" class="block text-gray-700 font-semibold mb-2">Total Payment</label>
+                <input 
+                    type="number" 
+                    id="totalPayment" 
+                    name="totalPayment" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none"
+                    value="100" 
+                    readonly>
+            </div>
+
+            <!-- Discount Code -->
+            <div class="mb-4">
+                <label for="discountCode" class="block text-gray-700 font-semibold mb-2">Discount Code (Optional)</label>
+                <input 
+                    type="text" 
+                    id="discountCode" 
+                    name="discountCode" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 focus:outline-none"
+                    placeholder="Enter discount code">
+            </div>
+
+            <!-- Payment Method -->
+            <div class="mb-6">
+                <label for="paymentMethod" class="block text-gray-700 font-semibold mb-2">Payment Method</label>
+                <select 
+                    id="paymentMethod" 
+                    name="paymentMethod" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 focus:outline-none" 
+                    required>
+                    <option value="" disabled selected>Select Payment Method</option>
+                    <option value="MyPay">MyPay</option>
+                    <option value="GoPay">GoPay</option>
+                    <option value="OVO">OVO</option>
+                    <option value="BCA Virtual Account">BCA Virtual Account</option>
+                    <option value="BNI Virtual Account">BNI Virtual Account</option>
+                    <option value="Mandiri Virtual Account">Mandiri Virtual Account</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+                <button 
+                    type="button" 
+                    class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 w-full">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Automatically fill today's date in the Order Date field
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("orderDate").value = today;
+
+        // Get session and price from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const session = urlParams.get('session');
+        const price = urlParams.get('price');
+
+        // If session and price are available in the URL, update the Total Payment field
+        if (price) {
+            document.getElementById("totalPayment").value = price;
+        }
+    </script>
+</body>
+</html>
