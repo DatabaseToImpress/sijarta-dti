@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Choose Registration Role
+{% endblock %}
+
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    {% include 'navbar/navbar.html' %}
+    <h1 class="register-title">Register as</h1>
+    <div class="register-buttons">
+        <a href="{% url 'register_user' %}" class="register-btn">User</a>
+        <a href="{% url 'register_worker' %}" class="register-btn">Worker</a>
+    </div>
+</div>
+{% endblock %}

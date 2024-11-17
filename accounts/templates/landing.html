@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Welcome
+{% endblock %}
+
+{% block css %}
+<style>
+    .landing-container {
+        text-align: center;
+        margin: 5rem auto;
+    }
+
+    .landing-title {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .landing-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .landing-btn {
+        padding: 0.8rem 2rem;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .landing-btn:hover {
+        background-color: #45a049;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="landing-container">
+    <h1 class="landing-title">Welcome to SIJARTA</h1>
+    <p>Please choose an option to proceed:</p>
+    <div class="landing-buttons">
+        <a href="{% url 'login' %}" class="landing-btn">Log In</a>
+        <a href="{% url 'register' %}" class="landing-btn">Register</a>
+    </div>
+</div>
+{% endblock %}
