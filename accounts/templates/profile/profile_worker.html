@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Register as Worker
+{% endblock %}
+
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<form>
+    <div class="register-container">
+        <h1 class="register-title">Profile</h1>
+        <div class="form-group row">
+            <label for="inputName" class="col-sm-2 col-form-label">Name : </label>
+            <label class="col-sm-2 col-form-label">Haruto</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputSex" class="col-sm-2 col-form-label">Sex : </label>
+            <label class="col-sm-2 col-form-label">Male</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputPhoneNum" class="col-sm-2 col-form-label">Phone Number : </label>
+            <label class="col-sm-2 col-form-label">08121212121</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputBirthDate" class="col-sm-2 col-form-label">Birth Date : </label>
+            <label class="col-sm-2 col-form-label">23/03/2004</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputAddress" class="col-sm-2 col-form-label">Address : </label>
+            <label class="col-sm-2 col-form-label">jl. Osaka</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputMyPayBalance" class="col-sm-2 col-form-label">MyPay Balance : </label>
+            <label class="col-sm-2 col-form-label">0</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputBankName" class="col-sm-2 col-form-label">Bank Name : </label>
+            <label class="col-sm-2 col-form-label">OVO</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputAccountNum" class="col-sm-2 col-form-label">Account Number : </label>
+            <label class="col-sm-2 col-form-label">12345</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputNPWP" class="col-sm-2 col-form-label">NPWP : </label>
+            <label class="col-sm-2 col-form-label">0123456789</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputOrderCount" class="col-sm-2 col-form-label">Rate : </label>
+            <label class="col-sm-2 col-form-label">5</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputRate" class="col-sm-2 col-form-label">Completed Order Count : </label>
+            <label class="col-sm-2 col-form-label">10</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputJobCategory" class="col-sm-2 col-form-label">Job Category : </label>
+            <label class="col-sm-2 col-form-label">1. Home Cleaning 2. Deep Cleaning</label>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-12">
+                <button type="submit" class="update-btn">Update</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

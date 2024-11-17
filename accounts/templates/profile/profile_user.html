@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Register as User
+{% endblock %}
+
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<form>
+    <div class="register-container">
+        <h1 class="register-title">Profile</h1>
+        <div class="form-group row">
+            <label for="inputName" class="col-sm-2 col-form-label">Name : </label>
+            <label class="col-sm-2 col-form-label">John Doe</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputLevel" class="col-sm-2 col-form-label">Level : </label>
+            <label class="col-sm-2 col-form-label">Gold</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputSex" class="col-sm-2 col-form-label">Sex : </label>
+            <label class="col-sm-2 col-form-label">Male</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputPhoneNum" class="col-sm-2 col-form-label">Phone Number : </label>
+            <label class="col-sm-2 col-form-label">08123456789</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputBirthDate" class="col-sm-2 col-form-label">Birth Date : </label>
+            <label class="col-sm-2 col-form-label">01/01/1995</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputAddress" class="col-sm-2 col-form-label">Address : </label>
+            <label class="col-sm-2 col-form-label">jl. Melati</label>
+        </div>
+        <div class="form-group row">
+            <label for="inputMyPayBalance" class="col-sm-2 col-form-label">MyPay Balance : </label>
+            <label class="col-sm-2 col-form-label">0</label>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-12">
+                <button type="submit" class="update-btn">Update</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

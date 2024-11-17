@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Logout
+{% endblock %}
+
+{% block css %}
+<style>
+    .logout-container {
+        text-align: center;
+        margin: 5rem auto;
+    }
+
+    .logout-container h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .logout-btn {
+        padding: 0.8rem 2rem;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .logout-btn:hover {
+        background-color: #45a049;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="logout-container">
+    <h1>You have been logged out successfully.</h1>
+    <a href="{% url 'login' %}" class="logout-btn">Login Again</a>
+</div>
+{% endblock %}
