@@ -1,49 +1,100 @@
-<!-- mypay.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MyPay</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.2/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            grape: '#94618E',
+            eggplant: '#49274A',
+            sand: '#F4DCEB',
+            shell: '#F8EEE7',
+          },
+        },
+      },
+    };
+  </script>
 </head>
-<body class="bg-gray-900 text-white">
+<body class="bg-shell text-eggplant font-sans min-h-screen py-12">
 
-  <!-- MyPay Balance and Transaction History -->
-  <div class="bg-gray-900 text-white p-8 rounded-lg shadow-lg max-w-lg mx-auto my-8">
-    <!-- Balance Display and Transact Button -->
-    <div class="flex justify-between items-center mb-6">
-      <div class="flex items-center space-x-4">
-        <div>
-          <label for="phoneNumber" class="block text-gray-300 text-sm font-bold">Phone Number</label>
-          <input type="text" id="phoneNumber" placeholder="123-456-7890" class="bg-gray-700 text-white p-2 rounded w-full" readonly>
-        </div>
-        <div>
-          <label class="block text-gray-300 text-sm font-bold">Balance</label>
-          <p class="text-xl font-semibold">$500</p> <!-- Placeholder for balance -->
-        </div>
+  <!-- Include Navbar -->
+  {% include "navbar/navbar_user.html" %}
+
+  <!-- MyPay Container -->
+  <div class="bg-white border-4 border-grape shadow-2xl rounded-2xl max-w-4xl mx-auto w-full p-8">
+
+    <!-- Header -->
+    <header class="mb-10 text-center">
+      <h1 class="text-4xl font-bold text-grape mb-2">Welcome to MyPay</h1>
+      <p class="text-eggplant text-sm">Track and manage your balance and transactions with ease</p>
+    </header>
+
+    <!-- Balance Section -->
+    <div class="bg-grape text-shell p-6 rounded-lg shadow-md flex justify-between items-center mb-12">
+      <div>
+        <h2 class="text-lg font-bold mb-1">Phone Number</h2>
+        <p class="text-xl font-mono">08123456789</p>
       </div>
-      <a href="{% url 'mypay_transaction_form' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Transact</a>
+      <div class="text-right">
+        <h2 class="text-lg font-bold mb-1">Current Balance</h2>
+        <p class="text-3xl font-extrabold">IDR 1,000,000</p>
+      </div>
+      <a href="{% url 'mypay_transaction' %}" class="ml-6 bg-shell text-grape font-bold px-6 py-3 rounded-lg shadow hover:bg-sand transition">
+        Transact
+      </a>
     </div>
 
-    <!-- Transaction History -->
-    <div>
-      <h3 class="text-xl font-semibold mb-4">Transaction History</h3>
-      <ul class="space-y-4">
-        <!-- Transaction Item (Placeholder content) -->
-        <li class="flex justify-between items-center border-b border-gray-700 pb-2">
-          <span class="flex-1">+ $50</span>
-          <span class="flex-1 text-center">11/12/24</span>
-          <span class="flex-1 text-right">Deposit</span>
-        </li>
-        <li class="flex justify-between items-center border-b border-gray-700 pb-2">
-          <span class="flex-1">- $30</span>
-          <span class="flex-1 text-center">11/10/24</span>
-          <span class="flex-1 text-right">Service Payment</span>
-        </li>
-        <!-- Add more placeholder transactions as needed -->
-      </ul>
-    </div>
+    <section>
+      <h2 class="text-2xl font-bold text-grape mb-6">Transaction History</h2>
+      <div class="bg-shell p-6 rounded-lg shadow-lg border-2 border-grape">
+        <ul>
+          <!-- Table Header -->
+          <li class="grid grid-cols-3 gap-4 pb-4 border-b border-sand font-bold text-eggplant">
+            <span>Amount</span>
+            <span class="text-center">Date</span>
+            <span class="text-right">Description</span>
+          </li>
+          <!-- Transaction Rows -->
+          <li class="grid grid-cols-3 gap-4 py-4">
+            <span class="text-grape">+ IDR 1,000,000</span>
+            <span class="text-center text-eggplant">2024-01-01</span>
+            <span class="text-right text-eggplant">Topup</span>
+          </li>
+          <li class="grid grid-cols-3 gap-4 py-4">
+            <span class="text-grape">- IDR 2,000,000</span>
+            <span class="text-center text-eggplant">2024-01-02</span>
+            <span class="text-right text-eggplant">Service Payment</span>
+          </li>
+          <li class="grid grid-cols-3 gap-4 py-4">
+            <span class="text-grape">- IDR 1,500,000</span>
+            <span class="text-center text-eggplant">2024-01-03</span>
+            <span class="text-right text-eggplant">Transfer</span>
+          </li>
+          <li class="grid grid-cols-3 gap-4 py-4">
+            <span class="text-grape">+ IDR 3,000,000</span>
+            <span class="text-center text-eggplant">2024-01-04</span>
+            <span class="text-right text-eggplant">Service Honorarium</span>
+          </li>
+          <li class="grid grid-cols-3 gap-4 py-4">
+            <span class="text-grape">- IDR 4,000,000</span>
+            <span class="text-center text-eggplant">2024-01-05</span>
+            <span class="text-right text-eggplant">Bank Withdrawal</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+    
+
+    <!-- Footer -->
+    <footer class="text-center mt-12 text-grape text-sm">
+      <p>© 2024 MyPay. All rights reserved.</p>
+    </footer>
+
   </div>
 
 </body>
