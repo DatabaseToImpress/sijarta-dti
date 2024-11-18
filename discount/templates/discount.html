@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "navbar/navbar_user.html" %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discount and Promo Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+    <div class="container mx-auto px-4 py-8 bg-[#F4DECB] rounded-lg shadow-lg">
+        
+        <h1 class="text-3xl font-bold text-center mb-8">Discount Page</h1>
+
+        <!-- Voucher Section -->
+        <div class="section mb-8">
+            <h2 class="text-2xl font-semibold text-center text-[#94618E] mb-6">Voucher</h2>
+            <table class="table-auto w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-[#94618E] text-white">
+                        <th class="px-4 py-2 border border-gray-300">Code</th>
+                        <th class="px-4 py-2 border border-gray-300">Discount</th>
+                        <th class="px-4 py-2 border border-gray-300">Min Tr Order</th>
+                        <th class="px-4 py-2 border border-gray-300">Number Day Valid</th>
+                        <th class="px-4 py-2 border border-gray-300">User Quota</th>
+                        <th class="px-4 py-2 border border-gray-300">Price</th>
+                        <th class="px-4 py-2 border border-gray-300">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">FLASHDEAL10</td>
+                        <td class="px-4 py-2 border border-gray-300">10%</td>
+                        <td class="px-4 py-2 border border-gray-300">70000</td>
+                        <td class="px-4 py-2 border border-gray-300">30</td>
+                        <td class="px-4 py-2 border border-gray-300">5</td>
+                        <td class="px-4 py-2 border border-gray-300">10000</td>
+                        <td class="px-4 py-2 border border-gray-300">
+                            <button class="button-buy px-4 py-2 bg-[#94618E] text-white rounded hover:bg-purple-800 transition"
+                                    data-code="FLASHDEAL10" data-price="10000">Buy</button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">FLASHDEAL25</td>
+                        <td class="px-4 py-2 border border-gray-300">25%</td>
+                        <td class="px-4 py-2 border border-gray-300">90000</td>
+                        <td class="px-4 py-2 border border-gray-300">20</td>
+                        <td class="px-4 py-2 border border-gray-300">3</td>
+                        <td class="px-4 py-2 border border-gray-300">20000</td>
+                        <td class="px-4 py-2 border border-gray-300">
+                            <button class="button-buy px-4 py-2 bg-[#94618E] text-white rounded hover:bg-purple-800 transition"
+                                    data-code="FLASHDEAL25" data-price="20000">Buy</button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">DEAL30</td>
+                        <td class="px-4 py-2 border border-gray-300">30%</td>
+                        <td class="px-4 py-2 border border-gray-300">130000</td>
+                        <td class="px-4 py-2 border border-gray-300">30</td>
+                        <td class="px-4 py-2 border border-gray-300">5</td>
+                        <td class="px-4 py-2 border border-gray-300">50000</td>
+                        <td class="px-4 py-2 border border-gray-300">
+                            <button class="button-buy px-4 py-2 bg-[#94618E] text-white rounded hover:bg-purple-800 transition"
+                                    data-code="DEAL30" data-price="50000">Buy</button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">VOUCHER5</td>
+                        <td class="px-4 py-2 border border-gray-300">5%</td>
+                        <td class="px-4 py-2 border border-gray-300">30000</td>
+                        <td class="px-4 py-2 border border-gray-300">5</td>
+                        <td class="px-4 py-2 border border-gray-300">15</td>
+                        <td class="px-4 py-2 border border-gray-300">70000</td>
+                        <td class="px-4 py-2 border border-gray-300">
+                            <button class="button-buy px-4 py-2 bg-[#94618E] text-white rounded hover:bg-purple-800 transition"
+                                    data-code="VOUCHER5" data-price="70000">Buy</button>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">SALE20</td>
+                        <td class="px-4 py-2 border border-gray-300">20%</td>
+                        <td class="px-4 py-2 border border-gray-300">100000</td>
+                        <td class="px-4 py-2 border border-gray-300">20</td>
+                        <td class="px-4 py-2 border border-gray-300">7</td>
+                        <td class="px-4 py-2 border border-gray-300">50000</td>
+                        <td class="px-4 py-2 border border-gray-300">
+                            <button class="button-buy px-4 py-2 bg-[#94618E] text-white rounded hover:bg-purple-800 transition"
+                                    data-code="SALE20" data-price="50000">Buy</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Promo Section -->
+        <div class="section">
+            <h2 class="text-2xl font-semibold text-center text-[#94618E] mb-6">Promo</h2>
+            <table class="table-auto w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-[#94618E] text-white">
+                        <th class="px-4 py-2 border border-gray-300">Code</th>
+                        <th class="px-4 py-2 border border-gray-300">Offer End Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">GAJISEP24</td>
+                        <td class="px-4 py-2 border border-gray-300">2024-12-13</td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">PROMO20</td>
+                        <td class="px-4 py-2 border border-gray-300">2024-11-09</td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">PROMO30</td>
+                        <td class="px-4 py-2 border border-gray-300">2024-12-09</td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">WELCOME10</td>
+                        <td class="px-4 py-2 border border-gray-300">2024-08-09</td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">SUMMERSALE15</td>
+                        <td class="px-4 py-2 border border-gray-300">2024-10-23</td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">WINTERSALE20</td>
+                        <td class="px-4 py-2 border border-gray-300">2024-12-03</td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">HOLIDAY50</td>
+                        <td class="px-4 py-2 border border-gray-300">2024-09-10</td>
+                    </tr>
+                    <tr class="hover:bg-gray-100">
+                        <td class="px-4 py-2 border border-gray-300">NEWUSER20</td>
+                        <td class="px-4 py-2 border border-gray-300">2024-12-01</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg text-center shadow-lg">
+            <h2 class="text-2xl font-semibold text-green-600 mb-4">Success</h2>
+            <p id="success-message" class="text-gray-700 mb-4"></p>
+            <button onclick="closeModal()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Close</button>
+        </div>
+    </div>
+
+    <div id="failure-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg text-center shadow-lg">
+            <h2 class="text-2xl font-semibold text-red-600 mb-4">Failed</h2>
+            <p id="failure-message" class="text-gray-700 mb-4">Sorry, your balance is insufficient to buy this voucher.</p>
+            <button onclick="closeModal()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const buttons = document.querySelectorAll(".button-buy");
+        const successModal = document.getElementById("success-modal");
+        const failureModal = document.getElementById("failure-modal");
+        const successMessage = document.getElementById("success-message");
+
+        // Example voucher data
+        const voucherDetails = {
+            "FLASHDEAL10": { expiration: "2024-12-31", quota: 5 },
+            "FLASHDEAL25": { expiration: "2024-11-30", quota: 3 },
+            "DEAL30": { expiration: "2024-12-15", quota: 5 },
+            "VOUCHER5": { expiration: "2024-10-01", quota: 15 },
+            "SALE20": { expiration: "2024-09-30", quota: 7 },
+        };
+
+        let userBalance = 30000; // Sample balance for testing
+
+        buttons.forEach(button => {
+            button.addEventListener("click", function () {
+                const code = this.getAttribute("data-code");
+                const price = parseInt(this.getAttribute("data-price"));
+                const voucher = voucherDetails[code];
+
+                if (userBalance >= price) {
+                    userBalance -= price;
+                    successMessage.innerHTML = `
+                        Congrats! You have successfully bought a voucher with the code <b>${code}</b>.
+                        <br>
+                        This voucher can be used until <b>${voucher.expiration}</b> with <b>${voucher.quota}</b> number of usage quota.
+                    `;
+                    openModal(successModal);
+                } else {
+                    openModal(failureModal);
+                }
+            });
+        });
+
+        function openModal(modal) {
+            modal.classList.remove("hidden");
+        }
+
+        function closeModal() {
+            successModal.classList.add("hidden");
+            failureModal.classList.add("hidden");
+        }
+    </script>
+</body>
+</html>

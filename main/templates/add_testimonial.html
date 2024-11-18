@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonial Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --grape: #94618E;
+            --eggplant: #49274A;
+            --sand: #F4DECB;
+            --shell: #F8EEE7;
+        }
+    </style>
+    {% include "navbar/navbar_user.html" %}
+</head>
+<body class="bg-[var(--shell)] min-h-screen flex flex-col items-center">
+    <!-- Include Navbar -->
+
+
+    <!-- Main Content -->
+    <div class="bg-white shadow-lg rounded-lg max-w-md w-full p-8 mt-16">
+        <h1 class="text-center text-xl font-bold text-[var(--eggplant)] mb-6">Give us your Testimony!</h1>
+        <form method="POST" action="/submit-testimonial/" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label for="rating" class="block text-sm font-semibold text-[var(--grape)] mb-1">Rating:</label>
+                <select name="rating" id="rating" class="w-full border border-[var(--sand)] rounded-md p-2 focus:ring-2 focus:ring-[var(--grape)] focus:outline-none" required>
+                    <option value="" disabled selected>Choose Rating</option>
+                    {% for rating in rating_choices %}
+                    <option value="{{ rating }}">{{ rating }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="comment" class="block text-sm font-semibold text-[var(--grape)] mb-1">Comment:</label>
+                <textarea name="comment" id="comment" placeholder="Give us your comments" class="w-full border border-[var(--sand)] rounded-md p-2 focus:ring-2 focus:ring-[var(--grape)] focus:outline-none resize-none" required></textarea>
+            </div>
+            <button type="submit" class="w-full bg-[var(--grape)] text-white py-2 rounded-md hover:bg-[var(--eggplant)] transition">
+                Submit
+            </button>
+        </form>
+    </div>
+</body>
+</html>
