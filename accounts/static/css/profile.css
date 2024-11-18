@@ -21,6 +21,37 @@
     text-align: center; /* Ensure the title is centered */
 }
 
+/* Image Box Section */
+.image-box {
+    margin-bottom: 2rem; /* Space below the image box */
+    text-align: center;
+}
+
+.profile-image {
+    width: 150px; /* Set width of the image */
+    height: 150px; /* Set height of the image */
+    border-radius: 50%; /* Make the image circular */
+    object-fit: cover; /* Ensure image covers the box without distortion */
+}
+
+.image-upload-btn {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #49274A;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+}
+
+.image-upload-btn:hover {
+    background-color: #94618E;
+}
+
 /* Form group layout */
 .form-group {
     margin-bottom: 1.5rem;
