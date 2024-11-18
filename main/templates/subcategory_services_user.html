@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+        {% include "navbar/navbar_user.html" %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subcategory Services</title>
+    
     <script>
-        // Mapping of subcategories to their service categories, workers, and session prices
+
         const subcategories = {
             "1": {
                 name: "Kitchen and Refrigerator Cleaning",
@@ -20,6 +22,10 @@
                     { session: 2, price: 115000 },
                     { session: 3, price: 165000 },
                     { session: 4, price: 215000 }
+                ],
+                testimonials: [
+                    { user: "User1", text: "Amazing service!", date: "2024-11-01", worker: "Luffy", rating: 5 },
+                    { user: "User2", text: "Very professional!", date: "2024-11-02", worker: "Matsuzaki", rating: 4 }
                 ]
             },
             "2": {
@@ -33,7 +39,8 @@
                 sessions: [
                     { session: 2, price: 65000 },
                     { session: 3, price: 115000 }
-                ]
+                ],
+                testimonials: []
             },
             "3": {
                 name: "Sofa Washing",
@@ -47,6 +54,10 @@
                     { session: 1, price: 98500 },
                     { session: 2, price: 162500 },
                     { session: 3, price: 230000 }
+                ],
+                testimonials: [
+                    { user: "User3", text: "So sigma!", date: "2024-12-03", worker: "Luffy", rating: 3 },
+                    { user: "User4", text: "Very beautiful!", date: "2024-10-12", worker: "Nara", rating: 5 }
                 ]
             },
             "4": {
@@ -61,7 +72,8 @@
                     { session: 1, price: 98500 },
                     { session: 2, price: 162500 },
                     { session: 3, price: 230000 }
-                ]
+                ],
+                testimonials: []
             },
             "5": {
                 name: "AC Chemical Service",
@@ -75,7 +87,8 @@
                     { session: 1, price: 450000 },
                     { session: 2, price: 650000 },
                     { session: 3, price: 850000 }
-                ]
+                ],
+                testimonials: []
             },
             "6": {
                 name: "AC Freon Fixing",
@@ -89,7 +102,8 @@
                     { session: 1, price: 200000 },
                     { session: 2, price: 300000 },
                     { session: 3, price: 400000 }
-                ]
+                ],
+                testimonials: []
             },
             "7": {
                 name: "House Massage",
@@ -103,7 +117,8 @@
                     { session: 1, price: 140000 },
                     { session: 2, price: 240000 },
                     { session: 3, price: 340000 }
-                ]
+                ],
+                testimonials: []
             },
             "8": {
                 name: "Swedish Massage",
@@ -117,7 +132,8 @@
                     { session: 1, price: 500000 },
                     { session: 2, price: 700000 },
                     { session: 3, price: 900000 }
-                ]
+                ],
+                testimonials: []
             },
             "9": {
                 name: "Hairwash",
@@ -131,7 +147,8 @@
                     { session: 1, price: 180000 },
                     { session: 2, price: 280000 },
                     { session: 3, price: 380000 }
-                ]
+                ],
+                testimonials: []
             },
             "10": {
                 name: "Creambath",
@@ -145,30 +162,27 @@
                     { session: 1, price: 400000 },
                     { session: 2, price: 600000 },
                     { session: 3, price: 800000 }
-                ]
+                ],
+                testimonials: []
             }
         };
 
-        // Function to set the page title dynamically
         function setPageTitle(subcategoryId) {
             const subcategory = subcategories[subcategoryId];
             document.title = `${subcategory.serviceCategory} - Subcategory Services`;
         }
 
-        // Function to load subcategory details
         function loadSubcategory(subcategoryId) {
             const subcategory = subcategories[subcategoryId];
 
             if (subcategory) {
                 setPageTitle(subcategoryId);
 
-                // Display subcategory name and description in the content section
                 let workerHtml = '';
                 subcategory.workers.forEach(worker => {
                     workerHtml += `<li><a href="${worker.profileLink}" class="worker-link">${worker.name}</a></li>`;
                 });
 
-                // Display session prices for the selected subcategory and a "Book" button for each session
                 let sessionHtml = '';
                 subcategory.sessions.forEach(session => {
                     sessionHtml += `
@@ -178,123 +192,187 @@
                     `;
                 });
 
+                let testimonialHtml = '';
+                subcategory.testimonials.forEach(testimonial => {
+                    testimonialHtml += `
+                        <div class="testimonial-item">
+                            <p><strong>${testimonial.user}</strong> (${testimonial.date})</p>
+                            <p>Worker: ${testimonial.worker} | Rating: ${testimonial.rating}</p>
+                            <p>${testimonial.text}</p>
+                        </div>
+                    `;
+                });
+
                 document.getElementById("subcategoryInfo").innerHTML = `
                     <h1 class="title">${subcategory.serviceCategory}</h1>
                     <h2 class="subtitle">${subcategory.name}</h2>
-                    <p class="description">${subcategory.description || "No description available for this subcategory."}</p>
+                    <p class="description">${subcategory.description}</p>
                     <h3 class="section-title">Available Workers:</h3>
                     <ul class="worker-list">${workerHtml}</ul>
                     <h3 class="section-title">Session Prices:</h3>
                     <ul class="session-list">${sessionHtml}</ul>
+                    <h3 class="section-title">Testimonials:</h3>
+                    <div class="testimonial-list">${testimonialHtml || "No testimonials available."}</div>
+                    <button class="add-testimonial-button" onclick="redirectToAddTestimonial()">Add Testimonial</button>
                 `;
             } else {
-                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-center text-red-500'>Subcategory not found.</p>";
+                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-red-500'>Subcategory not found.</p>";
             }
         }
 
-        // Function to get the subcategory ID from the URL
+        function redirectToAddTestimonial() {
+            window.location.href = "/add-testimonial";
+        }
+
         function getSubcategoryIdFromUrl() {
             const urlPath = window.location.pathname;
-            const parts = urlPath.split('/'); // Split by slashes
-
-            // Ensure that the last part is a valid subcategory number
-            const subcategoryId = parts[parts.length - 2]; // Get the second last part (before the trailing slash)
+            const parts = urlPath.split('/');
+            const subcategoryId = parts[parts.length - 2];
             return subcategoryId;
         }
 
-        // Function to simulate booking a service
         function bookService(session, price) {
             window.location.href = `/booking/?session=${session}&price=${price}`;
         }
 
-        // Load the subcategory based on the URL parameter
         window.onload = function() {
             const subcategoryId = getSubcategoryIdFromUrl();
             if (subcategories[subcategoryId]) {
                 loadSubcategory(subcategoryId);
             } else {
-                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-center text-red-500'>Invalid subcategory ID.</p>";
+                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-red-500'>Invalid subcategory ID.</p>";
             }
         };
     </script>
     <style>
+        /* General Styling */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
+            background-color: #F8EEE7;
+            margin: 0;
+            padding: 0;
+        }
+    
+        /* Navbar Styling */
+        nav {
+            background-color: #94618E; 
+            color: #F4DECB;
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+        }
+    
+        nav ul {
+            list-style: none;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            justify-content: space-around;
+            padding: 0;
             margin: 0;
         }
+    
+        nav li {
+            display: inline;
+        }
+    
+        nav a {
+            text-decoration: none;
+            color: #F4DECB;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+    
+        nav a:hover {
+            color: #49274A; 
+        }
+    
 
         .container {
+            margin-top: 80px; 
+            padding: 20px;
+            background-color: #F4DECB; 
+            border-radius: 8px;
             width: 80%;
             max-width: 800px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
+            margin-left: auto;
+            margin-right: auto;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h1, h2 {
             text-align: center;
         }
-
+    
+        h1, h2, h3 {
+            color: #49274A;
+        }
+    
         .worker-link {
             text-decoration: none;
-            color: #333;
+            color: #49274A;
         }
-
+    
         .worker-link:hover {
             text-decoration: underline;
         }
-
-        .booking-button {
-            background-color: #2d3748; /* Gray-800 */
-            color: white;
-            font-size: 14px;
-            padding: 0.625rem 1.25rem;
-            border-radius: 9999px; /* Fully rounded button */
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-left: 20px; /* Add margin to space the button from the session text */
-        }
-
-        .booking-button:hover {
-            background-color: #1a202c; /* Gray-900 */
-        }
-
-        .booking-button:focus {
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(156, 163, 175, 0.5); /* Gray-300 */
-        }
-
-        .booking-button:active {
-            background-color: #4a5568; /* Darker gray for active state */
-        }
-
+    
         ul {
-            padding-left: 20px;
+            list-style-type: none;
+            padding: 0;
         }
-
-        .section-title {
-            font-size: 1.2rem;
-            margin-top: 20px;
+    
+        /* Button Styling */
+        .booking-button, .add-testimonial-button {
+            background-color: #94618E;
+            color: #F8EEE7;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
         }
+    
+        .booking-button:hover, .add-testimonial-button:hover {
+            background-color: #7D4B6C; 
+        }
+    
 
-        .session-list li {
-            display: flex;
-            align-items: center; /* Align the button with the session text */
-            margin-bottom: 15px; /* Add space between sessions */
+        .testimonial-container {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    
+        .testimonial-list {
+            margin: 0 auto;
+            text-align: center;
+            max-width: 600px;
+        }
+    
+        .testimonial-item {
+            background-color: #F4DECB;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    
+        .testimonial-item p {
+            margin: 5px 0;
         }
     </style>
+    
 </head>
 <body>
+    <!-- Include Navbar -->
+    {% include "navbar/navbar_worker.html" %}
+
+    <!-- Page Content -->
     <div class="container">
         <div id="subcategoryInfo">
-            <!-- Subcategory info will be dynamically inserted here -->
+            <!-- Dynamic content -->
         </div>
     </div>
 </body>

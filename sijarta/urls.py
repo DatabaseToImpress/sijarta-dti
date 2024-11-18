@@ -22,4 +22,5 @@ urlpatterns = [
     path('', include('mypay.urls')),
     path('', include('main.urls')),
     path('', include('accounts.urls')),
+    path('', include('discount.urls')),
 ]

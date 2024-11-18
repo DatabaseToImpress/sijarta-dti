@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +20,10 @@
                     { session: 2, price: 115000 },
                     { session: 3, price: 165000 },
                     { session: 4, price: 215000 }
+                ],
+                testimonials: [
+                    { user: "User1", text: "Amazing service!", date: "2024-11-01", worker: "Luffy", rating: 5 },
+                    { user: "User2", text: "Very professional!", date: "2024-11-02", worker: "Matsuzaki", rating: 4 }
                 ]
             },
             "2": {
@@ -150,158 +155,165 @@
 
         function setPageTitle(subcategoryId) {
             const subcategory = subcategories[subcategoryId];
-            document.title = `${subcategory.serviceCategory} - Subcategory Services`;
+            document.title = `${subcategory.serviceCategory} - ${subcategory.name}`;
         }
 
         function loadSubcategory(subcategoryId) {
             const subcategory = subcategories[subcategoryId];
             if (subcategory) {
                 setPageTitle(subcategoryId);
-                let workerHtml = '';
-                subcategory.workers.forEach(worker => {
-                    workerHtml += `<li><a href="${worker.profileLink}" class="worker-link">${worker.name}</a></li>`;
-                });
 
-                let sessionHtml = '';
-                subcategory.sessions.forEach(session => {
-                    sessionHtml += ` 
-                        <li>Session ${session.session}: ${session.price.toLocaleString()}
-                        </li>
-                    `;
-                });
+                const workerHtml = subcategory.workers.map(worker => `
+                    <li><a href="${worker.profileLink}" class="worker-link">${worker.name}</a></li>
+                `).join("");
+
+                const sessionHtml = subcategory.sessions.map(session => `
+                    <li>Session ${session.session}: ${session.price.toLocaleString()}</li>
+                `).join("");
+
+                const testimonialHtml = subcategory.testimonials?.length
+                    ? subcategory.testimonials.map(testimonial => `
+                        <div class="testimonial-item">
+                            <p><strong>${testimonial.user}</strong> (${testimonial.date})</p>
+                            <p>Worker: ${testimonial.worker} | Rating: ${testimonial.rating}</p>
+                            <p>${testimonial.text}</p>
+                        </div>
+                    `).join("")
+                    : "No testimonials available.";
 
                 document.getElementById("subcategoryInfo").innerHTML = `
                     <h1 class="title">${subcategory.serviceCategory}</h1>
                     <h2 class="subtitle">${subcategory.name}</h2>
-                    <p class="description">${subcategory.description || "No description available for this subcategory."}</p>
+                    <p class="description">${subcategory.description}</p>
                     <h3 class="section-title">Available Workers:</h3>
                     <ul class="worker-list">${workerHtml}</ul>
                     <h3 class="section-title">Session Prices:</h3>
                     <ul class="session-list">${sessionHtml}</ul>
+                    <h3 class="section-title">Testimonials:</h3>
+                    <div class="testimonial-list">${testimonialHtml}</div>
                 `;
             } else {
-                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-center text-red-500'>Subcategory not found.</p>";
+                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-red-500'>Subcategory not found.</p>";
             }
         }
 
         function getSubcategoryIdFromUrl() {
             const urlPath = window.location.pathname;
             const parts = urlPath.split('/');
-            const subcategoryId = parts[parts.length - 2];
-            return subcategoryId;
+            return parts[parts.length - 2];
         }
 
-        function bookService(session, price) {
-            window.location.href = `/booking/?session=${session}&price=${price}`;
-        }
-
-        window.onload = function() {
+        window.onload = function () {
             const subcategoryId = getSubcategoryIdFromUrl();
             if (subcategories[subcategoryId]) {
                 loadSubcategory(subcategoryId);
             } else {
-                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-center text-red-500'>Invalid subcategory ID.</p>";
+                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-red-500'>Invalid subcategory ID.</p>";
             }
         };
     </script>
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #F8EEE7; /* Light Beige */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-    }
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F8EEE7; /* Light Beige */
+            margin: 0;
+            padding: 0;
+        }
 
-    .container {
-        width: 80%;
-        max-width: 800px;
-        padding: 20px;
-        background-color: #F4DECB; /* Light Peach */
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
+        /* Navbar Styling */
+        nav {
+            background-color: #94618E; /* Muted Purple */
+            color: #F4DECB; /* Light Peach */
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+        }
 
-    h1, h2, h3 {
-        text-align: center;
-        margin: 10px 0;
-        color: #49274A; /* Deep Purple */
-    }
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: space-around;
+            padding: 0;
+            margin: 0;
+        }
 
-    .worker-link {
-        text-decoration: none;
-        color: #49274A; /* Deep Purple */
-        text-align: center;
-        display: block;
-        margin: 5px 0;
-    }
+        nav li {
+            display: inline;
+        }
 
-    .worker-link:hover {
-        text-decoration: underline;
-    }
+        nav a {
+            text-decoration: none;
+            color: #F4DECB;
+            font-weight: bold;
+            font-size: 1rem;
+        }
 
-    ul {
-        padding-left: 20px;
-        list-style-type: none;
-        text-align: center;
-    }
+        nav a:hover {
+            color: #49274A; /* Darker Purple */
+        }
 
-    .section-title {
-        font-size: 1.2rem;
-        margin-top: 20px;
-        color: #49274A; /* Deep Purple */
-    }
+        /* Page Content Styling */
+        .container {
+            margin-top: 80px; /* Adjust for navbar height */
+            padding: 20px;
+            background-color: #F4DECB; /* Light Peach */
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
 
-    .session-list li {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 15px;
-    }
+        h1, h2, h3 {
+            color: #49274A; /* Deep Purple */
+        }
 
-    .join-button {
-        background-color: #94618E; /* Muted Purple */
-        color: white;
-        font-weight: 300;
-        font-size: 1.125rem;
-        border-radius: 16px;
-        padding: 12px 32px;
-        margin: 20px auto;
-        width: 100%;
-        max-width: 400px;
-        display: block;
-        transition: background-color 0.3s, box-shadow 0.3s;
-    }
+        .worker-link {
+            text-decoration: none;
+            color: #49274A; /* Deep Purple */
+        }
 
-    .join-button:hover {
-        background-color: #7D4B6C; /* Darker Muted Purple */
-    }
+        .worker-link:hover {
+            text-decoration: underline;
+        }
 
-    .join-button:focus {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(156, 163, 175, 0.5);
-    }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
 
-    .join-button:focus-visible {
-        border-color: #F4DECB; /* Light Peach */
-    }
+        .join-button {
+            background-color: #94618E;
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .join-button:hover {
+            background-color: #7D4B6C;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <div id="subcategoryInfo">
-        <!-- Subcategory info will be dynamically inserted here -->
+    <!-- Include Navbar -->
+    {% include "navbar/navbar_worker.html" %}
+
+    <!-- Page Content -->
+    <div class="container">
+        <div id="subcategoryInfo">
+            <!-- Dynamic content -->
+        </div>
+        <div>
+            <button class="join-button">Join</button>
+        </div>
     </div>
-    <div class="join-button-container">
-        <button type="button" class="join-button">Join</button>
-    </div>
-</div>
 </body>
 </html>
