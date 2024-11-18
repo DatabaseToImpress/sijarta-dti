@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        grape: '#94618E',
+                        eggplant: '#49274A',
+                        sand: '#F4DCEB',
+                        shell: '#F8EEE7',
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+<body class="bg-shell text-eggplant font-sans min-h-screen py-8">
+    {% include "navbar/navbar_worker.html" %}
+
+    <div class="max-w-5xl mx-auto bg-white border-4 border-grape rounded-lg shadow-lg p-8">
+        <h1 class="text-4xl font-bold text-grape text-center mb-8">Service Jobs</h1>
+        
+        <!-- Filters -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div class="w-full md:w-1/2">
+                <label for="category" class="block text-sm font-bold text-eggplant mb-2">Category:</label>
+                <select id="category" class="w-full bg-sand text-eggplant p-3 rounded border border-grape">
+                    <option value="" selected>Select a Category</option>
+                    <option value="home-cleaning">Home Cleaning</option>
+                    <option value="deep-cleaning">Deep Cleaning</option>
+                    <option value="ac-service">Air Conditioning Service</option>
+                    <option value="massage">Massage</option>
+                    <option value="hair-care">Hair Care</option>
+                </select>
+            </div>
+            <div class="w-full md:w-1/2">
+                <label for="subcategory" class="block text-sm font-bold text-eggplant mb-2">Subcategory:</label>
+                <select id="subcategory" class="w-full bg-sand text-eggplant p-3 rounded border border-grape" disabled>
+                    <option value="" selected>Select a Subcategory</option>
+                </select>
+            </div>
+            <button onclick="filterOrders()" class="bg-grape hover:bg-eggplant text-shell font-bold py-3 px-6 rounded transition">
+                Search
+            </button>
+        </div>
+
+        <!-- Order List -->
+        <div id="order-list" class="space-y-6">
+            <p class="text-center text-eggplant font-medium">Use the filters to search for service jobs.</p>
+        </div>
+    </div>
+
+    <script>
+        const categoryDropdown = document.getElementById('category');
+        const subcategoryDropdown = document.getElementById('subcategory');
+        const orderList = document.getElementById('order-list');
+
+        const subcategories = {
+            "home-cleaning": [
+                { subcategory: "Kitchen and Refrigerator Cleaning", user: "John Doe", orderDate: "2024-11-18", workingDate: "2024-11-20", session: "Session 1", totalAmount: "IDR 65,000" },
+                { subcategory: "Daily Cleaning", user: "Jane Smith", orderDate: "2024-11-19", workingDate: "2024-11-21", session: "Session 2", totalAmount: "IDR 115,000" }
+            ],
+            "deep-cleaning": [
+                { subcategory: "Sofa Washing", user: "Alice", orderDate: "2024-11-18", workingDate: "2024-11-20", session: "Session 1", totalAmount: "IDR 98,500" },
+                { subcategory: "Carpet Washing", user: "Bob", orderDate: "2024-11-19", workingDate: "2024-11-21", session: "Session 2", totalAmount: "IDR 162,500" }
+            ],
+            "massage": [
+                { subcategory: "House Massage", user: "Nanda", orderDate: "2024-11-18", workingDate: "2024-11-19", session: "Session 1", totalAmount: "IDR 140,000" },
+                { subcategory: "Swedish Massage", user: "Rina", orderDate: "2024-11-20", workingDate: "2024-11-21", session: "Session 2", totalAmount: "IDR 500,000" }
+            ],
+            "ac-service": [
+                { subcategory: "AC Chemical Service", user: "Emma", orderDate: "2024-11-19", workingDate: "2024-11-20", session: "Session 1", totalAmount: "IDR 450,000" },
+                { subcategory: "AC Freon Fixing", user: "Chris", orderDate: "2024-11-21", workingDate: "2024-11-22", session: "Session 2", totalAmount: "IDR 300,000" }
+            ],
+            "hair-care": [
+                { subcategory: "Hairwash", user: "Sarah", orderDate: "2024-11-22", workingDate: "2024-11-23", session: "Session 1", totalAmount: "IDR 180,000" },
+                { subcategory: "Creambath", user: "Kelly", orderDate: "2024-11-24", workingDate: "2024-11-25", session: "Session 2", totalAmount: "IDR 400,000" }
+            ]
+        };
+
+        categoryDropdown.addEventListener('change', function () {
+            const category = this.value;
+            subcategoryDropdown.innerHTML = '<option value="">Select a Subcategory</option>';
+            if (subcategories[category]) {
+                subcategories[category].forEach(order => {
+                    const option = document.createElement('option');
+                    option.value = order.subcategory;
+                    option.textContent = order.subcategory;
+                    subcategoryDropdown.appendChild(option);
+                });
+                subcategoryDropdown.disabled = false;
+            } else {
+                subcategoryDropdown.disabled = true;
+            }
+        });
+
+        function filterOrders() {
+            const category = categoryDropdown.value;
+            const subcategory = subcategoryDropdown.value;
+
+            orderList.innerHTML = '';
+            if (category && subcategories[category]) {
+                const filteredOrders = subcategories[category].filter(order => !subcategory || order.subcategory === subcategory);
+                filteredOrders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.classList.add(
+                        'bg-sand',
+                        'p-6',
+                        'rounded-lg',
+                        'shadow-md',
+                        'border',
+                        'border-grape',
+                        'flex',
+                        'justify-between',
+                        'items-center',
+                        'gap-4'
+                    );
+                    orderCard.innerHTML = `
+                        <div class="flex-1">
+                            <h2 class="text-lg font-bold text-grape">${order.subcategory}</h2>
+                            <p class="text-sm"><strong>User's Name:</strong> ${order.user}</p>
+                            <p class="text-sm"><strong>Order Date:</strong> ${order.orderDate}</p>
+                            <p class="text-sm"><strong>Working Date:</strong> ${order.workingDate}</p>
+                            <p class="text-sm"><strong>Session:</strong> ${order.session}</p>
+                            <p class="text-sm"><strong>Total Amount:</strong> ${order.totalAmount}</p>
+                        </div>
+                        <button class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded transition" 
+                            onclick="acceptOrder('${order.subcategory}')">Accept Order</button>
+                    `;
+                    orderList.appendChild(orderCard);
+                });
+            } else {
+                orderList.innerHTML = `
+                    <p class="text-center text-eggplant font-medium">No services available for the selected filters.</p>
+                `;
+            }
+        }
+
+        function acceptOrder(subcategory) {
+            alert(`Order for "${subcategory}" accepted!`);
+        }
+    </script>
+</body>
+</html>
