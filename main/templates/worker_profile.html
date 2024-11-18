@@ -4,47 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Worker Profiles</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Colors */
+        :root {
+            --primary-color: #94618E; /* Light Purple */
+            --secondary-color: #49274A; /* Dark Purple */
+            --accent-color: #F4DECB; /* Light Beige */
+            --background-color: #F8EEE7; /* Very Light Beige */
+        }
+    
+        body {
+            background-color: var(--background-color);
+        }
+
+        /* Worker Profile Text Colors */
+        .worker-name {
+            color: var(--secondary-color);
+        }
+
+        .worker-rating, .worker-finished-orders {
+            color: var(--primary-color);
+        }
+
+        .worker-details {
+            color: var(--secondary-color);
+        }
+
+        /* Bold labels */
+        .worker-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    {% include 'navbar/navbar_user.html' %}
+
+    <div class="flex flex-col justify-center items-center min-h-screen">
+        <!-- Worker Profile Section -->
+        <div class="container mx-auto p-6">
+            <div id="worker-container"></div>
+        </div>
+    </div>
+
     <script>
         const workers = {
             "1": {
                 name: "Luffy",
                 rate: "4.5/5",
                 finishedOrders: 35,
-                phone_number : '08123456789',
-                birth_date : '1990-01-01',
-                address : "Jalan. Jepang"
+                phone_number: '08123456789',
+                birth_date: '1990-01-01',
+                address: "Jalan. Jepang"
             },
             "2": {
                 name: "Matsuzaki",
                 rate: "4.0/5",
                 finishedOrders: 1,
-                phone_number : "08123456788",
-                birth_date : "1992-02-02",
-                address : "Jalan. Wibu"
+                phone_number: "08123456788",
+                birth_date: "1992-02-02",
+                address: "Jalan. Wibu"
             },
             "3": {
                 name: "Aleo",
                 rate: "3.5/5",
                 finishedOrders: 6,
-                phone_number : "08123456787",
-                birth_date : "1993-03-03",
-                address : "Jalan. Depok"
+                phone_number: "08123456787",
+                birth_date: "1993-03-03",
+                address: "Jalan. Depok"
             },
             "4": {
                 name: "Nanda",
                 rate: "3.0/5",
                 finishedOrders: 9,
-                phone_number : "08123456787",
-                birth_date : "1995-02-03",
-                address : "Jalan. Anggrek"
+                phone_number: "08123456787",
+                birth_date: "1995-02-03",
+                address: "Jalan. Anggrek"
             },
             "5": {
                 name: "Nara",
                 rate: "2.5/5",
                 finishedOrders: 32,
-                phone_number : "08123456799",
-                birth_date : "2000-02-03",
-                address : "Jalan. Anwar"
+                phone_number: "08123456799",
+                birth_date: "2000-02-03",
+                address: "Jalan. Anwar"
             }
         };
 
@@ -59,130 +103,26 @@
             if (worker) {
                 // If the worker exists, display their profile
                 let container = document.getElementById('worker-container');
-                let workerProfile = ` 
-                <div class="bg-white shadow-md rounded-lg p-6 mb-8">
-                    <div class="text-center mb-4">
-                        <img src="https://via.placeholder.com/150" alt="Worker Avatar" class="rounded-full border-4 border-gray-200">
-                        <h2 class="text-xl font-bold mb-2">${worker.name}'s Profile</h2>
+                let workerProfile = `
+                    <div class="bg-white shadow-md rounded-lg p-6 mb-8">
+                        <div class="text-center mb-4">
+                            <img src="https://via.placeholder.com/150" alt="${worker.name}" class="w-32 h-32 rounded-full mx-auto">
+                        </div>
+                        <h2 class="text-2xl font-bold text-center mb-4 worker-name">${worker.name}</h2>
+                        <p class="text-center text-lg worker-rating"><span class="worker-label">Rating:</span> ${worker.rate}</p>
+                        <p class="text-center worker-finished-orders"><span class="worker-label">Finished Orders:</span> ${worker.finishedOrders}</p>
+                        <p class="mt-4 text-lg worker-details"><span class="worker-label">Phone Number:</span> ${worker.phone_number}</p>
+                        <p class="text-lg worker-details"><span class="worker-label">Birth Date:</span> ${worker.birth_date}</p>
+                        <p class="text-lg worker-details"><span class="worker-label">Address:</span> ${worker.address}</p>
                     </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-gray-600 mb-1">Name:</p>
-                            <p class="text-gray-800 font-medium">${worker.name}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600 mb-1">Rate:</p>
-                            <p class="text-gray-800 font-medium">${worker.rate}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600 mb-1">Finished Order Count:</p>
-                            <p class="text-gray-800 font-medium">${worker.finishedOrders}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600 mb-1">Phone Number:</p>
-                            <p class="text-gray-800 font-medium">${worker.phone_number}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600 mb-1">Birth Date:</p>
-                            <p class="text-gray-800 font-medium">${worker.birth_date}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600 mb-1">Address:</p>
-                            <p class="text-gray-800 font-medium">${worker.address}</p>
-                        </div>
-                    </div>
-                </div>`;
+                `;
                 container.innerHTML = workerProfile;
             } else {
-                // If no worker is found, show a message
+                // If the worker is not found, display a message
                 let container = document.getElementById('worker-container');
-                container.innerHTML = `<p class="text-center text-gray-800">Worker not found.</p>`;
+                container.innerHTML = "<p>Worker profile not found.</p>";
             }
-        };
+        }
     </script>
-    <style>
-        /* Tailwind CSS or custom styles here */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f7fafc;
-            height: 100vh; /* Set the height of the viewport */
-            display: flex;
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-        }
-
-        .text-gray-800 {
-            color: #2d3748;
-        }
-
-        .text-gray-600 {
-            color: #718096;
-        }
-
-        .font-medium {
-            font-weight: 500;
-        }
-
-        .rounded-full {
-            border-radius: 9999px;
-        }
-
-        .bg-white {
-            background-color: white;
-        }
-
-        .shadow-md {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .p-6 {
-            padding: 1.5rem;
-        }
-
-        .mb-4 {
-            margin-bottom: 1rem;
-        }
-
-        .mb-8 {
-            margin-bottom: 2rem;
-        }
-
-        .grid {
-            display: grid;
-        }
-
-        .grid-cols-2 {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .gap-4 {
-            gap: 1rem;
-        }
-
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-
-        li {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Center the container */
-        #worker-container {
-            max-width: 600px;
-            width: 100%;
-            padding: 2rem;
-            box-sizing: border-box;
-        }
-    </style>
-</head>
-<body>
-    <div id="worker-container">
-        <!-- Worker profile will be populated here -->
-    </div>
 </body>
 </html>
