@@ -6,53 +6,53 @@
     <title>Booking Service</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex justify-center items-center h-screen">
+<body class="bg-[#F8EEE7] flex justify-center items-center h-screen">
 
     <!-- Modal Container -->
-    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        <h2 class="text-2xl font-bold text-center mb-6">Book Service</h2>
+    <div class="bg-[#94618E] rounded-lg shadow-lg p-8 w-full max-w-md">
+        <h2 class="text-2xl font-bold text-[#F4DECB] text-center mb-6">Book Service</h2>
         <form id="bookingForm" action="booking.html" method="POST">
             <!-- Order Date -->
             <div class="mb-4">
-                <label for="orderDate" class="block text-gray-700 font-semibold mb-2">Order Date</label>
+                <label for="orderDate" class="block text-[#F4DECB] font-semibold mb-2">Order Date</label>
                 <input 
                     type="date" 
                     id="orderDate" 
                     name="orderDate" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 focus:outline-none"
+                    class="w-full px-4 py-2 border border-[#49274A] rounded-md bg-[#F8EEE7] text-[#49274A] focus:ring-[#F8EEE7] focus:outline-none"
                     required>
             </div>
 
             <!-- Total Payment -->
             <div class="mb-4">
-                <label for="totalPayment" class="block text-gray-700 font-semibold mb-2">Total Payment</label>
+                <label for="totalPayment" class="block text-[#F4DECB] font-semibold mb-2">Total Payment</label>
                 <input 
                     type="number" 
                     id="totalPayment" 
                     name="totalPayment" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none"
+                    class="w-full px-4 py-2 border border-[#49274A] rounded-md bg-[#F8EEE7] text-[#49274A] focus:outline-none"
                     value="100" 
                     readonly>
             </div>
 
             <!-- Discount Code -->
             <div class="mb-4">
-                <label for="discountCode" class="block text-gray-700 font-semibold mb-2">Discount Code (Optional)</label>
+                <label for="discountCode" class="block text-[#F4DECB] font-semibold mb-2">Discount Code (Optional)</label>
                 <input 
                     type="text" 
                     id="discountCode" 
                     name="discountCode" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 focus:outline-none"
+                    class="w-full px-4 py-2 border border-[#49274A] rounded-md bg-[#F8EEE7] text-[#49274A] focus:ring-[#F8EEE7] focus:outline-none"
                     placeholder="Enter discount code">
             </div>
 
             <!-- Payment Method -->
             <div class="mb-6">
-                <label for="paymentMethod" class="block text-gray-700 font-semibold mb-2">Payment Method</label>
+                <label for="paymentMethod" class="block text-[#F4DECB] font-semibold mb-2">Payment Method</label>
                 <select 
                     id="paymentMethod" 
                     name="paymentMethod" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300 focus:outline-none" 
+                    class="w-full px-4 py-2 border border-[#49274A] rounded-md bg-[#F8EEE7] text-[#49274A] focus:ring-[#F8EEE7] focus:outline-none" 
                     required>
                     <option value="" disabled selected>Select Payment Method</option>
                     <option value="MyPay">MyPay</option>
@@ -68,7 +68,7 @@
             <div class="text-center">
                 <button 
                     type="button" 
-                    class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 w-full">
+                    class="text-[#F8EEE7] bg-[#49274A] hover:bg-[#7A4B66] focus:outline-none focus:ring-4 focus:ring-[#94618E] font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 w-full">
                     Submit
                 </button>
             </div>

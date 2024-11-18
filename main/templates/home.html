@@ -7,24 +7,104 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        #searchInput {
-            color: black;
+        /* Custom Colors */
+        :root {
+            --primary-color: #94618E;
+            --secondary-color: #49274A;
+            --accent-color: #F4DECB;
+            --background-color: #F8EEE7;
         }
-
-        /* Make sure dropdown doesn't shift the Category button */
+    
+        body {
+            background-color: var(--background-color);
+        }
+    
+        #searchInput {
+            color: var(--secondary-color);
+        }
+    
+        /* Category Button */
+        .category-button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    
+        .category-button:hover {
+            background-color: #94618E; /* Updated hover color */
+        }
+    
+        .category-button:focus {
+            outline: none;
+            box-shadow: none;
+        }
+    
+        .category-button:focus-visible {
+            border-color: transparent;
+        }
+    
+        /* Dropdown Menu */
         .dropdown-content {
+            background-color: var(--secondary-color);  /* Matches search button */
+            border: 1px solid var(--primary-color);
             display: none;
             position: absolute;
             z-index: 10;
         }
-
+    
+        /* Dropdown Text */
+        .dropdown-content a {
+            color: var(--background-color);  /* Matches background color */
+        }
+    
+        .dropdown-content a:hover {
+            background-color: var(--primary-color); /* Updated hover color */
+            color: var(--background-color);
+        }
+    
         /* Show the dropdown content when it's active */
         .show-dropdown {
             display: block;
         }
+    
+        /* Search Button */
+        .search-button {
+            background-color: var(--primary-color);  /* Matches category button */
+            color: white;
+        }
+    
+        .search-button:hover {
+            background-color: #94618E; /* Updated hover color */
+        }
+    
+        /* Service Categories */
+        .service-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    
+        .service-item h2 {
+            color: var(--primary-color);
+        }
+    
+        .service-item a {
+            color: var(--secondary-color);
+        }
+    
+        .service-item a:hover {
+            background-color: var(--primary-color); /* Updated hover color */
+            color: var(--background-color);
+        }
+
+        /* Subcategory Links */
+        .service-item a:hover {
+            background-color: #94618E; /* Set hover color to #94618E */
+            color: var(--background-color); /* Ensure text is readable */
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="min-h-screen">
 
     {% include 'navbar/navbar_user.html' %}
 
@@ -39,20 +119,20 @@
 
                 <!-- Category Dropdown button -->
                 <div class="relative">
-                    <button id="dropdownDividerButton" onclick="toggleDropdown()" class="text-white bg-gray-800 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">
+                    <button id="dropdownDividerButton" onclick="toggleDropdown()" class="category-button font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">
                         Category
                         <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                         </svg>
                     </button>
                     <!-- Dropdown menu -->
-                    <div id="dropdownDivider" class="dropdown-content bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDividerButton">
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onclick="filterByCategory('Home Cleaning')">Home Cleaning</a></li>
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onclick="filterByCategory('Deep Cleaning')">Deep Cleaning</a></li>
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onclick="filterByCategory('Air Conditioning Service')">Air Conditioning Service</a></li>
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onclick="filterByCategory('Massage')">Massage</a></li>
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" onclick="filterByCategory('Hair Care')">Hair Care</a></li>
+                    <div id="dropdownDivider" class="dropdown-content rounded-lg shadow w-44">
+                        <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDividerButton">
+                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Home Cleaning')">Home Cleaning</a></li>
+                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Deep Cleaning')">Deep Cleaning</a></li>
+                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Air Conditioning Service')">Air Conditioning Service</a></li>
+                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Massage')">Massage</a></li>
+                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Hair Care')">Hair Care</a></li>
                         </ul>
                     </div>
                 </div>
@@ -61,7 +141,7 @@
                 <input type="text" id="searchInput" placeholder="Search Subcategory" class="bg-white border border-gray-300 rounded px-4 py-2 w-80">
 
                 <!-- Search Button -->
-                <button onclick="filterServices()" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Search</button>
+                <button onclick="filterServices()" class="search-button font-bold py-2 px-4 rounded">Search</button>
             </div>
 
         </div>
@@ -71,35 +151,35 @@
     <main class="bg-white py-8 shadow-t-lg">
         <div class="container mx-auto grid grid-cols-1 gap-8" id="serviceCategories">
             <!-- Service Categories -->
-            <div class="bg-white p-6 rounded-lg shadow-md service-item" data-category="Home Cleaning">
+            <div class="service-item" data-category="Home Cleaning">
                 <h2 class="text-2xl font-bold mb-4 text-center">Home Cleaning</h2>
                 <ul class="list-none p-0">
                     <li class="mb-2"><a href="/subcategory/1/" class="block px-4 py-2 hover:bg-gray-200">Kitchen and Refrigerator Cleaning</a></li>
                     <li class="mb-2"><a href="/subcategory/2/" class="block px-4 py-2 hover:bg-gray-200">Daily Cleaning</a></li>
                 </ul>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-md service-item" data-category="Deep Cleaning">
+            <div class="service-item" data-category="Deep Cleaning">
                 <h2 class="text-2xl font-bold mb-4 text-center">Deep Cleaning</h2>
                 <ul class="list-none p-0">
                     <li class="mb-2"><a href="/subcategory/3/" class="block px-4 py-2 hover:bg-gray-200">Sofa Washing</a></li>
                     <li class="mb-2"><a href="/subcategory/4/" class="block px-4 py-2 hover:bg-gray-200">Carpet Washing</a></li>
                 </ul>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-md service-item" data-category="Air Conditioning Service">
+            <div class="service-item" data-category="Air Conditioning Service">
                 <h2 class="text-2xl font-bold mb-4 text-center">Air Conditioning Service</h2>
                 <ul class="list-none p-0">
                     <li class="mb-2"><a href="/subcategory/5/" class="block px-4 py-2 hover:bg-gray-200">AC Chemical Service</a></li>
                     <li class="mb-2"><a href="/subcategory/6/" class="block px-4 py-2 hover:bg-gray-200">AC Freon Fixing</a></li>
                 </ul>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-md service-item" data-category="Massage">
+            <div class="service-item" data-category="Massage">
                 <h2 class="text-2xl font-bold mb-4 text-center">Massage</h2>
                 <ul class="list-none p-0">
                     <li class="mb-2"><a href="/subcategory/7/" class="block px-4 py-2 hover:bg-gray-200">House Massage</a></li>
                     <li class="mb-2"><a href="/subcategory/8/" class="block px-4 py-2 hover:bg-gray-200">Swedish Massage</a></li>
                 </ul>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-md service-item" data-category="Hair Care">
+            <div class="service-item" data-category="Hair Care">
                 <h2 class="text-2xl font-bold mb-4 text-center">Hair Care</h2>
                 <ul class="list-none p-0">
                     <li class="mb-2"><a href="/subcategory/9/" class="block px-4 py-2 hover:bg-gray-200">Hairwash</a></li>
@@ -110,53 +190,33 @@
     </main>
 
     <script>
-        // Toggle the dropdown visibility
+        // Toggle dropdown visibility
         function toggleDropdown() {
             const dropdown = document.getElementById('dropdownDivider');
             dropdown.classList.toggle('show-dropdown');
         }
 
-        // Filter services based on selected category
+        // Filter service categories
         function filterByCategory(category) {
-            // Hide all service items initially
-            const services = document.querySelectorAll('.service-item');
-            services.forEach(service => {
-                // Show only services that match the selected category
-                if (service.getAttribute('data-category') === category) {
-                    service.style.display = 'block';
-                } else {
-                    service.style.display = 'none';
-                }
+            const allItems = document.querySelectorAll('.service-item');
+            allItems.forEach(item => {
+                item.style.display = item.dataset.category === category ? 'block' : 'none';
             });
-            // Close the dropdown after selection
-            const dropdown = document.getElementById('dropdownDivider');
-            dropdown.classList.remove('show-dropdown');
-            // Scroll to the service categories section
-            document.getElementById('serviceCategories').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Function to filter services based on search input
+        // Filter services based on search input
         function filterServices() {
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-            const services = document.querySelectorAll('.service-item');
-            services.forEach(service => {
-                const serviceName = service.querySelector('h2').innerText.toLowerCase();
-                const serviceLinks = service.querySelectorAll('a');
-                let matches = false;
-
-                // Check if the service name or any link matches the search query
-                if (serviceName.includes(searchQuery)) {
-                    matches = true;
-                } else {
-                    serviceLinks.forEach(link => {
-                        if (link.innerText.toLowerCase().includes(searchQuery)) {
-                            matches = true;
-                        }
-                    });
-                }
-
-                // Show or hide the service item based on the search query
-                service.style.display = matches ? 'block' : 'none';
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const allItems = document.querySelectorAll('.service-item');
+            allItems.forEach(item => {
+                const services = item.querySelectorAll('a');
+                let matchFound = false;
+                services.forEach(service => {
+                    if (service.innerText.toLowerCase().includes(searchValue)) {
+                        matchFound = true;
+                    }
+                });
+                item.style.display = matchFound ? 'block' : 'none';
             });
         }
     </script>
