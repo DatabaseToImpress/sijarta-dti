@@ -19,11 +19,45 @@
       },
     };
   </script>
+  <style>
+    /* Navbar styling */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 50;
+      background-color: #94618E;
+      color: #F4DECB;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #49274A;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar a {
+      color: #F4DECB;
+      text-decoration: none;
+      margin: 0 1rem;
+      transition: color 0.3s ease;
+    }
+
+    .navbar a:hover {
+      color: #49274A;
+    }
+
+    body {
+      margin: 0;
+      padding-top: 70px; /* Navbar height adjustment */
+    }
+  </style>
 </head>
 <body class="bg-shell text-eggplant font-sans min-h-screen py-12">
 
-  <!-- Include Navbar -->
-  {% include "navbar/navbar_user.html" %}
+  <!-- Navbar Container -->
+  <div id="navbar"></div>
 
   <!-- MyPay Container -->
   <div class="bg-white border-4 border-grape shadow-2xl rounded-2xl max-w-4xl mx-auto w-full p-8">
@@ -49,6 +83,7 @@
       </a>
     </div>
 
+    <!-- Transaction History -->
     <section>
       <h2 class="text-2xl font-bold text-grape mb-6">Transaction History</h2>
       <div class="bg-shell p-6 rounded-lg shadow-lg border-2 border-grape">
@@ -96,6 +131,58 @@
     </footer>
 
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const navbar = document.getElementById("navbar");
+
+      const isWorker = true; // Toggle this to true for Worker Navbar
+
+      if (isWorker) {
+        navbar.innerHTML = `
+          <nav class="navbar">
+            <div class="navbar-left">
+              <span class="navbar-logo font-bold text-xl">SIJARTA</span>
+            </div>
+            <div class="navbar-center">
+              <ul class="navbar-nav flex gap-4">
+                <li><a href="">Home</a></li>
+                <li><a href="">Manage My Jobs</a></li>
+                <li><a href="">Manage Order Status</a></li>
+                <li><a href="">MyPay</a></li>
+                <li><a href="{% url 'profilew' %}">Profile</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+              </ul>
+            </div>
+            <div class="navbar-right">
+              <span class="font-bold">Worker, Haruto</span>
+            </div>
+          </nav>
+        `;
+      } else {
+        navbar.innerHTML = `
+          <nav class="navbar">
+            <div class="navbar-left">
+              <span class="navbar-logo font-bold text-xl">SIJARTA</span>
+            </div>
+            <div class="navbar-center">
+              <ul class="navbar-nav flex gap-4">
+                <li><a href="">Home</a></li>
+                <li><a href="">MyPay</a></li>
+                <li><a href="">Orders</a></li>
+                <li><a href="">Discount</a></li>
+                <li><a href="{% url 'profileu' %}">Profile</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+              </ul>
+            </div>
+            <div class="navbar-right">
+              <span class="font-bold">User, John Doe</span>
+            </div>
+          </nav>
+        `;
+      }
+    });
+  </script>
 
 </body>
 </html>
