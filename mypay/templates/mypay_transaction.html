@@ -4,92 +4,148 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MyPay Transaction</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.2/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            grape: '#94618E',
+            eggplant: '#49274A',
+            sand: '#F4DCEB',
+            shell: '#F8EEE7',
+          },
+        },
+      },
+    };
+  </script>
 </head>
-<body class="bg-gray-900 text-white">
+<body class="bg-shell text-eggplant font-sans min-h-screen flex items-center justify-center">
+  <div id="navbar"></div> <!-- Navbar will be dynamically loaded here -->
 
-  <div class="bg-gray-800 text-white p-8 rounded-lg shadow-lg max-w-md mx-auto my-8">
-    <h2 class="text-2xl font-semibold mb-6">MyPay Transaction</h2>
+  <div class="bg-white border-4 border-grape text-eggplant p-8 rounded-lg shadow-2xl max-w-md w-full">
+    <h2 class="text-3xl font-bold text-center text-grape mb-6">MyPay Transaction</h2>
     
     <!-- User Info Section -->
-    <div class="mb-4">
-      <p><strong>User's Name:</strong> John Doe</p> <!-- Placeholder for Username -->
-      <p><strong>Transaction Date:</strong> {{ current_date | date:"m/d/Y" }}</p> <!-- Use JS to insert current date if needed -->
-      <p><strong>MyPay Balance:</strong> $500</p> <!-- Placeholder for Balance -->
+    <div class="mb-6">
+      <p><strong>User's Name:</strong> Luffy</p>
+      <p><strong>Transaction Date:</strong> <span id="transactionDate"></span></p>
+      <p><strong>MyPay Balance:</strong> <span class="text-grape font-bold">IDR 1,000,000</span></p>
     </div>
 
     <!-- Transaction Form -->
-    <form method="post">
-      {% csrf_token %}
-      
+    <form method="post" action="/submit-transaction/" class="space-y-6">
       <!-- Transaction Category Selection -->
-      <div class="mb-4">
-        {{ form.transaction_category.label_tag }}
-        {{ form.transaction_category }}
+      <div>
+        <label for="transactionCategory" class="block text-sm font-bold">Transaction Category</label>
+        <select id="transactionCategory" name="transaction_category" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+          <option value="topup">Top Up</option>
+          <option value="payment">Service Payment</option>
+          <option value="transfer">Transfer</option>
+          <option value="withdrawal">Withdrawal</option>
+        </select>
       </div>
 
-      <!-- Top-Up Amount -->
-      <div id="topupFields" class="hidden mb-4">
-        {{ form.topup_amount.label_tag }}
-        {{ form.topup_amount }}
+      <!-- Top-Up Fields -->
+      <div id="topupFields" class="hidden">
+        <label for="topupAmount" class="block text-sm font-bold">Top-Up Amount</label>
+        <input type="number" id="topupAmount" name="topup_amount" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+        <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded w-full mt-4 transition">Top Up</button>
       </div>
 
       <!-- Service Payment Fields -->
-      <div id="paymentFields" class="hidden mb-4">
-        {{ form.service_session.label_tag }}
-        {{ form.service_session }}
-        {{ form.service_price.label_tag }}
-        {{ form.service_price }}
+      <div id="paymentFields" class="hidden">
+        <label for="serviceSession" class="block text-sm font-bold">Service Session</label>
+        <select id="serviceSession" name="service_session" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+          <option value="session1">Session 1</option>
+          <option value="session2">Session 2</option>
+          <option value="session3">Session 3</option>
+          <option value="session4">Session 4</option>
+        </select>
+        <label for="sessionPrice" class="block text-sm font-bold mt-4">Price</label>
+        <input type="text" id="sessionPrice" name="session_price" class="w-full bg-sand text-eggplant p-2 rounded border border-grape" readonly>
+        <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded w-full mt-4 transition">Purchase</button>
       </div>
 
       <!-- Transfer Fields -->
-      <div id="transferFields" class="hidden mb-4">
-        {{ form.recipient_phone.label_tag }}
-        {{ form.recipient_phone }}
-        {{ form.transfer_amount.label_tag }}
-        {{ form.transfer_amount }}
+      <div id="transferFields" class="hidden">
+        <label for="recipientPhone" class="block text-sm font-bold">Recipient's Phone Number</label>
+        <input type="text" id="recipientPhone" name="recipient_phone" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+        <label for="transferAmount" class="block text-sm font-bold mt-4">Transfer Amount</label>
+        <input type="number" id="transferAmount" name="transfer_amount" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+        <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded w-full mt-4 transition">Transfer</button>
       </div>
 
       <!-- Withdrawal Fields -->
-      <div id="withdrawalFields" class="hidden mb-4">
-        {{ form.bank_name.label_tag }}
-        {{ form.bank_name }}
-        {{ form.bank_account_number.label_tag }}
-        {{ form.bank_account_number }}
-        {{ form.withdrawal_amount.label_tag }}
-        {{ form.withdrawal_amount }}
+      <div id="withdrawalFields" class="hidden">
+        <label for="bankName" class="block text-sm font-bold">Bank Name</label>
+        <select id="bankName" name="bank_name" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+          <option value="bca">BCA</option>
+          <option value="bni">BNI</option>
+          <option value="mandiri">Mandiri</option>
+          <option value="ovo">OVO</option>
+          <option value="gopay">GoPay</option>
+        </select>
+        <label for="bankAccountNumber" class="block text-sm font-bold mt-4">Bank Account Number</label>
+        <input type="text" id="bankAccountNumber" name="bank_account_number" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+        <label for="withdrawalAmount" class="block text-sm font-bold mt-4">Withdrawal Amount</label>
+        <input type="number" id="withdrawalAmount" name="withdrawal_amount" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+        <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded w-full mt-4 transition">Withdraw</button>
       </div>
-
-      <!-- Submit Button -->
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">Submit</button>
     </form>
   </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      const transactionCategory = document.getElementById('id_transaction_category');
-      toggleFields(); // Initial check
+      const transactionCategory = document.getElementById('transactionCategory');
+      const serviceSession = document.getElementById('serviceSession');
+      const sessionPrice = document.getElementById('sessionPrice');
+      const navbar = document.getElementById('navbar');
 
+      const sessionPrices = {
+        session1: 'IDR 65,000',
+        session2: 'IDR 115,000',
+        session3: 'IDR 165,000',
+        session4: 'IDR 215,000'
+      };
+
+      const isWorker = false; // Change to `true` to simulate a worker
+
+      // Dynamically load the correct navbar
+      if (isWorker) {
+        navbar.innerHTML = `{% include "navbar/navbar_worker.html" %}`;
+        // Remove Service Payment option for workers
+        Array.from(transactionCategory.options).forEach(option => {
+          if (option.value === 'payment') {
+            option.remove();
+          }
+        });
+      } else {
+        navbar.innerHTML = `{% include "navbar/navbar_user.html" %}`;
+      }
+
+      // Display current date
+      const date = new Date();
+      document.getElementById('transactionDate').textContent = date.toLocaleDateString();
+
+      // Toggle fields based on transaction category
       transactionCategory.addEventListener('change', toggleFields);
 
+      // Update price field when session changes
+      serviceSession.addEventListener('change', function() {
+        const selectedSession = serviceSession.value;
+        sessionPrice.value = sessionPrices[selectedSession] || '';
+      });
+
       function toggleFields() {
-        document.getElementById('topupFields').classList.add('hidden');
-        document.getElementById('paymentFields').classList.add('hidden');
-        document.getElementById('transferFields').classList.add('hidden');
-        document.getElementById('withdrawalFields').classList.add('hidden');
-
-        const selectedCategory = transactionCategory.value;
-
-        if (selectedCategory === 'topup') {
-          document.getElementById('topupFields').classList.remove('hidden');
-        } else if (selectedCategory === 'payment') {
-          document.getElementById('paymentFields').classList.remove('hidden');
-        } else if (selectedCategory === 'transfer') {
-          document.getElementById('transferFields').classList.remove('hidden');
-        } else if (selectedCategory === 'withdrawal') {
-          document.getElementById('withdrawalFields').classList.remove('hidden');
-        }
+        const category = transactionCategory.value;
+        document.getElementById('topupFields').classList.toggle('hidden', category !== 'topup');
+        document.getElementById('paymentFields').classList.toggle('hidden', category !== 'payment');
+        document.getElementById('transferFields').classList.toggle('hidden', category !== 'transfer');
+        document.getElementById('withdrawalFields').classList.toggle('hidden', category !== 'withdrawal');
       }
+
+      toggleFields(); // Initialize
     });
   </script>
 
