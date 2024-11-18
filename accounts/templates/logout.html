@@ -8,34 +8,47 @@ Logout
 <style>
     .logout-container {
         text-align: center;
-        margin: 5rem auto;
+        margin: 20rem auto;
     }
 
     .logout-container h1 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     .logout-btn {
-        padding: 0.8rem 2rem;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-        text-decoration: none;
+    padding: 0.8rem 2rem;
+    background-color: #49274A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    }   
+
+    /* Reset browser default blue hover styles */
+    .logout-btn:hover, .logout-btn:focus {
+        background-color: #94618E; /* Slightly lighter background */
+        text-decoration: underline; /* Add underline */
+        color: white; /* Ensure text remains white */
     }
 
-    .logout-btn:hover {
-        background-color: #45a049;
+    /* Active state: clicked */
+    .logout-btn:active {
+        background-color: #49274A; /* Keep the original background color */
+        color: white; /* Ensure text color remains white */
+        text-decoration: none; /* No underline while clicked */
     }
+
 </style>
 {% endblock %}
 
 {% block content %}
+{% include 'navbar/navbar_guest.html' %}
 <div class="logout-container">
     <h1>You have been logged out successfully.</h1>
-    <a href="{% url 'login' %}" class="logout-btn">Login Again</a>
+    <a href="{% url 'landing' %}" class="logout-btn">Login Again</a>
 </div>
 {% endblock %}

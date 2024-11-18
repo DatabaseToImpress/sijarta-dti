@@ -1,21 +1,27 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Choose Registration Role
+Choose Account Type
 {% endblock %}
 
 {% load static %}
 {% block css %}
-<link rel="stylesheet" href="{% static 'css/register.css' %}">
+<link rel="stylesheet" href="{% static 'css/register_landing.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="register-container">
-    {% include 'navbar/navbar.html' %}
-    <h1 class="register-title">Register as</h1>
-    <div class="register-buttons">
-        <a href="{% url 'register_user' %}" class="register-btn">User</a>
-        <a href="{% url 'register_worker' %}" class="register-btn">Worker</a>
+    {% include 'navbar/navbar_guest.html' %}
+    <h1 class="register-title">Choose a Role</h1>
+    <div class="register-options">
+        <a href="{% url 'register_user' %}" class="option-card">
+            <img src="{% static 'image/user-icon.png' %}" alt="User" class="option-image">
+            <span class="option-text">User</span>
+        </a>
+        <a href="{% url 'register_worker' %}" class="option-card">
+            <img src="{% static 'image/worker-icon.png' %}" alt="Worker" class="option-image">
+            <span class="option-text">Worker</span>
+        </a>
     </div>
 </div>
 {% endblock %}

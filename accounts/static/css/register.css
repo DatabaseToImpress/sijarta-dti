@@ -1,73 +1,97 @@
-/* General body styling */
-body {
-    background-color: #f5f5f5;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-y: auto;
-}
-
-/* Main container for the register section */
 .register-container {
-    text-align: center;
+    text-align: center; /* Center all content including the title */
     background-color: white;
-    padding: 2rem;
+    padding: 2rem 2rem; /* Top & Bottom: 2rem, Left & Right: 2rem */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    width: auto;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-    display:grid;
-    flex-direction: column;
-    align-items: center;
+    max-width: 700px; /* Reduced container width */
+    width: 90%; /* Ensure responsiveness on smaller screens */
+    margin: 20px auto;
+    display: block;
+    box-sizing: border-box; /* Include padding in the width */
 }
 
 /* Title styling */
 .register-title {
-    font-size: 1.5rem;
+    font-size: 2.5rem; /* Larger size for the title */
     font-weight: bold;
-    color: #333;
+    color: #49274A;
+    margin-bottom: 2rem;
+    text-align: center; /* Ensure the title is centered */
+}
+
+/* Form group layout */
+.form-group {
     margin-bottom: 1.5rem;
-    justify-content: center;
-    text-align: center;
-}
-
-/* Button group styling */
-.register-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.register-btn {
-    padding: 0.8rem 1.5rem;
-    background-color: #333; /* Matches the login button */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    text-decoration: none; /* Removes underline from links */
-    margin-left: 10px;
-}
-
-.register-btn:hover {
-    background-color: #555; /* Consistent hover effect */
-}
-
-/* Responsive spacing for small screens */
-@media (max-width: 600px) {
-    .register-buttons {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
+    width: 100%;
+    max-width: 600px; /* Match the input field width */
+    margin: 0 auto 1.5rem; /* Center within container */
+    text-align: left; /* Align labels and fields to the left */
 }
 
 label {
-    text-align: right; /* Right-align the labels */
+    display: block; /* Place labels above input fields */
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+    text-align: left; /* Align labels with the input field */
+    padding-left: 0.5rem; /* Slight indentation for better spacing */
+}
+
+/* Input field styling */
+.form-control {
+    width: 100%; /* Ensure input fields match the form group width */
+    max-width: 600px; /* Reduce maximum width */
+    padding: 1rem; /* Maintain padding for usability */
+    font-size: 1.2rem; /* Font size stays for readability */
+    border: 1px solid #ccc;
+    border-radius: 8px; /* Softer corners */
+    box-sizing: border-box; /* Include padding and border in width */
+    display: block; /* Ensure consistent block layout */
+    margin: 0 auto; /* Center the input fields */
+}
+
+/* Button styling */
+.register-btn {
+    padding: 0.8rem 2rem; /* Keep button padding unchanged */
+    background-color: #49274A;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem; /* Keep text size */
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    width: auto; /* Allow natural width */
+    max-width: 200px; /* Limit button width */
+    margin: 2rem auto 0; /* Center the button and add spacing above */
+    display: block;
+}
+
+.register-btn:hover {
+    background-color: #94618E;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .register-container {
+        max-width: 90%; /* Make it span most of the screen */
+        padding: 1.5rem; /* Reduce padding for smaller screens */
+    }
+
+    .form-group {
+        max-width: 100%; /* Make form group span full width */
+    }
+
+    .form-control {
+        font-size: 1rem; /* Adjust font size for smaller screens */
+        padding: 0.8rem; /* Adjust padding */
+        max-width: 100%; /* Remove width restriction */
+    }
+
+    .register-btn {
+        font-size: 1rem; /* Keep button text size */
+        padding: 0.8rem 1.5rem; /* Adjust button padding */
+        max-width: 100%; /* Ensure button spans container width on small screens */
+    }
 }

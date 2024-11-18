@@ -1,34 +1,21 @@
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-</head>
-
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Website{% endblock %}</title>
-    <!-- Include global navbar styles -->
-    <!--<link rel="stylesheet" href="{% static 'css/navbar.css' %}">-->
+    <!-- Add Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #F8EEE7; 
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+    </style>
     {% block css %}{% endblock %}
 </head>
 <body>
-    <!-- Include Navbar dynamically based on user role -->
-    <!--{% if user.is_authenticated %}
-        {% if user.role == 'User' %}
-            {% include 'navbar/navbar_user.html' %}
-        {% elif user.role == 'Worker' %}
-            {% include 'navbar/navbar_worker.html' %}
-        {% endif %}
-    {% else %}
-        {% include 'navbar/navbar_guest.html' %}
-    {% endif %}
-    -->
-    <!-- Main Content -->
-    <div class="container">
-        {% block content %}
-        {% endblock %}
-    </div>
-
-   
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

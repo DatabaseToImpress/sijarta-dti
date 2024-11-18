@@ -10,7 +10,7 @@ def login(request):
     return render(request, 'login.html')
 
 def logout(request):
-    return render(request, 'logout.html')
+    return redirect('landing')
 
 def register_landing(request):
     return render(request, 'register/register_landing.html')
@@ -27,9 +27,7 @@ def register_worker(request):
         pass
     return render(request, 'register/register_worker.html')
 
-def profile(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
+def profileu(request):
     if request.method == 'POST':
         # Handle profile updates
         user = request.user
@@ -39,11 +37,20 @@ def profile(request):
         user.phone = request.POST.get('phone')
         user.birth_date = request.POST.get('birth_date')
         user.address = request.POST.get('address')
-        if user.role == 'Worker':
-            user.bank_name = request.POST.get('bank_name')
-            user.account_number = request.POST.get('account_number')
-            user.npwp = request.POST.get('npwp')
-            user.image_url = request.POST.get('image_url')
         user.save()
-        return redirect('profile')
-    return render(request, 'profile.html')
+        return redirect('profileu')
+    return render(request, 'profile/profile_user.html')
+
+def profilew(request):
+    #if not request.user.is_authenticated:
+        #return redirect('login')
+    if request.method == 'POST':
+        pass
+        return redirect('profilew')
+    return render(request, 'profile/profile_worker.html')
+
+def profileUserUpdate(request):
+    return render(request, 'profile/profileUser_update.html')
+
+def profileWorkerUpdate(request):
+    return render(request, 'profile/profileWorker_update.html')
