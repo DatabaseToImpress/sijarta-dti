@@ -1,0 +1,82 @@
+/* General body styling */
+body {
+    background-color: #f5f5f5;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+
+/* Title styling - center the title */
+.register-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #49274A;
+    margin-bottom: 2rem;
+    text-align: center; /* Center the title horizontally */
+}
+
+/* Options container styling */
+.register-options {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+/* Option card styling */
+.option-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    background-color: #94618E;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 1rem;
+    transition: all 0.3s ease-in-out;
+    width: 150px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.option-card:hover {
+    border-color: #49274A;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 1.5);
+}
+
+/* Image styling */
+.option-image {
+    width: 80px;
+    height: auto;
+    margin-bottom: 0.8rem;
+}
+
+/* Text styling */
+.option-text {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #f5f5f5;
+    transition: color 0.3s ease; /* Smooth color transition */
+}
+
+/* Hover effect on option text */
+.option-card:hover .option-text {
+    color: #f5f5f5; /* Change text color to purple when card is hovered */
+    text-decoration: underline; /* Add underline on hover */
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .register-options {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .option-card {
+        width: 100%;
+    }
+}
