@@ -19,9 +19,44 @@
       },
     };
   </script>
+  <style>
+    /* Navbar styling */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 50;
+      background-color: #94618E;
+      color: #F4DECB;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #49274A;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar a {
+      color: #F4DECB;
+      text-decoration: none;
+      margin: 0 1rem;
+      transition: color 0.3s ease;
+    }
+
+    .navbar a:hover {
+      color: #49274A;
+    }
+
+    body {
+      margin: 0;
+      padding-top: 70px; /* Navbar height adjustment */
+    }
+  </style>
 </head>
 <body class="bg-shell text-eggplant font-sans min-h-screen flex items-center justify-center">
-  <div id="navbar"></div> <!-- Navbar will be dynamically loaded here -->
+  <!-- Navbar Container -->
+  <div id="navbar"></div>
 
   <div class="bg-white border-4 border-grape text-eggplant p-8 rounded-lg shadow-2xl max-w-md w-full">
     <h2 class="text-3xl font-bold text-center text-grape mb-6">MyPay Transaction</h2>
@@ -96,58 +131,83 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const transactionCategory = document.getElementById('transactionCategory');
-      const serviceSession = document.getElementById('serviceSession');
-      const sessionPrice = document.getElementById('sessionPrice');
-      const navbar = document.getElementById('navbar');
+    document.addEventListener("DOMContentLoaded", function () {
+      const navbar = document.getElementById("navbar");
+      const transactionCategory = document.getElementById("transactionCategory");
+      const serviceSession = document.getElementById("serviceSession");
+      const sessionPrice = document.getElementById("sessionPrice");
 
       const sessionPrices = {
-        session1: 'IDR 65,000',
-        session2: 'IDR 115,000',
-        session3: 'IDR 165,000',
-        session4: 'IDR 215,000'
+        session1: "IDR 65,000",
+        session2: "IDR 115,000",
+        session3: "IDR 165,000",
+        session4: "IDR 215,000",
       };
 
-      const isWorker = false; // Change to `true` to simulate a worker
+      const isWorker = true; // Toggle this to switch between user and worker navbar
 
-      // Dynamically load the correct navbar
       if (isWorker) {
-        navbar.innerHTML = `{% include "navbar/navbar_worker.html" %}`;
-        // Remove Service Payment option for workers
-        Array.from(transactionCategory.options).forEach(option => {
-          if (option.value === 'payment') {
-            option.remove();
-          }
-        });
+        navbar.innerHTML = `
+          <nav class="navbar">
+            <div class="navbar-left">
+              <span class="navbar-logo font-bold text-xl">SIJARTA</span>
+            </div>
+            <div class="navbar-center">
+              <ul class="navbar-nav flex gap-4">
+                <li><a href="">Home</a></li>
+                <li><a href="">Manage My Jobs</a></li>
+                <li><a href="">Manage Order Status</a></li>
+                <li><a href="">MyPay</a></li>
+                <li><a href="{% url 'profilew' %}">Profile</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+              </ul>
+            </div>
+            <div class="navbar-right">
+              <span class="font-bold">Worker, Luffy</span>
+            </div>
+          </nav>`;
+        // Remove "Service Payment" option for workers
+        const servicePaymentOption = transactionCategory.querySelector('option[value="payment"]');
+        if (servicePaymentOption) servicePaymentOption.remove();
       } else {
-        navbar.innerHTML = `{% include "navbar/navbar_user.html" %}`;
+        navbar.innerHTML = `
+          <nav class="navbar">
+            <div class="navbar-left">
+              <span class="navbar-logo font-bold text-xl">SIJARTA</span>
+            </div>
+            <div class="navbar-center">
+              <ul class="navbar-nav flex gap-4">
+                <li><a href="">Home</a></li>
+                <li><a href="">MyPay</a></li>
+                <li><a href="">Orders</a></li>
+                <li><a href="">Discount</a></li>
+                <li><a href="{% url 'profileu' %}">Profile</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+              </ul>
+            </div>
+            <div class="navbar-right">
+              <span class="font-bold">User, Luffy</span>
+            </div>
+          </nav>`;
       }
 
       // Display current date
-      const date = new Date();
-      document.getElementById('transactionDate').textContent = date.toLocaleDateString();
+      document.getElementById("transactionDate").textContent = new Date().toLocaleDateString();
 
       // Toggle fields based on transaction category
-      transactionCategory.addEventListener('change', toggleFields);
-
-      // Update price field when session changes
-      serviceSession.addEventListener('change', function() {
-        const selectedSession = serviceSession.value;
-        sessionPrice.value = sessionPrices[selectedSession] || '';
+      transactionCategory.addEventListener("change", function () {
+        const category = transactionCategory.value;
+        document.getElementById("topupFields").classList.toggle("hidden", category !== "topup");
+        document.getElementById("paymentFields").classList.toggle("hidden", category !== "payment");
+        document.getElementById("transferFields").classList.toggle("hidden", category !== "transfer");
+        document.getElementById("withdrawalFields").classList.toggle("hidden", category !== "withdrawal");
       });
 
-      function toggleFields() {
-        const category = transactionCategory.value;
-        document.getElementById('topupFields').classList.toggle('hidden', category !== 'topup');
-        document.getElementById('paymentFields').classList.toggle('hidden', category !== 'payment');
-        document.getElementById('transferFields').classList.toggle('hidden', category !== 'transfer');
-        document.getElementById('withdrawalFields').classList.toggle('hidden', category !== 'withdrawal');
-      }
-
-      toggleFields(); // Initialize
+      // Update price field when session changes
+      serviceSession.addEventListener("change", function () {
+        sessionPrice.value = sessionPrices[serviceSession.value] || "";
+      });
     });
   </script>
-
 </body>
 </html>
