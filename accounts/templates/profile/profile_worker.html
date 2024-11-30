@@ -4,70 +4,47 @@
 Profile User
 {% endblock %}
 
-{% load static %}
-{% block css %}
-<link rel="stylesheet" href="{% static 'css/profile.css' %}">
-{% endblock %}
-
 {% block content %}
-{% include 'navbar/navbar_worker.html' %} <!-- Including the user navbar -->
-<div class="top-20 flex items-center justify-center">
-    <div class="profile-container">
-        <h2 class="profile-title">Profile</h2>
-        <div class="image-box">
-            <img src="https://via.placeholder.com/150" alt="Profile Image" class="profile-image">
+{% include 'navbar/navbar_worker.html' %} <!-- Including the worker navbar -->
+<div class="flex items-center justify-center mt-20">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-3xl w-full">
+        <h2 class="text-2xl font-bold text-[#49274A] mb-8 text-center">Profile</h2>
+        <div class="flex justify-center mb-8">
+            <img src="https://via.placeholder.com/150" alt="Profile Image" class="w-36 h-36 rounded-full object-cover">
         </div>
-        <div class="form-group row">
-            <label for="inputName" class="col-sm-6 col-form-label">Name:</label>
-            <label class="col-sm-6 col-form-label">Haruto</label>
+        <div class="grid grid-cols-2 gap-y-6 text-gray-700 text-sm mb-8">
+            <div class="font-bold">Name:</div>
+            <div>Haruto</div>
+            <div class="font-bold">Phone number:</div>
+            <div>08121212121</div>
+            <div class="font-bold">Sex:</div>
+            <div>Male</div>
+            <div class="font-bold">Birth date:</div>
+            <div>23/03/2004</div>
+            <div class="font-bold">Address:</div>
+            <div>Jl. Osaka</div>
+            <div class="font-bold">MyPay Balance:</div>
+            <div>0</div>
+            <div class="font-bold">Bank name:</div>
+            <div>OVO</div>
+            <div class="font-bold">Account number:</div>
+            <div>12345</div>
+            <div class="font-bold">NPWP:</div>
+            <div>0122344567789</div>
+            <div class="font-bold">Rate:</div>
+            <div>5</div>
+            <div class="font-bold">Completed order count:</div>
+            <div>10</div>
+            <div class="font-bold">Job Category:</div>
+            <div>
+                1. Home Cleaning <br> 2. Deep Cleaning
+            </div>
         </div>
-        <div class="form-group row">
-            <label for="inputPhoneNum" class="col-sm-6 col-form-label">Phone number:</label>
-            <label class="col-sm-6 col-form-label">08121212121</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputSex" class="col-sm-6 col-form-label">Sex:</label>
-            <label class="col-sm-6 col-form-label">Male</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputBirthDate" class="col-sm-6 col-form-label">Birth date:</label>
-            <label class="col-sm-6 col-form-label">23/03/2004</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputAddress" class="col-sm-6 col-form-label">Address:</label>
-            <label class="col-sm-6 col-form-label">Jl. Osaka</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputMyPayBalance" class="col-sm-6 col-form-label">MyPay Balance:</label>
-            <label class="col-sm-6 col-form-label">0</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputBankName" class="col-sm-6 col-form-label">Bank name:</label>
-            <label class="col-sm-6 col-form-label">OVO</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputAccountNum" class="col-sm-6 col-form-label">Account number:</label>
-            <label class="col-sm-6 col-form-label">12345</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputNPWP" class="col-sm-6 col-form-label">NPWP:</label>
-            <label class="col-sm-6 col-form-label">0122344567789</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputRate" class="col-sm-6 col-form-label">Rate:</label>
-            <label class="col-sm-6 col-form-label">5</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputCompletedOrders" class="col-sm-6 col-form-label">Completed order count:</label>
-            <label class="col-sm-6 col-form-label">10</label>
-        </div>
-        <div class="form-group row">
-            <label for="inputJobCategory" class="col-sm-6 col-form-label">Job Category: </label>
-            <label class="col-sm-6 col-form-label">1. Home Cleaning <br> 2. Deep Cleaning</label>
-        </div>
-        <div class="form-group row">
-            <form action="{% url 'profileWorkerUpdate' %}" class="col-sm-12">
-                <button class="update-btn">Update</button>
+        <div class="flex justify-center">
+            <form action="{% url 'profileWorkerUpdate' %}">
+                <button type="submit" class="bg-[#49274A] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#94618E] transition duration-300">
+                    Update
+                </button>
             </form>
         </div>
     </div>

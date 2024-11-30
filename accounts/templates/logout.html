@@ -4,51 +4,13 @@
 Logout
 {% endblock %}
 
-{% block css %}
-<style>
-    .logout-container {
-        text-align: center;
-        margin: 20rem auto;
-    }
-
-    .logout-container h1 {
-        font-size: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .logout-btn {
-    padding: 0.8rem 2rem;
-    background-color: #49274A;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    }   
-
-    /* Reset browser default blue hover styles */
-    .logout-btn:hover, .logout-btn:focus {
-        background-color: #94618E; /* Slightly lighter background */
-        text-decoration: underline; /* Add underline */
-        color: white; /* Ensure text remains white */
-    }
-
-    /* Active state: clicked */
-    .logout-btn:active {
-        background-color: #49274A; /* Keep the original background color */
-        color: white; /* Ensure text color remains white */
-        text-decoration: none; /* No underline while clicked */
-    }
-
-</style>
-{% endblock %}
-
 {% block content %}
 {% include 'navbar/navbar_guest.html' %}
-<div class="logout-container">
-    <h1>You have been logged out successfully.</h1>
-    <a href="{% url 'landing' %}" class="logout-btn">Login Again</a>
+<div class="text-center my-40">
+    <h1 class="text-xl font-semibold mb-8">You have been logged out successfully.</h1>
+    <a href="{% url 'landing' %}" 
+       class="px-8 py-3 bg-[#49274A] text-white rounded-md text-base font-bold transition-all hover:bg-[#94618E] hover:underline focus:outline-none focus:ring-2 focus:ring-[#94618E]">
+        Login Again
+    </a>
 </div>
 {% endblock %}

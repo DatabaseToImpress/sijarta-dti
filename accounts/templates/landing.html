@@ -4,66 +4,28 @@
 Welcome
 {% endblock %}
 
-{% block css %}
-<style>
-    .landing-container {
-        text-align: center;
-        margin: 15rem auto;
-        max-width: 400px;
-    }
-
-    .landing-title {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-        font-weight: bold;
-        color: #49274A;
-    }
-
-    .landing-description {
-        margin-bottom: 1.5rem;
-        font-size: 1.2rem;
-        color: #94618E;
-    }
-
-    .landing-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 2rem;
-        
-    }
-
-    
-    .landing-btn {
-        padding: 0.8rem;
-        background-color: #49274A;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-        text-decoration: none;
-        text-align: center;
-        width: 100%;
-    }
-
-    .landing-btn:hover {
-        background-color: #94618E;
-        color: #FFFFFF;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="landing-container">
+<!-- Ensure the navbar is placed at the top and content is centered below it -->
+<div class="flex flex-col h-screen">
+    <!-- Navbar inclusion -->
     {% include 'navbar/navbar_guest.html' %}
-    <h1 class="landing-title">SIJARTA by DTI</h1>
-    <p class="landing-description">Please choose an option to proceed:</p>
-    <div class="landing-buttons">
-        <!-- Log In Button -->
-        <a href="{% url 'login' %}" class="landing-btn">Log In</a>
-        <!-- Register Button -->
-        <a href="{% url 'register' %}" class="landing-btn">Register</a>
+
+    <!-- Main content -->
+    <div class="flex flex-col items-center justify-center flex-1">
+        <h1 class="text-4xl font-bold text-[#49274A] mb-6">SIJARTA by DTI</h1>
+        <p class="text-lg text-[#94618E] mb-6">Please choose an option to proceed:</p>
+        <div class="flex gap-6">
+            <!-- Log In Button -->
+            <a href="{% url 'login' %}" 
+               class="px-6 py-3 bg-[#49274A] text-white rounded-lg text-lg font-semibold hover:bg-[#84628A] transition-colors duration-300">
+                Log In
+            </a>
+            <!-- Register Button -->
+            <a href="{% url 'register' %}" 
+               class="px-6 py-3 bg-[#49274A] text-white rounded-lg text-lg font-semibold hover:bg-[#84628A] transition-colors duration-300">
+                Register
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
