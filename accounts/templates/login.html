@@ -4,145 +4,50 @@
 Login
 {% endblock %}
 
-{% block css %}
-<style>
-/* Login container styling */
-.login-container {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    margin: 8rem auto;
-    font-family: Arial, sans-serif;
-}
-
-/* Title styling */
-.login-title {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #49274A;
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-/* Input group styling */
-.input-group {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    margin-bottom: 1.5rem;
-}
-
-.input-group label {
-    font-size: 1rem;
-    color: #0d0d0d;
-    margin-bottom: 0.5rem;
-    text-align: left;
-    font-weight: bold;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.input-group input:focus {
-    border-color: #49274A;
-    box-shadow: 0 0 5px rgba(73, 39, 74, 0.3);
-}
-
-/* Button styling */
-.login-btn {
-    width: 100%;
-    padding: 0.8rem;
-    background-color: #49274A;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background-color 0.3s;
-}
-
-.login-btn:hover {
-    background-color: #94618E;
-}
-
-/* Sign-up link styling */
-.login-links {
-    text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.95rem;
-}
-
-.login-links a {
-    text-decoration: none;
-    color: #94618E;
-    font-weight: bold;
-}
-
-.login-links a:hover {
-    color: #49274A;
-    text-decoration: underline;
-}
-
-/* Responsive adjustments */
-@media (max-width: 576px) {
-    .login-container {
-        padding: 1.5rem;
-        margin: 4rem auto;
-    }
-
-    .login-title {
-        font-size: 1.5rem;
-    }
-
-    .input-group input {
-        font-size: 0.95rem;
-        padding: 0.7rem;
-    }
-
-    .login-btn {
-        font-size: 0.95rem;
-    }
-
-    .login-links {
-        font-size: 0.85rem;
-    }
-}
-</style>
-{% endblock %}
-
 {% block content %}
 {% include 'navbar/navbar_guest.html' %}
-<div class="login-container">
-    <h1 class="login-title">Login</h1>
+<div class="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto mt-32 font-sans">
+    <h1 class="text-2xl font-bold text-[#49274A] text-center mb-8">Login</h1>
     <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}
         <!-- Input for phone number -->
-        <div class="input-group">
-            <label for="phone">Phone Number</label>
-            <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
+        <div class="flex flex-col mb-6">
+            <label for="phone" class="text-sm font-bold text-gray-900 mb-2">Phone Number</label>
+            <input
+                type="text"
+                id="phone"
+                name="phone"
+                placeholder="Enter your phone number"
+                required
+                class="w-full p-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-[#49274A] focus:border-[#49274A] transition duration-300"
+            >
         </div>
         <!-- Input for password -->
-        <div class="input-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <div class="flex flex-col mb-6">
+            <label for="password" class="text-sm font-bold text-gray-900 mb-2">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+                class="w-full p-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-[#49274A] focus:border-[#49274A] transition duration-300"
+            >
         </div>
         <!-- Submit button -->
-        <button type="submit" class="login-btn">Login</button>
+        <button
+            type="submit"
+            class="w-full p-3 bg-[#49274A] text-white rounded-md text-sm font-bold hover:bg-[#94618E] transition duration-300"
+        >
+            Login
+        </button>
     </form>
     <!-- Sign up link -->
-    <p class="login-links">
-        Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
+    <p class="text-center mt-6 text-sm">
+        Don't have an account? 
+        <a href="{% url 'register' %}" class="text-[#94618E] font-bold hover:text-[#49274A] hover:underline">
+            Sign Up
+        </a>
     </p>
 </div>
 {% endblock %}

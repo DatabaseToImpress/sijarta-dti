@@ -1,26 +1,27 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Choose Account Type
+Register as User
 {% endblock %}
 
 {% load static %}
-{% block css %}
-<link rel="stylesheet" href="{% static 'css/register_landing.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="register-container">
-    {% include 'navbar/navbar_guest.html' %}
-    <h1 class="register-title">Choose a Role</h1>
-    <div class="register-options">
-        <a href="{% url 'register_user' %}" class="option-card">
-            <img src="{% static 'image/user-icon.png' %}" alt="User" class="option-image">
-            <span class="option-text">User</span>
+
+{% include 'navbar/navbar_guest.html' %}
+
+<div class="flex flex-col items-center justify-center h-screen">
+    
+    <h1 class="text-2xl font-bold text-[#49274A] mb-8 text-center">Choose a Role</h1>
+    <div class="flex justify-center gap-8 flex-wrap">
+        <!-- User Option -->
+        <a href="{% url 'register_user' %}" class="flex flex-col items-center text-center bg-[#94618E] border-2 border-transparent rounded-lg p-4 w-36 transition duration-300 hover:border-[#49274A] hover:shadow-lg cursor-pointer">
+            <img src="{% static 'image/user-icon.png' %}" alt="User" class="w-20 h-auto mb-3">
+            <span class="text-white font-bold text-sm hover:underline">User</span>
         </a>
-        <a href="{% url 'register_worker' %}" class="option-card">
-            <img src="{% static 'image/worker-icon.png' %}" alt="Worker" class="option-image">
-            <span class="option-text">Worker</span>
+        <!-- Worker Option -->
+        <a href="{% url 'register_worker' %}" class="flex flex-col items-center text-center bg-[#94618E] border-2 border-transparent rounded-lg p-4 w-36 transition duration-300 hover:border-[#49274A] hover:shadow-lg cursor-pointer">
+            <img src="{% static 'image/worker-icon.png' %}" alt="Worker" class="w-20 h-auto mb-3">
+            <span class="text-white font-bold text-sm hover:underline">Worker</span>
         </a>
     </div>
 </div>
