@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'sijarta.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgre_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'postgres',
         'USER': 'postgres.uptauwqenbfukihuiznu',
         'PASSWORD': 'indahnyadunia',
