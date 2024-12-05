@@ -6,7 +6,6 @@
     <title>Homepage</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom Colors */
         :root {
             --primary-color: #94618E;
             --secondary-color: #49274A;
@@ -28,7 +27,7 @@
         }
 
         .category-button:hover {
-            background-color: #94618E;
+            background-color: #7a4b7a;
         }
 
         .dropdown-content {
@@ -37,7 +36,7 @@
             display: none;
             position: absolute;
             z-index: 10;
-            width: 200px; /* Adjust dropdown width */
+            width: 200px;
         }
 
         .dropdown-content a {
@@ -46,20 +45,11 @@
 
         .dropdown-content a:hover {
             background-color: var(--primary-color);
-            color: var(--background-color);
+            color: white;
         }
 
         .show-dropdown {
             display: block;
-        }
-
-        .search-button {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .search-button:hover {
-            background-color: #94618E;
         }
 
         .service-item {
@@ -74,8 +64,16 @@
         }
 
         .service-item a:hover {
-            background-color: #94618E;
+            background-color: #7a4b7a;
             color: var(--background-color);
+        }
+
+        .pagination-link {
+            color: var(--primary-color);
+        }
+
+        .pagination-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -83,20 +81,18 @@
 
     {% include 'navbar/navbar_user.html' %}
 
-    <div class="flex flex-col justify-center items-center min-h-screen">
-        <div class="space-y-4 text-center">
-            <div class="flex items-center space-x-4">
+    <div class="container mx-auto py-6">
+        <div class="flex flex-col items-center mb-6">
+            <div class="flex space-x-4">
                 <div class="relative">
-                    <button id="dropdownDividerButton" onclick="toggleDropdown()" class="category-button font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center">
+                    <button id="dropdownButton" onclick="toggleDropdown()" class="category-button font-medium rounded-lg px-5 py-2 inline-flex items-center">
                         Category
-                        <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                        <svg class="w-2.5 h-2.5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-width="2" d="M1 1l4 4 4-4"></path>
                         </svg>
                     </button>
-                    <div id="dropdownDivider" class="dropdown-content rounded-lg shadow w-44">
-                        <!-- Add the "All" option here -->
+                    <div id="dropdownMenu" class="dropdown-content rounded-lg shadow">
                         <a href="?category=all" class="block px-4 py-2">All</a>
-                        <!-- Show only categories -->
                         {% for category_name, _ in categories_for_dropdown %}
                             <a href="?category={{ category_name }}" class="block px-4 py-2">{{ category_name }}</a>
                         {% endfor %}
@@ -109,75 +105,48 @@
                         id="searchInput" 
                         placeholder="Search Subcategory" 
                         class="bg-white border border-gray-300 rounded px-4 py-2 w-80" 
-                        value="{{ search_query }}" 
+                        value="{{ search_query }}"
                     >
-                    <button type="submit" class="search-button font-bold py-2 px-4 rounded">Search</button>
+                    <button type="submit" class="category-button font-bold py-2 px-4 rounded">Search</button>
                 </form>
             </div>
         </div>
-    </div>
 
-    <main class="bg-white py-8">
-        <div class="container mx-auto grid grid-cols-1 gap-8" id="serviceCategories">
+        <main class="grid grid-cols-1 gap-8">
             {% if services %}
-                {% if selected_category == 'all' %}
-                    <!-- Display all categories and subcategories when "All" is selected -->
-                    {% for category, subcategories in services %}
-                        <div class="service-item" data-category="{{ category }}">
-                            <h2 class="text-2xl font-bold mb-4 text-center">{{ category }}</h2>
-                            <ul>
-                                {% for subcategory_id, subcategory_name in subcategories %}
-                                    <li class="mb-2">
-                                        <!-- Direct link to subcategory page -->
-                                        <a href="/subcategory/{{ subcategory_id }}/" 
-                                           class="block px-4 py-2">
-                                           {{ subcategory_name }}
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <!-- Display only the selected category -->
-                    {% for category, subcategories in services %}
-                        {% if category == selected_category %}
-                            <div class="service-item" data-category="{{ category }}">
-                                <h2 class="text-2xl font-bold mb-4 text-center">{{ category }}</h2>
-                                <ul>
-                                    {% for subcategory_id, subcategory_name in subcategories %}
-                                        <li class="mb-2">
-                                            <!-- Direct link to subcategory page -->
-                                            <a href="/subcategory/{{ subcategory_id }}/" 
-                                               class="block px-4 py-2">
-                                               {{ subcategory_name }}
-                                            </a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
+                {% for category, subcategories in services %}
+                    <div class="service-item">
+                        <h2 class="text-2xl font-bold mb-4">{{ category }}</h2>
+                        <ul>
+                            {% for subcategory_id, subcategory_name in subcategories %}
+                                <li>
+                                    <a href="{% url 'main:subcategory_services_user' subcategory_id %}" class="block px-4 py-2">
+                                        {{ subcategory_name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
             {% else %}
                 <p class="text-center text-gray-500">No services found.</p>
             {% endif %}
-        </div>
-    </main>
+        </main>
 
-    <div class="flex justify-center mt-4">
-        {% if has_previous_page %}
-            <a href="?page={{ current_page|add:"-1" }}{% if search_query %}&search={{ search_query }}{% endif %}" class="mx-2 text-primary">Previous</a>
-        {% endif %}
-        <span>Page {{ current_page }} of {{ total_pages }}</span>
-        {% if has_next_page %}
-            <a href="?page={{ current_page|add:"1" }}{% if search_query %}&search={{ search_query }}{% endif %}" class="mx-2 text-primary">Next</a>
-        {% endif %}
+        <div class="flex justify-center mt-6">
+            {% if has_previous_page %}
+                <a href="?page={{ current_page|add:'-1' }}{% if search_query %}&search={{ search_query }}{% endif %}" class="pagination-link mx-2">Previous</a>
+            {% endif %}
+            <span>Page {{ current_page }} of {{ total_pages }}</span>
+            {% if has_next_page %}
+                <a href="?page={{ current_page|add:'1' }}{% if search_query %}&search={{ search_query }}{% endif %}" class="pagination-link mx-2">Next</a>
+            {% endif %}
+        </div>
     </div>
 
     <script>
         function toggleDropdown() {
-            const dropdown = document.getElementById('dropdownDivider');
+            const dropdown = document.getElementById('dropdownMenu');
             dropdown.classList.toggle('show-dropdown');
         }
     </script>
