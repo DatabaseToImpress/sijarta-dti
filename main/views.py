@@ -171,16 +171,6 @@ def worker_profile(request, worker_name):
     }
     return render(request, 'worker_profile.html', context)
 
-def subcategory_services_worker(request, id):
-    category = request.GET.get('category', None)
-    subcategory = request.GET.get('subcategory', None)
-    
-    context = {
-        'category': category,
-        'subcategory': subcategory,
-        'id': id,  # Add id to context so you can use it in the template
-    }
-    return render(request, 'subcategory_services_worker.html', context)
 
 def add_testimonial(request):
     context = {
@@ -189,17 +179,57 @@ def add_testimonial(request):
     return render(request, 'add_testimonial.html', context)
 
 
-def submit_testimonial(request):
-    if request.method == 'POST':
+from django.shortcuts import render, redirect
+from django.db import connection
+import uuid
+from django.utils.timezone import now
 
+from django.shortcuts import render, redirect
+from django.db import connection
+from django.utils.timezone import now
+
+def add_testimonial(request):
+    if request.method == 'POST':
+        # Retrieve form data
         rating = request.POST.get('rating')
         comment = request.POST.get('comment')
+        current_time = now()
 
-        print(f"Rating: {rating}, Comment: {comment}")
+        # Insert data into the database
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO sijarta.TESTIMONI (servicetrid, date, text, rating)
+                VALUES (
+                    (SELECT Id FROM sijarta.TR_SERVICE_ORDER LIMIT 1 OFFSET %s), %s, %s, %s
+                )
+            """, [0, current_time, comment, rating])  # Replace 0 with the correct OFFSET as needed
 
-        return redirect('add_testimonial')  
+        return redirect('subcategory_services_user', id=request.user.id)  # Adjust as needed
     else:
+        return render(request, 'add_testimonial.html', {'rating_choices': range(1, 11)})
 
+
+
+def submit_testimonial(request):
+    if request.method == 'POST':
+        # Ambil data dari form
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        servicetrid = request.POST.get('servicetrid')  # Pastikan `servicetrid` dikirim dari form
+        current_time = now()
+
+        # Masukkan data testimonial ke database
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO sijarta.testimoni (servicetrid, date, text, rating)
+                VALUES (%s, %s, %s, %s)
+            """, [servicetrid, current_time, comment, rating])
+
+
+        # Redirect ke halaman yang sesuai setelah submit
+        return redirect('subcategory_services_user', id=servicetrid)
+    else:
+        # Redirect ke form testimonial jika bukan POST
         return redirect('add_testimonial')
 
 def subcategory_services_worker(request, id):
