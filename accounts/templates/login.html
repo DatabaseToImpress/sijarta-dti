@@ -6,22 +6,35 @@ Login
 
 {% block content %}
 {% include 'navbar/navbar_guest.html' %}
+
 <div class="bg-white p-8 rounded-lg shadow-lg max-w-md mx-auto mt-32 font-sans">
     <h1 class="text-2xl font-bold text-[#49274A] text-center mb-8">Login</h1>
+
+    <!-- Display error messages if there are any -->
+    {% if messages %}
+        <div class="bg-green-100 text-green-700 p-4 rounded mb-6">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}
+        
         <!-- Input for phone number -->
         <div class="flex flex-col mb-6">
-            <label for="phone" class="text-sm font-bold text-gray-900 mb-2">Phone Number</label>
+            <label for="phone_number" class="text-sm font-bold text-gray-900 mb-2">Phone Number</label>
             <input
                 type="text"
-                id="phone"
-                name="phone"
+                id="phone_number"
+                name="phone_number"
                 placeholder="Enter your phone number"
                 required
                 class="w-full p-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-[#49274A] focus:border-[#49274A] transition duration-300"
             >
         </div>
+
         <!-- Input for password -->
         <div class="flex flex-col mb-6">
             <label for="password" class="text-sm font-bold text-gray-900 mb-2">Password</label>
@@ -34,14 +47,15 @@ Login
                 class="w-full p-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-[#49274A] focus:border-[#49274A] transition duration-300"
             >
         </div>
+
         <!-- Submit button -->
         <button
             type="submit"
-            class="w-full p-3 bg-[#49274A] text-white rounded-md text-sm font-bold hover:bg-[#94618E] transition duration-300"
-        >
+            class="w-full p-3 bg-[#49274A] text-white rounded-md text-sm font-bold hover:bg-[#94618E] transition duration-300">
             Login
         </button>
     </form>
+
     <!-- Sign up link -->
     <p class="text-center mt-6 text-sm">
         Don't have an account? 

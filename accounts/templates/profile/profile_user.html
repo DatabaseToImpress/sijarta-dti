@@ -16,48 +16,54 @@ Profile User
                 <label for="inputName" class="block font-bold text-gray-700">Name:</label>
             </div>
             <div>
-                <label class="block text-gray-700">John Doe</label>
+                <label class="block text-gray-700">{{ user_data.name }}</label>
             </div>
+
             <div>
                 <label for="inputLevel" class="block font-bold text-gray-700">Level:</label>
             </div>
             <div>
-                <label class="block text-gray-700">Gold</label>
+                <label class="block text-gray-700">{{ user_data.level }}</label>
             </div>
+
             <div>
                 <label for="inputSex" class="block font-bold text-gray-700">Sex:</label>
             </div>
             <div>
-                <label class="block text-gray-700">Male</label>
+                <label class="block text-gray-700">{{ user_data.sex }}</label>
             </div>
+
             <div>
                 <label for="inputPhoneNum" class="block font-bold text-gray-700">Phone Number:</label>
             </div>
             <div>
-                <label class="block text-gray-700">08123456789</label>
+                <label class="block text-gray-700">{{ user_data.phone_number }}</label>
             </div>
+
             <div>
                 <label for="inputBirthDate" class="block font-bold text-gray-700">Birth Date:</label>
             </div>
             <div>
-                <label class="block text-gray-700">01/01/1995</label>
+                <label class="block text-gray-700">{{ user_data.dob }}</label>
             </div>
+
             <div>
                 <label for="inputAddress" class="block font-bold text-gray-700">Address:</label>
             </div>
             <div>
-                <label class="block text-gray-700">Jl. Melati</label>
+                <label class="block text-gray-700">{{ user_data.address }}</label>
             </div>
+
             <div>
                 <label for="inputMyPayBalance" class="block font-bold text-gray-700">MyPay Balance:</label>
             </div>
             <div>
-                <label class="block text-gray-700">0</label>
+                <label class="block text-gray-700">{{ user_data.my_pay_balance }}</label>
             </div>
         </div>
 
         <div class="flex justify-center mt-6">
-            <form action="{% url 'profileUserUpdate' %}">
+            <form action="{% url 'profileUserUpdate' %}" method="GET">
                 <button type="submit" class="bg-[#49274A] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#94618E] transition duration-300">
                     Update
                 </button>
