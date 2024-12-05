@@ -1,47 +1,50 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Profile User
+Profile Worker
 {% endblock %}
 
 {% block content %}
 {% include 'navbar/navbar_worker.html' %} <!-- Including the worker navbar -->
+
 <div class="flex items-center justify-center mt-20">
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-3xl w-full">
         <h2 class="text-2xl font-bold text-[#49274A] mb-8 text-center">Profile</h2>
         <div class="flex justify-center mb-8">
-            <img src="https://via.placeholder.com/150" alt="Profile Image" class="w-36 h-36 rounded-full object-cover">
+            <img src="{{ worker_data.pic_url }}" alt="Profile Image" class="w-36 h-36 rounded-full object-cover">
         </div>
         <div class="grid grid-cols-2 gap-y-6 text-gray-700 text-sm mb-8">
             <div class="font-bold">Name:</div>
-            <div>Haruto</div>
+            <div>{{ worker_data.name }}</div>
             <div class="font-bold">Phone number:</div>
-            <div>08121212121</div>
+            <div>{{ worker_data.phone_number }}</div>
             <div class="font-bold">Sex:</div>
-            <div>Male</div>
+            <div>{{ worker_data.sex }}</div>
             <div class="font-bold">Birth date:</div>
-            <div>23/03/2004</div>
+            <div>{{ worker_data.dob }}</div>
             <div class="font-bold">Address:</div>
-            <div>Jl. Osaka</div>
+            <div>{{ worker_data.address }}</div>
             <div class="font-bold">MyPay Balance:</div>
-            <div>0</div>
+            <div>{{ worker_data.my_pay_balance }}</div>
             <div class="font-bold">Bank name:</div>
-            <div>OVO</div>
+            <div>{{ worker_data.bank_name }}</div>
             <div class="font-bold">Account number:</div>
-            <div>12345</div>
+            <div>{{ worker_data.account_number }}</div>
             <div class="font-bold">NPWP:</div>
-            <div>0122344567789</div>
+            <div>{{ worker_data.npwp }}</div>
             <div class="font-bold">Rate:</div>
-            <div>5</div>
+            <div>{{ worker_data.rate }}</div>
             <div class="font-bold">Completed order count:</div>
-            <div>10</div>
+            <div>{{ worker_data.completed_orders }}</div>
             <div class="font-bold">Job Category:</div>
             <div>
-                1. Home Cleaning <br> 2. Deep Cleaning
+                {% for category in worker_data.job_categories %}
+                    {{ forloop.counter }}. {{ category }} <br>
+                {% endfor %}
             </div>
         </div>
         <div class="flex justify-center">
-            <form action="{% url 'profileWorkerUpdate' %}">
+            <form action="{% url 'profileWorkerUpdate' %}" method="GET">
                 <button type="submit" class="bg-[#49274A] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#94618E] transition duration-300">
                     Update
                 </button>
