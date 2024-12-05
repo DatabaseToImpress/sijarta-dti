@@ -1,249 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        {% include "navbar/navbar_user.html" %}
+    {% include "navbar/navbar_user.html" %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subcategory Services</title>
-    
-    <script>
-
-        const subcategories = {
-            "1": {
-                name: "Kitchen and Refrigerator Cleaning",
-                serviceCategory: "Home Cleaning",
-                description: "Detailed cleaning for kitchens and refrigerators, ensuring freshness and hygiene.",
-                workers: [
-                    { name: "Luffy", profileLink: "/worker/luffy" },
-                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" }
-                ],
-                sessions: [
-                    { session: 1, price: 65000 },
-                    { session: 2, price: 115000 },
-                    { session: 3, price: 165000 },
-                    { session: 4, price: 215000 }
-                ],
-                testimonials: [
-                    { user: "User1", text: "Amazing service!", date: "2024-11-01", worker: "Luffy", rating: 5 },
-                    { user: "User2", text: "Very professional!", date: "2024-11-02", worker: "Matsuzaki", rating: 4 }
-                ]
-            },
-            "2": {
-                name: "Daily Cleaning",
-                serviceCategory: "Home Cleaning",
-                description: "Regular cleaning to maintain a hygienic and fresh environment at home.",
-                workers: [
-                    { name: "Aleo", profileLink: "/worker/aleo" },
-                    { name: "Nanda", profileLink: "/worker/nanda" }
-                ],
-                sessions: [
-                    { session: 2, price: 65000 },
-                    { session: 3, price: 115000 }
-                ],
-                testimonials: []
-            },
-            "3": {
-                name: "Sofa Washing",
-                serviceCategory: "Deep Cleaning",
-                description: "Thorough cleaning of sofas to remove dirt, stains, and allergens.",
-                workers: [
-                    { name: "Nara", profileLink: "/worker/nara" },
-                    { name: "Luffy", profileLink: "/worker/luffy" }
-                ],
-                sessions: [
-                    { session: 1, price: 98500 },
-                    { session: 2, price: 162500 },
-                    { session: 3, price: 230000 }
-                ],
-                testimonials: [
-                    { user: "User3", text: "So sigma!", date: "2024-12-03", worker: "Luffy", rating: 3 },
-                    { user: "User4", text: "Very beautiful!", date: "2024-10-12", worker: "Nara", rating: 5 }
-                ]
-            },
-            "4": {
-                name: "Carpet Washing",
-                serviceCategory: "Deep Cleaning",
-                description: "Deep cleaning for carpets to remove dust, stains, and bacteria.",
-                workers: [
-                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" },
-                    { name: "Aleo", profileLink: "/worker/aleo" }
-                ],
-                sessions: [
-                    { session: 1, price: 98500 },
-                    { session: 2, price: 162500 },
-                    { session: 3, price: 230000 }
-                ],
-                testimonials: []
-            },
-            "5": {
-                name: "AC Chemical Service",
-                serviceCategory: "Air Conditioning Service",
-                description: "Chemical cleaning of AC units to ensure optimal cooling performance.",
-                workers: [
-                    { name: "Nanda", profileLink: "/worker/nanda" },
-                    { name: "Nara", profileLink: "/worker/nara" }
-                ],
-                sessions: [
-                    { session: 1, price: 450000 },
-                    { session: 2, price: 650000 },
-                    { session: 3, price: 850000 }
-                ],
-                testimonials: []
-            },
-            "6": {
-                name: "AC Freon Fixing",
-                serviceCategory: "Air Conditioning Service",
-                description: "Fixing Freon leaks and recharging to restore your AC's cooling capacity.",
-                workers: [
-                    { name: "Luffy", profileLink: "/worker/luffy" },
-                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" }
-                ],
-                sessions: [
-                    { session: 1, price: 200000 },
-                    { session: 2, price: 300000 },
-                    { session: 3, price: 400000 }
-                ],
-                testimonials: []
-            },
-            "7": {
-                name: "House Massage",
-                serviceCategory: "Massage",
-                description: "Relaxing massage services offered in the comfort of your home.",
-                workers: [
-                    { name: "Aleo", profileLink: "/worker/aleo" },
-                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" }
-                ],
-                sessions: [
-                    { session: 1, price: 140000 },
-                    { session: 2, price: 240000 },
-                    { session: 3, price: 340000 }
-                ],
-                testimonials: []
-            },
-            "8": {
-                name: "Swedish Massage",
-                serviceCategory: "Massage",
-                description: "A soothing full-body massage that promotes relaxation and stress relief.",
-                workers: [
-                    { name: "Nara", profileLink: "/worker/nara" },
-                    { name: "Nanda", profileLink: "/worker/nanda" }
-                ],
-                sessions: [
-                    { session: 1, price: 500000 },
-                    { session: 2, price: 700000 },
-                    { session: 3, price: 900000 }
-                ],
-                testimonials: []
-            },
-            "9": {
-                name: "Hairwash",
-                serviceCategory: "Hair Care",
-                description: "A refreshing hair cleaning service that nourishes your hair and scalp with shampoo, conditioner, and optional treatments for a revitalized look.",
-                workers: [
-                    { name: "Aleo", profileLink: "/worker/aleo" },
-                    { name: "Matsuzaki", profileLink: "/worker/matsuzaki" }
-                ],
-                sessions: [
-                    { session: 1, price: 180000 },
-                    { session: 2, price: 280000 },
-                    { session: 3, price: 380000 }
-                ],
-                testimonials: []
-            },
-            "10": {
-                name: "Creambath",
-                serviceCategory: "Hair Care",
-                description: "A relaxing hair treatment that combines a nourishing cream mask with a soothing scalp massage for soft, healthy hair.",
-                workers: [
-                    { name: "Luffy", profileLink: "/worker/luffy" },
-                    { name: "Nara", profileLink: "/worker/nara" }
-                ],
-                sessions: [
-                    { session: 1, price: 400000 },
-                    { session: 2, price: 600000 },
-                    { session: 3, price: 800000 }
-                ],
-                testimonials: []
-            }
-        };
-
-        function setPageTitle(subcategoryId) {
-            const subcategory = subcategories[subcategoryId];
-            document.title = `${subcategory.serviceCategory} - Subcategory Services`;
-        }
-
-        function loadSubcategory(subcategoryId) {
-            const subcategory = subcategories[subcategoryId];
-
-            if (subcategory) {
-                setPageTitle(subcategoryId);
-
-                let workerHtml = '';
-                subcategory.workers.forEach(worker => {
-                    workerHtml += `<li><a href="${worker.profileLink}" class="worker-link">${worker.name}</a></li>`;
-                });
-
-                let sessionHtml = '';
-                subcategory.sessions.forEach(session => {
-                    sessionHtml += `
-                        <li>Session ${session.session}: ${session.price.toLocaleString()}
-                            <button class="booking-button" onclick="bookService(${session.session}, ${session.price})">Booking</button>
-                        </li>
-                    `;
-                });
-
-                let testimonialHtml = '';
-                subcategory.testimonials.forEach(testimonial => {
-                    testimonialHtml += `
-                        <div class="testimonial-item">
-                            <p><strong>${testimonial.user}</strong> (${testimonial.date})</p>
-                            <p>Worker: ${testimonial.worker} | Rating: ${testimonial.rating}</p>
-                            <p>${testimonial.text}</p>
-                        </div>
-                    `;
-                });
-
-                document.getElementById("subcategoryInfo").innerHTML = `
-                    <h1 class="title">${subcategory.serviceCategory}</h1>
-                    <h2 class="subtitle">${subcategory.name}</h2>
-                    <p class="description">${subcategory.description}</p>
-                    <h3 class="section-title">Available Workers:</h3>
-                    <ul class="worker-list">${workerHtml}</ul>
-                    <h3 class="section-title">Session Prices:</h3>
-                    <ul class="session-list">${sessionHtml}</ul>
-                    <h3 class="section-title">Testimonials:</h3>
-                    <div class="testimonial-list">${testimonialHtml || "No testimonials available."}</div>
-                    <button class="add-testimonial-button" onclick="redirectToAddTestimonial()">Add Testimonial</button>
-                `;
-            } else {
-                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-red-500'>Subcategory not found.</p>";
-            }
-        }
-
-        function redirectToAddTestimonial() {
-            window.location.href = "/add-testimonial";
-        }
-
-        function getSubcategoryIdFromUrl() {
-            const urlPath = window.location.pathname;
-            const parts = urlPath.split('/');
-            const subcategoryId = parts[parts.length - 2];
-            return subcategoryId;
-        }
-
-        function bookService(session, price) {
-            window.location.href = `/booking/?session=${session}&price=${price}`;
-        }
-
-        window.onload = function() {
-            const subcategoryId = getSubcategoryIdFromUrl();
-            if (subcategories[subcategoryId]) {
-                loadSubcategory(subcategoryId);
-            } else {
-                document.getElementById("subcategoryInfo").innerHTML = "<p class='text-red-500'>Invalid subcategory ID.</p>";
-            }
-        };
-    </script>
+    <title>{{ subcategory_data.service_category }} - Subcategory Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* General Styling */
         body {
@@ -252,10 +14,10 @@
             margin: 0;
             padding: 0;
         }
-    
+
         /* Navbar Styling */
         nav {
-            background-color: #94618E; 
+            background-color: #94618E;
             color: #F4DECB;
             padding: 1rem 2rem;
             position: fixed;
@@ -263,7 +25,7 @@
             width: 100%;
             z-index: 10;
         }
-    
+
         nav ul {
             list-style: none;
             display: flex;
@@ -271,27 +33,26 @@
             padding: 0;
             margin: 0;
         }
-    
+
         nav li {
             display: inline;
         }
-    
+
         nav a {
             text-decoration: none;
             color: #F4DECB;
             font-weight: bold;
             font-size: 1rem;
         }
-    
+
         nav a:hover {
-            color: #49274A; 
+            color: #49274A;
         }
-    
 
         .container {
-            margin-top: 80px; 
+            margin-top: 150px; /* Increased space from the top */
             padding: 20px;
-            background-color: #F4DECB; 
+            background-color: #F4DECB;
             border-radius: 8px;
             width: 80%;
             max-width: 800px;
@@ -300,25 +61,28 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-    
+
+        /* Make the headings bold */
         h1, h2, h3 {
+            font-family: 'Arial', sans-serif;
             color: #49274A;
+            font-weight: bold;
         }
-    
+
         .worker-link {
             text-decoration: none;
             color: #49274A;
         }
-    
+
         .worker-link:hover {
             text-decoration: underline;
         }
-    
+
         ul {
             list-style-type: none;
             padding: 0;
         }
-    
+
         /* Button Styling */
         .booking-button, .add-testimonial-button {
             background-color: #94618E;
@@ -331,11 +95,10 @@
             cursor: pointer;
             transition: background-color 0.3s ease-in-out;
         }
-    
+
         .booking-button:hover, .add-testimonial-button:hover {
-            background-color: #7D4B6C; 
+            background-color: #7D4B6C;
         }
-    
 
         .testimonial-container {
             margin-top: 40px;
@@ -344,36 +107,53 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-    
+
         .testimonial-list {
             margin: 0 auto;
             text-align: center;
-            max-width: 600px;
-        }
-    
-        .testimonial-item {
-            background-color: #F4DECB;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-    
-        .testimonial-item p {
-            margin: 5px 0;
         }
     </style>
-    
 </head>
-<body>
-    <!-- Include Navbar -->
-    {% include "navbar/navbar_worker.html" %}
+<body class="bg-[#F8EEE7]">
 
-    <!-- Page Content -->
-    <div class="container">
-        <div id="subcategoryInfo">
-            <!-- Dynamic content -->
-        </div>
+    <!-- Content -->
+    <div class="container mt-24 px-8 py-6 bg-[#F4DECB] rounded-lg shadow-lg mx-auto text-center">
+
+        <!-- Service Category and Subcategory -->
+        <h1 class="text-3xl font-semibold font-bold text-[#49274A]">{{ subcategory_data.service_category }}</h1>
+        <h2 class="text-2xl font-semibold font-bold text-[#49274A] mt-2">{{ subcategory_data.subcategory_name }}</h2>
+        <p class="mt-4 text-lg text-[#49274A]">{{ subcategory_data.description }}</p>
+
+        <!-- Available Workers Section -->
+        <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Available Workers:</h3>
+        <ul class="mt-4 space-y-2 text-center max-w-xl mx-auto">
+            {% for worker in workers %}
+                <li class="text-[#49274A]">{{ worker }}</li>
+            {% empty %}
+                <li class="text-[#49274A]">No workers available for this service.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Session Prices and Booking Buttons -->
+        <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Session Prices:</h3>
+        <ul class="mt-4 space-y-4">
+            {% for session in sessions %}
+                <li class="flex justify-center items-center space-x-4">
+                    <span class="text-lg text-[#49274A]">Session {{ session.session }}: {{ session.price|floatformat:0 }} IDR</span>
+                    <button class="bg-[#94618E] text-white px-6 py-2 rounded hover:bg-[#49274A]" onclick="bookService({{ session.session }}, {{ session.price }})">
+                        Book Now
+                    </button>
+                </li>
+            {% endfor %}
+        </ul>
+
     </div>
+
+    <script>
+        function bookService(session, price) {
+            window.location.href = `/booking/?session=${session}&price=${price}`;
+        }
+    </script>
+
 </body>
 </html>

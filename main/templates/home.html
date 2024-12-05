@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homepage</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom Colors */
@@ -14,210 +13,172 @@
             --accent-color: #F4DECB;
             --background-color: #F8EEE7;
         }
-    
+
         body {
             background-color: var(--background-color);
         }
-    
+
         #searchInput {
             color: var(--secondary-color);
         }
-    
-        /* Category Button */
+
         .category-button {
             background-color: var(--primary-color);
             color: white;
         }
-    
+
         .category-button:hover {
-            background-color: #94618E; /* Updated hover color */
+            background-color: #94618E;
         }
-    
-        .category-button:focus {
-            outline: none;
-            box-shadow: none;
-        }
-    
-        .category-button:focus-visible {
-            border-color: transparent;
-        }
-    
-        /* Dropdown Menu */
+
         .dropdown-content {
-            background-color: var(--secondary-color);  /* Matches search button */
+            background-color: var(--secondary-color);
             border: 1px solid var(--primary-color);
             display: none;
             position: absolute;
             z-index: 10;
+            width: 200px; /* Adjust dropdown width */
         }
-    
-        /* Dropdown Text */
+
         .dropdown-content a {
-            color: var(--background-color);  /* Matches background color */
-        }
-    
-        .dropdown-content a:hover {
-            background-color: var(--primary-color); /* Updated hover color */
             color: var(--background-color);
         }
-    
-        /* Show the dropdown content when it's active */
+
+        .dropdown-content a:hover {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
         .show-dropdown {
             display: block;
         }
-    
-        /* Search Button */
+
         .search-button {
-            background-color: var(--primary-color);  /* Matches category button */
+            background-color: var(--primary-color);
             color: white;
         }
-    
+
         .search-button:hover {
-            background-color: #94618E; /* Updated hover color */
+            background-color: #94618E;
         }
-    
-        /* Service Categories */
+
         .service-item {
             background-color: white;
             border-radius: 10px;
             padding: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-    
+
         .service-item h2 {
             color: var(--primary-color);
         }
-    
-        .service-item a {
-            color: var(--secondary-color);
-        }
-    
-        .service-item a:hover {
-            background-color: var(--primary-color); /* Updated hover color */
-            color: var(--background-color);
-        }
 
-        /* Subcategory Links */
         .service-item a:hover {
-            background-color: #94618E; /* Set hover color to #94618E */
-            color: var(--background-color); /* Ensure text is readable */
+            background-color: #94618E;
+            color: var(--background-color);
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col">
 
     {% include 'navbar/navbar_user.html' %}
 
-    <!-- Centered Content Section -->
     <div class="flex flex-col justify-center items-center min-h-screen">
-
-        <!-- Container for Category button, Search Bar, and Search Button -->
         <div class="space-y-4 text-center">
-
-            <!-- Horizontal Flexbox container for Category button, Search Bar, and Search button -->
             <div class="flex items-center space-x-4">
-
-                <!-- Category Dropdown button -->
                 <div class="relative">
-                    <button id="dropdownDividerButton" onclick="toggleDropdown()" class="category-button font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">
+                    <button id="dropdownDividerButton" onclick="toggleDropdown()" class="category-button font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center">
                         Category
                         <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                         </svg>
                     </button>
-                    <!-- Dropdown menu -->
                     <div id="dropdownDivider" class="dropdown-content rounded-lg shadow w-44">
-                        <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDividerButton">
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Home Cleaning')">Home Cleaning</a></li>
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Deep Cleaning')">Deep Cleaning</a></li>
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Air Conditioning Service')">Air Conditioning Service</a></li>
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Massage')">Massage</a></li>
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100" onclick="filterByCategory('Hair Care')">Hair Care</a></li>
-                        </ul>
+                        <!-- Add the "All" option here -->
+                        <a href="?category=all" class="block px-4 py-2">All</a>
+                        <!-- Show only categories -->
+                        {% for category_name, _ in categories_for_dropdown %}
+                            <a href="?category={{ category_name }}" class="block px-4 py-2">{{ category_name }}</a>
+                        {% endfor %}
                     </div>
                 </div>
-
-                <!-- Search Bar -->
-                <input type="text" id="searchInput" placeholder="Search Subcategory" class="bg-white border border-gray-300 rounded px-4 py-2 w-80">
-
-                <!-- Search Button -->
-                <button onclick="filterServices()" class="search-button font-bold py-2 px-4 rounded">Search</button>
+                <form method="get" class="flex items-center">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        id="searchInput" 
+                        placeholder="Search Subcategory" 
+                        class="bg-white border border-gray-300 rounded px-4 py-2 w-80" 
+                        value="{{ search_query }}" 
+                    >
+                    <button type="submit" class="search-button font-bold py-2 px-4 rounded">Search</button>
+                </form>
             </div>
-
         </div>
     </div>
 
-    <!-- Service Categories Section -->
-    <main class="bg-white py-8 shadow-t-lg">
+    <main class="bg-white py-8">
         <div class="container mx-auto grid grid-cols-1 gap-8" id="serviceCategories">
-            <!-- Service Categories -->
-            <div class="service-item" data-category="Home Cleaning">
-                <h2 class="text-2xl font-bold mb-4 text-center">Home Cleaning</h2>
-                <ul class="list-none p-0">
-                    <li class="mb-2"><a href="/subcategory/1/" class="block px-4 py-2 hover:bg-gray-200">Kitchen and Refrigerator Cleaning</a></li>
-                    <li class="mb-2"><a href="/subcategory/2/" class="block px-4 py-2 hover:bg-gray-200">Daily Cleaning</a></li>
-                </ul>
-            </div>
-            <div class="service-item" data-category="Deep Cleaning">
-                <h2 class="text-2xl font-bold mb-4 text-center">Deep Cleaning</h2>
-                <ul class="list-none p-0">
-                    <li class="mb-2"><a href="/subcategory/3/" class="block px-4 py-2 hover:bg-gray-200">Sofa Washing</a></li>
-                    <li class="mb-2"><a href="/subcategory/4/" class="block px-4 py-2 hover:bg-gray-200">Carpet Washing</a></li>
-                </ul>
-            </div>
-            <div class="service-item" data-category="Air Conditioning Service">
-                <h2 class="text-2xl font-bold mb-4 text-center">Air Conditioning Service</h2>
-                <ul class="list-none p-0">
-                    <li class="mb-2"><a href="/subcategory/5/" class="block px-4 py-2 hover:bg-gray-200">AC Chemical Service</a></li>
-                    <li class="mb-2"><a href="/subcategory/6/" class="block px-4 py-2 hover:bg-gray-200">AC Freon Fixing</a></li>
-                </ul>
-            </div>
-            <div class="service-item" data-category="Massage">
-                <h2 class="text-2xl font-bold mb-4 text-center">Massage</h2>
-                <ul class="list-none p-0">
-                    <li class="mb-2"><a href="/subcategory/7/" class="block px-4 py-2 hover:bg-gray-200">House Massage</a></li>
-                    <li class="mb-2"><a href="/subcategory/8/" class="block px-4 py-2 hover:bg-gray-200">Swedish Massage</a></li>
-                </ul>
-            </div>
-            <div class="service-item" data-category="Hair Care">
-                <h2 class="text-2xl font-bold mb-4 text-center">Hair Care</h2>
-                <ul class="list-none p-0">
-                    <li class="mb-2"><a href="/subcategory/9/" class="block px-4 py-2 hover:bg-gray-200">Hairwash</a></li>
-                    <li class="mb-2"><a href="/subcategory/10/" class="block px-4 py-2 hover:bg-gray-200">Creambath</a></li>
-                </ul>
-            </div>
+            {% if services %}
+                {% if selected_category == 'all' %}
+                    <!-- Display all categories and subcategories when "All" is selected -->
+                    {% for category, subcategories in services %}
+                        <div class="service-item" data-category="{{ category }}">
+                            <h2 class="text-2xl font-bold mb-4 text-center">{{ category }}</h2>
+                            <ul>
+                                {% for subcategory_id, subcategory_name in subcategories %}
+                                    <li class="mb-2">
+                                        <!-- Direct link to subcategory page -->
+                                        <a href="/subcategory/{{ subcategory_id }}/" 
+                                           class="block px-4 py-2">
+                                           {{ subcategory_name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Display only the selected category -->
+                    {% for category, subcategories in services %}
+                        {% if category == selected_category %}
+                            <div class="service-item" data-category="{{ category }}">
+                                <h2 class="text-2xl font-bold mb-4 text-center">{{ category }}</h2>
+                                <ul>
+                                    {% for subcategory_id, subcategory_name in subcategories %}
+                                        <li class="mb-2">
+                                            <!-- Direct link to subcategory page -->
+                                            <a href="/subcategory/{{ subcategory_id }}/" 
+                                               class="block px-4 py-2">
+                                               {{ subcategory_name }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% else %}
+                <p class="text-center text-gray-500">No services found.</p>
+            {% endif %}
         </div>
     </main>
 
+    <div class="flex justify-center mt-4">
+        {% if has_previous_page %}
+            <a href="?page={{ current_page|add:"-1" }}{% if search_query %}&search={{ search_query }}{% endif %}" class="mx-2 text-primary">Previous</a>
+        {% endif %}
+        <span>Page {{ current_page }} of {{ total_pages }}</span>
+        {% if has_next_page %}
+            <a href="?page={{ current_page|add:"1" }}{% if search_query %}&search={{ search_query }}{% endif %}" class="mx-2 text-primary">Next</a>
+        {% endif %}
+    </div>
+
     <script>
-        // Toggle dropdown visibility
         function toggleDropdown() {
             const dropdown = document.getElementById('dropdownDivider');
             dropdown.classList.toggle('show-dropdown');
-        }
-
-        // Filter service categories
-        function filterByCategory(category) {
-            const allItems = document.querySelectorAll('.service-item');
-            allItems.forEach(item => {
-                item.style.display = item.dataset.category === category ? 'block' : 'none';
-            });
-        }
-
-        // Filter services based on search input
-        function filterServices() {
-            const searchValue = document.getElementById('searchInput').value.toLowerCase();
-            const allItems = document.querySelectorAll('.service-item');
-            allItems.forEach(item => {
-                const services = item.querySelectorAll('a');
-                let matchFound = false;
-                services.forEach(service => {
-                    if (service.innerText.toLowerCase().includes(searchValue)) {
-                        matchFound = true;
-                    }
-                });
-                item.style.display = matchFound ? 'block' : 'none';
-            });
         }
     </script>
 </body>
