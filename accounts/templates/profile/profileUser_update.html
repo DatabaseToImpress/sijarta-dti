@@ -5,7 +5,7 @@ Update Profile
 {% endblock %}
 
 {% block content %}
-{% include 'navbar/navbar_user.html' %}
+{% include 'navbar/navbar.html' %}
 
 <form action="{% url 'profileUserUpdate' %}" method="POST">
     {% csrf_token %}

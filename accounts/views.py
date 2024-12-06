@@ -17,86 +17,60 @@ def login(request):
         phone_number = request.POST.get('phone_number')
         password = request.POST.get('password')
 
-        print("Login attempt with phone_number:", phone_number)  # Debugging print
-
         try:
             with connection.cursor() as cursor:
-                # Explicitly refer to schema and table names
                 cursor.execute("""
-                    SELECT id FROM sijarta.app_user
+                    SELECT id, name, sex, phonenum, pwd, dob, address, mypaybalance
+                    FROM sijarta.app_user
                     WHERE phonenum = %s AND pwd = %s
                 """, [phone_number, password])
                 user = cursor.fetchone()
-                user_id = str(user[0])
-
-            print("User data fetched:", user)  # Debugging print
 
             if not user:
-                # If no matching user is found, display an error message
                 messages.error(request, "Invalid phone number or password. Please try again.")
-                print("Login failed: No user found with provided credentials.")  # Debugging print
                 return render(request, "login.html")
 
-            # # Save user data to session
-            # user_columns = ['Id', 'Name', 'Sex', 'PhoneNum', 'Pwd', 'DoB', 'Address', 'MyPayBalance']
-            # user_data = dict(zip(user_columns, user))
+            # Map user data
+            user_columns = ['Id', 'Name', 'Sex', 'PhoneNum', 'Pwd', 'DoB', 'Address', 'MyPayBalance']
+            user_data = dict(zip(user_columns, user))
 
-            # # Convert UUID to string, DoB to ISO string format, and MyPayBalance (Decimal) to float for JSON serialization
-            # user_data['Id'] = str(user_data['Id'])
-            # if isinstance(user_data['DoB'], (datetime.date, datetime.datetime)):
-            #     user_data['DoB'] = user_data['DoB'].isoformat()
-            # if isinstance(user_data['MyPayBalance'], Decimal):
-            #     user_data['MyPayBalance'] = float(user_data['MyPayBalance'])
+            # Convert data for serialization
+            user_data['Id'] = str(user_data['Id'])  # Convert UUID to string
+            user_data['DoB'] = user_data['DoB'].isoformat() if user_data['DoB'] else None
+            user_data['MyPayBalance'] = float(user_data['MyPayBalance']) if user_data['MyPayBalance'] is not None else 0.0
 
-            # request.session['user'] = json.dumps(user_data)
-            
-            user_data = []
-            # Check if the user is a CUSTOMER
+            # Save user data to session
+            request.session['user'] = json.dumps(user_data)  # Save user_data as JSON
+            request.session['user_id'] = user_data['Id']  # Save user_id explicitly as a string
+            request.session['user_name'] = user_data['Name']
+
+            # Determine role
             with connection.cursor() as cursor:
-                cursor.execute("""
-                    SELECT id FROM sijarta.app_user WHERE id = %s
-                """, [user_id])
-                role = cursor.fetchone()
+                cursor.execute("SELECT id FROM sijarta.customer WHERE id = %s", [user_data['Id']])
+                customer = cursor.fetchone()
 
-            if role:
-                # Save customer-specific data to session
+            if customer:
                 request.session['role'] = 'Customer'
             else:
-                # Check if the user is a WORKER
-                request.session['role'] = 'Worker'
-                # with connection.cursor() as cursor:
-                #     cursor.execute("""
-                #         SELECT * FROM "WORKER" WHERE "Id" = %s
-                #     """, [user_data['Id']])
-                #     worker = cursor.fetchone()
+                with connection.cursor() as cursor:
+                    cursor.execute("SELECT id FROM sijarta.worker WHERE id = %s", [user_data['Id']])
+                    worker = cursor.fetchone()
 
-                # print("Worker data fetched:", worker)  # Debugging print
+                if worker:
+                    request.session['role'] = 'Worker'
+                    request.session['worker_id'] = user_data['Id']
+                else:
+                    messages.error(request, "You do not have a valid role. Please contact support.")
+                    return render(request, "login.html")
 
-                # if worker:
-                #     # Save worker-specific data to session
-                #     worker_columns = ['Id', 'BankName', 'AccNumber', 'NPWP', 'PicURL', 'Rate', 'TotalFinishOrder']
-                #     worker_data = dict(zip(worker_columns, worker))
-
-                #     # Convert UUID to string for JSON serialization
-                #     worker_data['Id'] = str(worker_data['Id'])
-
-                #     request.session['role'] = 'Worker'
-                #     request.session['worker'] = json.dumps(worker_data)
-                # else:
-                #     # If neither CUSTOMER nor WORKER, assign as general APP_USER
-                #     request.session['role'] = 'General User'
-
-            # Redirect to the appropriate homepage/dashboard
-            print("Redirecting to home_page.")  # Debugging print
             return HttpResponseRedirect(reverse('main:home_page'))
 
         except Exception as e:
-            # Handle unexpected errors
-            print("Error during login process:", str(e))  # Debugging print
-            messages.error(request, "An unexpected error occurred. Please try again.")
+            messages.error(request, f"An error occurred: {e}")
             return render(request, "login.html")
 
     return render(request, "login.html")
+
 
 def register_landing(request):
     return render(request, 'register/register_landing.html')
@@ -216,25 +190,29 @@ def profileu(request):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT Name, Sex, PhoneNum, DoB, Address, MyPayBalance, Level
-            FROM APP_USER
-            INNER JOIN CUSTOMER ON APP_USER.Id = CUSTOMER.Id
-            WHERE APP_USER.Id = %s
+            FROM sijarta.app_user
+            INNER JOIN sijarta.customer ON sijarta.app_user.Id = sijarta.customer.Id
+            WHERE sijarta.app_user.Id = %s
         """, [user_id])
         user_data = cursor.fetchone()
 
     if not user_data:
         return redirect('login')
 
-    context = {
+    # Correctly map the fetched data to `user_data` dictionary
+    user_data_dict = {
         "name": user_data[0],
         "sex": user_data[1],
         "phone_number": user_data[2],
-        "birth_date": user_data[3],
+        "dob": user_data[3],
         "address": user_data[4],
-        "mypay_balance": user_data[5],
+        "my_pay_balance": user_data[5],
         "level": user_data[6],
     }
-    return render(request, 'profile/profile_user.html', context)
+
+    # Pass `user_data_dict` as `user_data` to the template
+    return render(request, 'profile/profile_user.html', {'user_data': user_data_dict})
+
 
 def profileUserUpdate(request):
     if request.method == "POST":
@@ -254,14 +232,14 @@ def profileUserUpdate(request):
 
         with connection.cursor() as cursor:
             cursor.execute("""
-                UPDATE APP_USER
+                UPDATE sijarta.app_user
                 SET Name = %s, Sex = %s, PhoneNum = %s, DoB = %s, Address = %s
                 WHERE Id = %s
             """, [name, sex, phone_number, dob, address, user_id])
 
             if hashed_password:
                 cursor.execute("""
-                    UPDATE APP_USER
+                    UPDATE sijarta.app_user
                     SET Pwd = %s
                     WHERE Id = %s
                 """, [hashed_password, user_id])
@@ -277,32 +255,46 @@ def profilew(request):
         return redirect('login')
 
     with connection.cursor() as cursor:
+        # Fetch worker data
         cursor.execute("""
             SELECT Name, Sex, PhoneNum, DoB, Address, MyPayBalance, BankName, AccNumber, NPWP, PicURL, Rate, TotalFinishOrder
-            FROM APP_USER
-            INNER JOIN WORKER ON APP_USER.Id = WORKER.Id
-            WHERE APP_USER.Id = %s
+            FROM sijarta.app_user
+            INNER JOIN sijarta.worker ON sijarta.app_user.Id = sijarta.worker.Id
+            WHERE sijarta.app_user.Id = %s
         """, [worker_id])
         worker_data = cursor.fetchone()
+
+        # Fetch worker's job categories
+        cursor.execute("""
+            SELECT sc.CategoryName
+            FROM sijarta.worker_service_category wsc
+            JOIN sijarta.service_category sc ON wsc.ServiceCategoryId = sc.Id
+            WHERE wsc.WorkerId = %s
+        """, [worker_id])
+        job_categories = cursor.fetchall()  # Returns a list of tuples, e.g., [(Category1,), (Category2,)]
 
     if not worker_data:
         return redirect('login')
 
-    context = {
+    # Map fetched data to context
+    worker_data_dict = {
         "name": worker_data[0],
         "sex": worker_data[1],
         "phone_number": worker_data[2],
-        "birth_date": worker_data[3],
+        "dob": worker_data[3],
         "address": worker_data[4],
-        "mypay_balance": worker_data[5],
+        "my_pay_balance": worker_data[5],
         "bank_name": worker_data[6],
         "account_number": worker_data[7],
         "npwp": worker_data[8],
         "pic_url": worker_data[9],
         "rate": worker_data[10],
-        "completed_order_count": worker_data[11],
+        "completed_orders": worker_data[11],
+        "job_categories": [category[0] for category in job_categories],  # Extract category names
     }
-    return render(request, 'profile/profile_worker.html', context)
+
+    return render(request, 'profile/profile_worker.html', {'worker_data': worker_data_dict})
+
 
 def profileWorkerUpdate(request):
     if request.method == "POST":
@@ -332,7 +324,7 @@ def profileWorkerUpdate(request):
         try:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    UPDATE APP_USER
+                    UPDATE sijarta.app_user
                     SET Name = %s, Sex = %s, PhoneNum = %s, DoB = %s, Address = %s
                     WHERE Id = %s
                 """, [name, sex, phone_number, dob, address, worker_id])
@@ -365,9 +357,9 @@ def profileWorkerUpdate(request):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT Name, Sex, PhoneNum, DoB, Address, BankName, AccNumber, NPWP, PicURL
-            FROM APP_USER
-            INNER JOIN WORKER ON APP_USER.Id = WORKER.Id
-            WHERE APP_USER.Id = %s
+            FROM sijarta.app_user
+            INNER JOIN sijarta.worker ON sijarta.app_user.Id = sijarta.worker.Id
+            WHERE sijarta.app_user.Id = %s
         """, [worker_id])
         worker_data = cursor.fetchone()
 
@@ -376,7 +368,7 @@ def profileWorkerUpdate(request):
             "name": worker_data[0],
             "sex": worker_data[1],
             "phone_number": worker_data[2],
-            "birth_date": worker_data[3],
+            "dob": worker_data[3],
             "address": worker_data[4],
             "bank_name": worker_data[5],
             "account_number": worker_data[6],
