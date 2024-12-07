@@ -22,13 +22,22 @@ def login(request):
                 cursor.execute("""
                     SELECT id, name, sex, phonenum, pwd, dob, address, mypaybalance
                     FROM sijarta.app_user
-                    WHERE phonenum = %s AND pwd = %s
-                """, [phone_number, password])
+                    WHERE phonenum = %s
+                """, [phone_number])
                 user = cursor.fetchone()
 
             if not user:
                 messages.error(request, "Invalid phone number or password. Please try again.")
                 return render(request, "login.html")
+
+            # Extract the hashed password from the database
+            hashed_password = user[4]  # Assuming `pwd` is the 5th column
+
+            # Use `check_password` to verify the provided password
+            if password != hashed_password:  # Compare raw passwords directly
+                messages.error(request, "Invalid phone number or password. Please try again.")
+                return render(request, "login.html")
+
 
             # Map user data
             user_columns = ['Id', 'Name', 'Sex', 'PhoneNum', 'Pwd', 'DoB', 'Address', 'MyPayBalance']
@@ -70,6 +79,7 @@ def login(request):
             return render(request, "login.html")
 
     return render(request, "login.html")
+
 
 
 def register_landing(request):
@@ -218,7 +228,7 @@ def profileUserUpdate(request):
     if request.method == "POST":
         user_id = request.session.get('user_id')  # Assuming you store user_id in session
         name = request.POST.get('name')
-        password = request.POST.get('password')
+        password = request.POST.get('password')  # Raw password input from the form
         sex = request.POST.get('sex')
         phone_number = request.POST.get('phone_number')
         dob = request.POST.get('birth_date')
@@ -228,21 +238,24 @@ def profileUserUpdate(request):
             messages.error(request, "All fields except password are required.")
             return redirect('profileUserUpdate')
 
-        hashed_password = make_password(password) if password else None
-
         with connection.cursor() as cursor:
+            # Update non-password fields
             cursor.execute("""
                 UPDATE sijarta.app_user
                 SET Name = %s, Sex = %s, PhoneNum = %s, DoB = %s, Address = %s
                 WHERE Id = %s
             """, [name, sex, phone_number, dob, address, user_id])
 
-            if hashed_password:
+            # Update password if provided
+            if password:  # Check if a new password was provided
                 cursor.execute("""
                     UPDATE sijarta.app_user
                     SET Pwd = %s
                     WHERE Id = %s
-                """, [hashed_password, user_id])
+                """, [password, user_id])  # Store the raw password
+
+        # Update the session with the new name
+        request.session['user_name'] = name
 
         messages.success(request, "Profile updated successfully!")
         return redirect('profileu')
@@ -305,7 +318,7 @@ def profileWorkerUpdate(request):
 
         # Get form data
         name = request.POST.get('name')
-        password = request.POST.get('password')
+        password = request.POST.get('password')  # Raw password input from the form
         sex = request.POST.get('sex')
         phone_number = request.POST.get('phone_number')
         dob = request.POST.get('birth_date')
@@ -319,32 +332,38 @@ def profileWorkerUpdate(request):
             messages.error(request, "All fields except password are required.")
             return redirect('profileWorkerUpdate')
 
-        hashed_password = make_password(password) if password else None
-
         try:
             with connection.cursor() as cursor:
+                # Update non-password fields
                 cursor.execute("""
                     UPDATE sijarta.app_user
                     SET Name = %s, Sex = %s, PhoneNum = %s, DoB = %s, Address = %s
                     WHERE Id = %s
                 """, [name, sex, phone_number, dob, address, worker_id])
 
-                if hashed_password:
+                # Update the raw password if provided
+                if password:  # Check if a new password was provided
                     cursor.execute("""
-                        UPDATE APP_USER
+                        UPDATE sijarta.app_user
                         SET Pwd = %s
                         WHERE Id = %s
-                    """, [hashed_password, worker_id])
+                    """, [password, worker_id])  # Store the raw password
 
+                # Update worker-specific details
                 cursor.execute("""
-                    UPDATE WORKER
+                    UPDATE sijarta.worker
                     SET BankName = %s, AccNumber = %s, NPWP = %s, PicURL = %s
                     WHERE Id = %s
                 """, [bank_name, account_number, npwp, pic_url, worker_id])
 
+            # Update the session variable for the worker's name
+            request.session['user_name'] = name  # Update the name in the session
+
             messages.success(request, "Profile updated successfully!")
             return redirect('profilew')
+
         except Exception as e:
+            print(f"Error during profile update: {e}")  
             messages.error(request, f"An error occurred: {str(e)}")
             return redirect('profileWorkerUpdate')
 

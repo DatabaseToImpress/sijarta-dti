@@ -10,9 +10,10 @@ Profile Worker
 <div class="flex items-center justify-center mt-20">
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-3xl w-full">
         <h2 class="text-2xl font-bold text-[#49274A] mb-8 text-center">Profile</h2>
-        <div class="flex justify-center mb-8">
-            <img src="{{ worker_data.pic_url }}" alt="Profile Image" class="w-36 h-36 rounded-full object-cover">
+        <div class="flex flex-col justify-center items-center mb-8">
+            <img src="{{ worker_data.pic_url }}" alt="Profile Image" class="w-36 h-36 rounded-full object-cover border-4 border-gray-700">
         </div>
+        
         <div class="grid grid-cols-2 gap-y-6 text-gray-700 text-sm mb-8">
             <div class="font-bold">Name:</div>
             <div>{{ worker_data.name }}</div>

@@ -7,20 +7,21 @@ Update Profile
 {% block content %}
 {% include 'navbar/navbar.html' %}
 
-<form>
+<form method="POST" action="{% url 'profileWorkerUpdate' %}">
+    {% csrf_token %}
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-3xl mx-auto mt-10">
         <h1 class="text-2xl font-bold text-[#49274A] mb-8 text-center">Update Profile</h1>
 
         <!-- Name -->
         <div class="mb-6">
             <label for="inputName" class="block text-sm font-bold text-gray-700 mb-2">Name</label>
-            <input type="text" id="inputName" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your name">
+            <input type="text" id="inputName" name="name" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your name">
         </div>
 
         <!-- Password -->
         <div class="mb-6">
             <label for="inputPassword" class="block text-sm font-bold text-gray-700 mb-2">Password</label>
-            <input type="password" id="inputPassword" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter a password">
+            <input type="password" id="inputPassword" name="password" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter a password">
         </div>
 
         <!-- Sex -->
@@ -28,61 +29,62 @@ Update Profile
             <label class="block text-sm font-bold text-gray-700 mb-2">Sex</label>
             <div class="flex items-center gap-4">
                 <div>
-                    <input type="radio" id="gridRadios1" name="gridRadios" value="female" class="form-radio text-[#49274A]" checked>
+                    <input type="radio" id="gridRadios1" name="sex" value="F" class="form-radio text-[#49274A]" checked>
                     <label for="gridRadios1" class="ml-2 text-sm">Female</label>
                 </div>
                 <div>
-                    <input type="radio" id="gridRadios2" name="gridRadios" value="male" class="form-radio text-[#49274A]">
+                    <input type="radio" id="gridRadios2" name="sex" value="M" class="form-radio text-[#49274A]">
                     <label for="gridRadios2" class="ml-2 text-sm">Male</label>
                 </div>
             </div>
         </div>
+        
 
         <!-- Phone Number -->
         <div class="mb-6">
             <label for="inputNumber" class="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
-            <input type="text" id="inputNumber" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your phone number">
+            <input type="text" id="inputNumber" name="phone_number" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your phone number">
         </div>
 
         <!-- Birth Date -->
         <div class="mb-6">
             <label for="inputBirthDate" class="block text-sm font-bold text-gray-700 mb-2">Birth Date</label>
-            <input type="date" id="inputBirthDate" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none">
+            <input type="date" id="inputBirthDate" name="birth_date" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none">
         </div>
 
         <!-- Address -->
         <div class="mb-6">
             <label for="inputAddress" class="block text-sm font-bold text-gray-700 mb-2">Address</label>
-            <input type="text" id="inputAddress" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your address">
+            <input type="text" id="inputAddress" name="address" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your address">
         </div>
 
         <!-- Bank Name -->
         <div class="mb-6">
             <label for="inlineFormCustomSelectPref" class="block text-sm font-bold text-gray-700 mb-2">Bank Name</label>
-            <select id="inlineFormCustomSelectPref" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none">
+            <select id="inlineFormCustomSelectPref" name="bank_name" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none">
                 <option selected>Gopay</option>
-                <option value="1">OVO</option>
-                <option value="2">Virtual Account BCA</option>
-                <option value="3">Virtual Account BNI</option>
+                <option value="OVO">OVO</option>
+                <option value="Virtual Account BCA">Virtual Account BCA</option>
+                <option value="Virtual Account BNI">Virtual Account BNI</option>
             </select>
         </div>
 
         <!-- Account Number -->
         <div class="mb-6">
             <label for="inputAccountNum" class="block text-sm font-bold text-gray-700 mb-2">Account Number</label>
-            <input type="text" id="inputAccountNum" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your account number">
+            <input type="text" id="inputAccountNum" name="account_number" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your account number">
         </div>
 
         <!-- NPWP -->
         <div class="mb-6">
             <label for="inputNPWP" class="block text-sm font-bold text-gray-700 mb-2">NPWP</label>
-            <input type="text" id="inputNPWP" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your NPWP">
+            <input type="text" id="inputNPWP" name="npwp" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter your NPWP">
         </div>
 
         <!-- Image URL -->
         <div class="mb-6">
             <label for="inputImageUrl" class="block text-sm font-bold text-gray-700 mb-2">Image URL</label>
-            <input type="url" id="inputImageUrl" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter Image URL">
+            <input type="url" id="inputImageUrl" name="image_url" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#49274A] focus:outline-none" placeholder="Enter Image URL">
         </div>
 
         <!-- Submit Button -->
@@ -93,4 +95,5 @@ Update Profile
         </div>
     </div>
 </form>
+
 {% endblock %}
