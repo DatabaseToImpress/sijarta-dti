@@ -12,6 +12,15 @@ Update Profile
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-3xl mx-auto mt-10">
         <h1 class="text-2xl font-bold text-[#49274A] mb-8 text-center">Update Profile</h1>
 
+        <!-- Error Messages -->
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="text-red-500 text-sm">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
         <!-- Name -->
         <div class="mb-6">
             <label for="inputName" class="block text-sm font-bold text-gray-700 mb-2">Name</label>
