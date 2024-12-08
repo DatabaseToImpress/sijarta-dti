@@ -81,7 +81,6 @@ def login(request):
     return render(request, "login.html")
 
 
-
 def register_landing(request):
     return render(request, 'register/register_landing.html')
 
@@ -121,7 +120,6 @@ def register_user(request):
                         VALUES (%s, %s)
                     """, [user_id, 'Basic'])
 
-                    messages.success(request, "User registration successful!")
                     return redirect("login")
 
             except IntegrityError as e:
@@ -175,7 +173,6 @@ def register_worker(request):
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """, [user_id, bank_name, account_number, npwp, pic_url, 0.0, 0])
 
-                messages.success(request, "Worker registration successful!")
                 return redirect("login")
 
             except IntegrityError as e:
@@ -223,44 +220,68 @@ def profileu(request):
     # Pass `user_data_dict` as `user_data` to the template
     return render(request, 'profile/profile_user.html', {'user_data': user_data_dict})
 
-
 def profileUserUpdate(request):
     if request.method == "POST":
-        user_id = request.session.get('user_id')  # Assuming you store user_id in session
+        user_id = request.session.get('user_id')
         name = request.POST.get('name')
-        password = request.POST.get('password')  # Raw password input from the form
+        password = request.POST.get('password')
         sex = request.POST.get('sex')
         phone_number = request.POST.get('phone_number')
         dob = request.POST.get('birth_date')
         address = request.POST.get('address')
 
+        # Ensure all required fields except password are provided
         if not (name and sex and phone_number and dob and address):
             messages.error(request, "All fields except password are required.")
             return redirect('profileUserUpdate')
 
-        with connection.cursor() as cursor:
-            # Update non-password fields
-            cursor.execute("""
-                UPDATE sijarta.app_user
-                SET Name = %s, Sex = %s, PhoneNum = %s, DoB = %s, Address = %s
-                WHERE Id = %s
-            """, [name, sex, phone_number, dob, address, user_id])
-
-            # Update password if provided
-            if password:  # Check if a new password was provided
+        try:
+            with connection.cursor() as cursor:
+                # Update non-password fields
                 cursor.execute("""
                     UPDATE sijarta.app_user
-                    SET Pwd = %s
+                    SET Name = %s, Sex = %s, PhoneNum = %s, DoB = %s, Address = %s
                     WHERE Id = %s
-                """, [password, user_id])  # Store the raw password
+                """, [name, sex, phone_number, dob, address, user_id])
 
-        # Update the session with the new name
-        request.session['user_name'] = name
+                # Update password if provided
+                if password:
+                    cursor.execute("""
+                        UPDATE sijarta.app_user
+                        SET Pwd = %s
+                        WHERE Id = %s
+                    """, [password, user_id])
 
-        messages.success(request, "Profile updated successfully!")
-        return redirect('profileu')
+            # Update the session name
+            request.session['user_name'] = name
 
-    return render(request, 'profile/profileUser_update.html')
+            # Redirect to the profile page after the success message
+            return redirect('profileu')
+
+        except Exception as e:
+            # Handle exceptions
+            messages.error(request, f"An error occurred: {str(e)}")
+            return redirect('profileUserUpdate')
+
+    # Fetch current user data for pre-filling the form
+    user_id = request.session.get('user_id')
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT Name, Sex, PhoneNum, DoB, Address
+            FROM sijarta.app_user
+            WHERE Id = %s
+        """, [user_id])
+        user_data = cursor.fetchone()
+
+    user_data_dict = {
+        "name": user_data[0],
+        "sex": user_data[1],
+        "phone_number": user_data[2],
+        "dob": user_data[3],
+        "address": user_data[4],
+    }
+
+    return render(request, 'profile/profileUser_update.html', {'user_data': user_data_dict})
 
 def profilew(request):
     worker_id = request.session.get('worker_id')  # Assuming you store worker_id in session
@@ -308,17 +329,11 @@ def profilew(request):
 
     return render(request, 'profile/profile_worker.html', {'worker_data': worker_data_dict})
 
-
 def profileWorkerUpdate(request):
     if request.method == "POST":
         worker_id = request.session.get('worker_id')
-        if not worker_id:
-            messages.error(request, "You must be logged in to update your profile.")
-            return redirect('login')
-
-        # Get form data
         name = request.POST.get('name')
-        password = request.POST.get('password')  # Raw password input from the form
+        password = request.POST.get('password')
         sex = request.POST.get('sex')
         phone_number = request.POST.get('phone_number')
         dob = request.POST.get('birth_date')
@@ -341,58 +356,26 @@ def profileWorkerUpdate(request):
                     WHERE Id = %s
                 """, [name, sex, phone_number, dob, address, worker_id])
 
-                # Update the raw password if provided
-                if password:  # Check if a new password was provided
+                # Update password if provided
+                if password:
                     cursor.execute("""
                         UPDATE sijarta.app_user
                         SET Pwd = %s
                         WHERE Id = %s
-                    """, [password, worker_id])  # Store the raw password
+                    """, [password, worker_id])
 
-                # Update worker-specific details
+                # Update worker-specific fields
                 cursor.execute("""
                     UPDATE sijarta.worker
                     SET BankName = %s, AccNumber = %s, NPWP = %s, PicURL = %s
                     WHERE Id = %s
                 """, [bank_name, account_number, npwp, pic_url, worker_id])
 
-            # Update the session variable for the worker's name
-            request.session['user_name'] = name  # Update the name in the session
-
-            messages.success(request, "Profile updated successfully!")
-            return redirect('profilew')
+            request.session['user_name'] = name
 
         except Exception as e:
-            print(f"Error during profile update: {e}")  
-            messages.error(request, f"An error occurred: {str(e)}")
-            return redirect('profileWorkerUpdate')
+            messages.error(request, f"An error occurred: {str(e)}")  # Error message
 
-    # Fetch existing data for prefilling the form
-    worker_id = request.session.get('worker_id')
-    if not worker_id:
-        messages.error(request, "You must be logged in to update your profile.")
-        return redirect('login')
+        return redirect('profilew')
 
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT Name, Sex, PhoneNum, DoB, Address, BankName, AccNumber, NPWP, PicURL
-            FROM sijarta.app_user
-            INNER JOIN sijarta.worker ON sijarta.app_user.Id = sijarta.worker.Id
-            WHERE sijarta.app_user.Id = %s
-        """, [worker_id])
-        worker_data = cursor.fetchone()
-
-    context = {
-        "worker_data": {
-            "name": worker_data[0],
-            "sex": worker_data[1],
-            "phone_number": worker_data[2],
-            "dob": worker_data[3],
-            "address": worker_data[4],
-            "bank_name": worker_data[5],
-            "account_number": worker_data[6],
-            "npwp": worker_data[7],
-            "pic_url": worker_data[8],
-        }
-    }
-    return render(request, 'profile/profileWorker_update.html', context)
+    return render(request, 'profile/profileWorker_update.html')
