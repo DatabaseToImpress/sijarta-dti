@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Worker Profiles</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Worker Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom Colors */
@@ -46,86 +46,24 @@
     <div class="flex flex-col justify-center items-center min-h-screen">
         <!-- Worker Profile Section -->
         <div class="container mx-auto p-6">
-            <div id="worker-container"></div>
-        </div>
-    </div>
-
-    <script>
-        const workers = {
-            "1": {
-                name: "Luffy",
-                rate: "4.5/5",
-                finishedOrders: 35,
-                phone_number: '08123456789',
-                birth_date: '1990-01-01',
-                address: "Jalan. Jepang"
-            },
-            "2": {
-                name: "Matsuzaki",
-                rate: "4.0/5",
-                finishedOrders: 1,
-                phone_number: "08123456788",
-                birth_date: "1992-02-02",
-                address: "Jalan. Wibu"
-            },
-            "3": {
-                name: "Aleo",
-                rate: "3.5/5",
-                finishedOrders: 6,
-                phone_number: "08123456787",
-                birth_date: "1993-03-03",
-                address: "Jalan. Depok"
-            },
-            "4": {
-                name: "Nanda",
-                rate: "3.0/5",
-                finishedOrders: 9,
-                phone_number: "08123456787",
-                birth_date: "1995-02-03",
-                address: "Jalan. Anggrek"
-            },
-            "5": {
-                name: "Nara",
-                rate: "2.5/5",
-                finishedOrders: 32,
-                phone_number: "08123456799",
-                birth_date: "2000-02-03",
-                address: "Jalan. Anwar"
-            }
-        };
-
-        window.onload = function() {
-            // Extract worker name from the URL
-            const pathname = window.location.pathname;
-            const workerName = pathname.split('/')[2]; // Assumes the URL is in the format /worker-profile/{worker_name}
-
-            // Find the worker by name
-            const worker = Object.values(workers).find(worker => worker.name.toLowerCase() === workerName.toLowerCase());
-
-            if (worker) {
-                // If the worker exists, display their profile
-                let container = document.getElementById('worker-container');
-                let workerProfile = `
+            <div id="worker-container">
+                {% if error_message %}
+                    <p>{{ error_message }}</p>
+                {% else %}
                     <div class="bg-white shadow-md rounded-lg p-6 mb-8">
                         <div class="text-center mb-4">
-                            <img src="https://via.placeholder.com/150" alt="${worker.name}" class="w-32 h-32 rounded-full mx-auto">
+                            <img src="{{ worker_pic }}" alt="{{ worker_name }}" class="w-32 h-32 rounded-full mx-auto">
                         </div>
-                        <h2 class="text-2xl font-bold text-center mb-4 worker-name">${worker.name}</h2>
-                        <p class="text-center text-lg worker-rating"><span class="worker-label">Rating:</span> ${worker.rate}</p>
-                        <p class="text-center worker-finished-orders"><span class="worker-label">Finished Orders:</span> ${worker.finishedOrders}</p>
-                        <p class="mt-4 text-lg worker-details"><span class="worker-label">Phone Number:</span> ${worker.phone_number}</p>
-                        <p class="text-lg worker-details"><span class="worker-label">Birth Date:</span> ${worker.birth_date}</p>
-                        <p class="text-lg worker-details"><span class="worker-label">Address:</span> ${worker.address}</p>
+                        <h2 class="text-2xl font-bold text-center mb-4 worker-name">{{ worker_name }}</h2>
+                        <p class="text-center text-lg worker-rating"><span class="worker-label">Rating:</span> {{ worker_rate }} / 5.0</p>
+                        <p class="text-center worker-finished-orders"><span class="worker-label">Finished Orders:</span> {{ worker_finished_orders }}</p>
+                        <p class="mt-4 text-lg worker-details"><span class="worker-label">Phone Number:</span> {{ worker_phone }}</p>
+                        <p class="text-lg worker-details"><span class="worker-label">Birth Date:</span> {{ worker_dob }}</p>
+                        <p class="text-lg worker-details"><span class="worker-label">Address:</span> {{ worker_address }}</p>
                     </div>
-                `;
-                container.innerHTML = workerProfile;
-            } else {
-                // If the worker is not found, display a message
-                let container = document.getElementById('worker-container');
-                container.innerHTML = "<p>Worker profile not found.</p>";
-            }
-        }
-    </script>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </body>
-
 </html>

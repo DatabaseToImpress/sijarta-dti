@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% include "navbar/navbar.html" %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Service</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body class="bg-[#F8EEE7] flex flex-col items-center min-h-screen">
 
-    <!-- Modal Container -->
+    <!-- Navbar -->
+    <div class="navbar-wrapper w-full">
+        {% include "navbar/navbar.html" %}
+    </div>
+
+    <!-- Booking Form -->
     <div class="bg-[#94618E] rounded-lg shadow-lg p-8 w-full max-w-md mt-6">
         <h2 class="text-2xl font-bold text-[#F4DECB] text-center mb-6">Book Service</h2>
-        <form id="bookingForm" action="booking.html" method="POST">
+        <form id="bookingForm" method="POST" action="">
+            {% csrf_token %}
+
             <!-- Order Date -->
             <div class="mb-4">
                 <label for="orderDate" class="block text-[#F4DECB] font-semibold mb-2">Order Date</label>
@@ -21,6 +26,29 @@
                     type="date" 
                     id="orderDate" 
                     name="orderDate" 
+                    class="w-full px-4 py-2 border border-[#49274A] rounded-md bg-[#F8EEE7] text-[#49274A] focus:ring-[#F8EEE7] focus:outline-none"
+                    value="{{ today }}" 
+                    readonly
+                    required>
+            </div>
+
+            <div class="mb-4">
+                <label for="serviceDate" class="block text-[#F4DECB] font-semibold mb-2">Service Date</label>
+                <input 
+                    type="date" 
+                    id="serviceDate" 
+                    name="serviceDate" 
+                    class="w-full px-4 py-2 border border-[#49274A] rounded-md bg-[#F8EEE7] text-[#49274A] focus:ring-[#F8EEE7] focus:outline-none"
+                    min="{{ today }}"
+                    required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="serviceTime" class="block text-[#F4DECB] font-semibold mb-2">Service Time</label>
+                <input 
+                    type="time" 
+                    id="serviceTime" 
+                    name="serviceTime" 
                     class="w-full px-4 py-2 border border-[#49274A] rounded-md bg-[#F8EEE7] text-[#49274A] focus:ring-[#F8EEE7] focus:outline-none"
                     required>
             </div>
@@ -33,7 +61,7 @@
                     id="totalPayment" 
                     name="totalPayment" 
                     class="w-full px-4 py-2 border border-[#49274A] rounded-md bg-[#F8EEE7] text-[#49274A] focus:outline-none"
-                    value="100" 
+                    value="{{ price|default:100 }}" 
                     readonly>
             </div>
 
@@ -57,14 +85,21 @@
                     class="w-full px-4 py-2 border border-[#49274A] rounded-md bg-[#F8EEE7] text-[#49274A] focus:ring-[#F8EEE7] focus:outline-none" 
                     required>
                     <option value="" disabled selected>Select Payment Method</option>
-                    <option value="MyPay">MyPay</option>
-                    <option value="GoPay">GoPay</option>
-                    <option value="OVO">OVO</option>
-                    <option value="BCA Virtual Account">BCA Virtual Account</option>
-                    <option value="BNI Virtual Account">BNI Virtual Account</option>
-                    <option value="Mandiri Virtual Account">Mandiri Virtual Account</option>
+                    {% for method in payment_methods %}
+                        <option value="{{ method.0 }}">{{ method.1 }}</option>
+                    {% endfor %}
                 </select>
             </div>
+
+            <!-- Hidden Inputs -->
+            <input type="hidden" id="serviceCategoryId" name="serviceCategoryId">
+            <input type="hidden" id="session" name="session">
+            <input type="hidden" id="price" name="price">
+
+            <!-- Added hidden input for phone_number -->
+            {% if user_phone_number %}
+                <input type="hidden" name="phone_number" value="{{ user_phone_number }}">
+            {% endif %}
 
             <!-- Submit Button -->
             <div class="text-center">
@@ -76,23 +111,56 @@
             </div>
         </form>
     </div>
-</body>
 
-
+    <!-- JavaScript -->
     <script>
-        // Automatically fill today's date in the Order Date field
-        const today = new Date().toISOString().split("T")[0];
-        document.getElementById("orderDate").value = today;
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const serviceCategoryId = urlParams.get("serviceCategoryId");
+            const session = urlParams.get("session");
+            const price = urlParams.get("price");
 
-        // Get session and price from URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const session = urlParams.get('session');
-        const price = urlParams.get('price');
+            // Populate hidden inputs with URL parameters
+            document.getElementById("serviceCategoryId").value = serviceCategoryId;
+            document.getElementById("session").value = session;
+            document.getElementById("price").value = price;
 
-        // If session and price are available in the URL, update the Total Payment field
-        if (price) {
-            document.getElementById("totalPayment").value = price;
-        }
+            console.log({ serviceCategoryId, session, price }); // Debug log
+
+            const bookingForm = document.getElementById("bookingForm");
+
+            if (bookingForm) {
+                bookingForm.addEventListener("submit", async function (event) {
+                    event.preventDefault(); // Prevent default form submission
+
+                    const formData = new FormData(bookingForm); // Collect form data
+
+                    try {
+                        const response = await fetch(bookingForm.action, {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "X-CSRFToken": "{{ csrf_token }}",
+                            },
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            if (data.success) {
+                                window.location.href = "/main/view-bookings/";
+                            } else {
+                                alert(data.error || "An error occurred.");
+                            }
+                        } else {
+                            alert(data.error || "An error occurred while processing your booking.");
+                        }
+                    } catch (error) {
+                        alert("An unexpected error occurred. Please try again later.");
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

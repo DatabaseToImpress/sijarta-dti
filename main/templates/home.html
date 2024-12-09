@@ -57,6 +57,10 @@
             border-radius: 10px;
             padding: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px; /* Set a max-width to prevent stretching too much */
+            width: 100%; /* Ensures the container scales properly */
+            margin: 0 auto; /* Center align */
+            box-sizing: border-box; /* Ensure padding doesn't break the layout */
         }
 
         .service-item h2 {
@@ -75,15 +79,22 @@
         .pagination-link:hover {
             text-decoration: underline;
         }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .service-item {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     {% include 'navbar/navbar.html' %}
 
-    <div class="container mx-auto py-6">
-        <div class="flex flex-col items-center mb-6">
-            <div class="flex space-x-4">
+    <div class="flex flex-col justify-center items-center min-h-screen pt-24 pb-16">
+        <div class="space-y-6 text-center">
+            <div class="flex items-center space-x-4">
                 <div class="relative">
                     <button id="dropdownButton" onclick="toggleDropdown()" class="category-button font-medium rounded-lg px-5 py-2 inline-flex items-center">
                         Category
@@ -111,12 +122,14 @@
                 </form>
             </div>
         </div>
+    </div>
 
-        <main class="grid grid-cols-1 gap-8">
+    <main class="bg-white py-8">
+        <div class="container mx-auto grid grid-cols-1 gap-8">
             {% if services %}
                 {% for category, subcategories in services %}
                     <div class="service-item">
-                        <h2 class="text-2xl font-bold mb-4">{{ category }}</h2>
+                        <h2 class="text-2xl font-bold mb-4 text-center">{{ category }}</h2>
                         <ul>
                             {% for subcategory_id, subcategory_name in subcategories %}
                                 <li>
@@ -131,17 +144,17 @@
             {% else %}
                 <p class="text-center text-gray-500">No services found.</p>
             {% endif %}
-        </main>
-
-        <div class="flex justify-center mt-6">
-            {% if has_previous_page %}
-                <a href="?page={{ current_page|add:'-1' }}{% if search_query %}&search={{ search_query }}{% endif %}" class="pagination-link mx-2">Previous</a>
-            {% endif %}
-            <span>Page {{ current_page }} of {{ total_pages }}</span>
-            {% if has_next_page %}
-                <a href="?page={{ current_page|add:'1' }}{% if search_query %}&search={{ search_query }}{% endif %}" class="pagination-link mx-2">Next</a>
-            {% endif %}
         </div>
+    </main>
+
+    <div class="flex justify-center mt-6">
+        {% if has_previous_page %}
+            <a href="?page={{ current_page|add:'-1' }}{% if search_query %}&search={{ search_query }}{% endif %}" class="pagination-link mx-2">Previous</a>
+        {% endif %}
+        <span>Page {{ current_page }} of {{ total_pages }}</span>
+        {% if has_next_page %}
+            <a href="?page={{ current_page|add:'1' }}{% if search_query %}&search={{ search_query }}{% endif %}" class="pagination-link mx-2">Next</a>
+        {% endif %}
     </div>
 
     <script>
