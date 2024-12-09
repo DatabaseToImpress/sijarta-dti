@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     {% include "navbar/navbar.html" %}
@@ -7,7 +7,6 @@
     <title>{{ subcategory_data.service_category }} - Subcategory Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* General Styling */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #F8EEE7;
@@ -15,7 +14,6 @@
             padding: 0;
         }
 
-        /* Navbar Styling */
         nav {
             background-color: #94618E;
             color: #F4DECB;
@@ -50,7 +48,7 @@
         }
 
         .container {
-            margin-top: 150px; /* Increased space from the top */
+            margin-top: 150px;
             padding: 20px;
             background-color: #F4DECB;
             border-radius: 8px;
@@ -62,20 +60,10 @@
             text-align: center;
         }
 
-        /* Make the headings bold */
         h1, h2, h3 {
             font-family: 'Arial', sans-serif;
             color: #49274A;
             font-weight: bold;
-        }
-
-        .worker-link {
-            text-decoration: none;
-            color: #49274A;
-        }
-
-        .worker-link:hover {
-            text-decoration: underline;
         }
 
         ul {
@@ -84,76 +72,118 @@
         }
 
         /* Button Styling */
-        .booking-button, .add-testimonial-button {
-            background-color: #94618E;
+        .join-button {
+            background-color: #7D4B6C;
             color: #F8EEE7;
             font-weight: bold;
             padding: 10px 20px;
             border-radius: 5px;
             border: none;
-            margin: 10px 0;
+            margin: 20px 0;
             cursor: pointer;
             transition: background-color 0.3s ease-in-out;
         }
 
-        .booking-button:hover, .add-testimonial-button:hover {
-            background-color: #7D4B6C;
+        .join-button:hover {
+            background-color: #49274A;
         }
 
-        .testimonial-container {
-            margin-top: 40px;
-            padding: 20px;
-            background-color: #FFFFFF;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        /* Worker Link Styling */
+        .worker-link {
+            color: #6B21A8; /* Purple color */
+            text-decoration: none;
+            font-weight: bold;
         }
 
-        .testimonial-list {
-            margin: 0 auto;
-            text-align: center;
+        .worker-link:hover {
+            text-decoration: underline;
+            color: #4C1D95; /* Darker purple on hover */
         }
     </style>
 </head>
 <body class="bg-[#F8EEE7]">
 
-    <!-- Content -->
-    <div class="container mt-24 px-8 py-6 bg-[#F4DECB] rounded-lg shadow-lg mx-auto text-center">
+    {% include "navbar/navbar.html" %}
 
-        <!-- Service Category and Subcategory -->
+    <div class="container">
         <h1 class="text-3xl font-semibold font-bold text-[#49274A]">{{ subcategory_data.service_category }}</h1>
         <h2 class="text-2xl font-semibold font-bold text-[#49274A] mt-2">{{ subcategory_data.subcategory_name }}</h2>
         <p class="mt-4 text-lg text-[#49274A]">{{ subcategory_data.description }}</p>
 
-        <!-- Available Workers Section -->
         <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Available Workers:</h3>
-        <ul class="mt-4 space-y-2 text-center max-w-xl mx-auto">
+        <ul>
             {% for worker in workers %}
-                <li class="text-[#49274A]">{{ worker }}</li>
+                <li>
+                    <a href="/main/worker/{{ worker|urlencode }}/" class="worker-link">
+                        {{ worker }}
+                    </a>
+                </li>
             {% empty %}
-                <li class="text-[#49274A]">No workers available for this service.</li>
+                <li>No workers available for this service.</li>
             {% endfor %}
         </ul>
 
-        <!-- Session Prices and Booking Buttons -->
+        <!-- Success Message -->
+        <div id="success-message" class="text-green-500 mt-4 hidden"></div>
+
+        {% if role == 'Worker' and not already_joined %}
+            <button id="join-button" class="join-button" onclick="joinService()">Join Now</button>
+        {% elif already_joined %}
+            <p class="text-green-500">You are already joined to this service category.</p>
+        {% endif %}
+
         <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Session Prices:</h3>
         <ul class="mt-4 space-y-4">
             {% for session in sessions %}
-                <li class="flex justify-center items-center space-x-4">
-                    <span class="text-lg text-[#49274A]">Session {{ session.session }}: {{ session.price|floatformat:0 }} IDR</span>
-                    <button class="bg-[#94618E] text-white px-6 py-2 rounded hover:bg-[#49274A]" onclick="bookService({{ session.session }}, {{ session.price }})">
-                        Book Now
-                    </button>
+                <li class="flex justify-between items-center bg-[#F4DECB] p-4 rounded-lg shadow-md">
+                    <span class="text-lg font-medium text-[#49274A]">
+                        Session {{ session.session }}: {{ session.price|floatformat:0 }} IDR
+                    </span>
+                    {% if role == 'Customer' %}
+                        <button 
+                            class="bg-[#94618E] text-white px-4 py-2 rounded hover:bg-[#49274A]" 
+                            onclick="bookService('{{ session.session }}', '{{ session.price }}')">
+                            Book Now
+                        </button>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
-
     </div>
 
     <script>
+        // Extract subcategory service ID from the current URL
+        const currentUrl = window.location.href;
+        const subcategoryId = currentUrl.split('/').filter(Boolean).pop();
+
+        function joinService() {
+            fetch(window.location.href, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    const successMessage = document.getElementById("success-message");
+                    const joinButton = document.getElementById("join-button");
+                    successMessage.innerText = data.message;
+                    successMessage.classList.remove("hidden");
+                    if (joinButton) joinButton.style.display = "none";
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
         function bookService(session, price) {
-            window.location.href = `/booking/?session=${session}&price=${price}`;
+            // Redirect to booking page with the subcategoryServiceId as a query parameter
+            const bookingUrl = `/main/booking/?session=${session}&price=${price}&subcategoryServiceId=${subcategoryId}`;
+            window.location.href = bookingUrl;
         }
     </script>
-
 </body>
 </html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Bookings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#F8EEE7] font-sans leading-normal tracking-normal">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8 text-[#94618E]">Your Bookings</h1>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-[#F4DECB] rounded-lg shadow-md">
+                <thead>
+                    <tr class="bg-[#49274A] text-[#F8EEE7] uppercase text-sm leading-normal">
+                        <th class="py-3 px-6 text-left">Order ID</th>
+                        <th class="py-3 px-6 text-left">Service Name</th>
+                        <th class="py-3 px-6 text-left">Order Status</th>
+                        <th class="py-3 px-6 text-left">Order Date</th>
+                        <th class="py-3 px-6 text-left">Total Payment</th>
+                        <th class="py-3 px-6 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-[#49274A] text-sm font-light">
+                    {% for booking in bookings %}
+                    <tr class="border-b border-[#94618E]">
+                        <td class="py-3 px-6 text-left">{{ booking.order_id }}</td>
+                        <td class="py-3 px-6 text-left">{{ booking.service_name }}</td>
+                        <td class="py-3 px-6 text-left">
+                            <span class="py-1 px-3 rounded-full text-xs 
+                                {% if booking.order_status == 'Waiting for Payment' %}
+                                    bg-[#94618E] text-[#F8EEE7]
+                                {% elif booking.order_status == 'Order Completed' %}
+                                    bg-green-100 text-green-600
+                                {% else %}
+                                    bg-red-100 text-red-600
+                                {% endif %}">
+                                {{ booking.order_status }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-6 text-left">{{ booking.order_date }}</td>
+                        <td class="py-3 px-6 text-left">IDR {{ booking.total_payment }}</td>
+                        <td class="py-3 px-6 text-center">
+                            <button class="bg-[#94618E] hover:bg-[#49274A] text-[#F8EEE7] font-bold py-2 px-4 rounded">
+                                Cancel Order
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
