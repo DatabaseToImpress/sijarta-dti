@@ -3,11 +3,10 @@ from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
-import json, datetime, uuid
+import json, uuid
 from decimal import Decimal
 from django.db import IntegrityError
 from django.urls import reverse
-# from django.utils.dateparse import parse_date 
 
 def landing(request):
     return render(request, 'landing.html')
@@ -30,30 +29,23 @@ def login(request):
                 messages.error(request, "Invalid phone number or password. Please try again.")
                 return render(request, "login.html")
 
-            # Extract the hashed password from the database
-            hashed_password = user[4]  # Assuming `pwd` is the 5th column
+            hashed_password = user[4]  
 
-            # Use `check_password` to verify the provided password
-            if password != hashed_password:  # Compare raw passwords directly
+            if password != hashed_password:  
                 messages.error(request, "Invalid phone number or password. Please try again.")
                 return render(request, "login.html")
 
-
-            # Map user data
             user_columns = ['Id', 'Name', 'Sex', 'PhoneNum', 'Pwd', 'DoB', 'Address', 'MyPayBalance']
             user_data = dict(zip(user_columns, user))
 
-            # Convert data for serialization
-            user_data['Id'] = str(user_data['Id'])  # Convert UUID to string
+            user_data['Id'] = str(user_data['Id']) 
             user_data['DoB'] = user_data['DoB'].isoformat() if user_data['DoB'] else None
             user_data['MyPayBalance'] = float(user_data['MyPayBalance']) if user_data['MyPayBalance'] is not None else 0.0
 
-            # Save user data to session
-            request.session['user'] = json.dumps(user_data)  # Save user_data as JSON
-            request.session['user_id'] = user_data['Id']  # Save user_id explicitly as a string
+            request.session['user'] = json.dumps(user_data)  
+            request.session['user_id'] = user_data['Id']  
             request.session['user_name'] = user_data['Name']
 
-            # Determine role
             with connection.cursor() as cursor:
                 cursor.execute("SELECT id FROM sijarta.customer WHERE id = %s", [user_data['Id']])
                 customer = cursor.fetchone()
@@ -99,7 +91,6 @@ def register_user(request):
 
         with connection.cursor() as cursor:
             try:
-                    # Ensure Phone Number uniqueness
                     cursor.execute("""
                         SELECT * FROM sijarta.app_user WHERE phonenum = %s
                     """, [phone_number])
@@ -152,7 +143,6 @@ def register_worker(request):
 
         with connection.cursor() as cursor:
             try:
-                # Ensure Phone Number and NPWP uniqueness
                 cursor.execute("""
                     SELECT * FROM sijarta.app_user WHERE phonenum = %s
                 """, [phone_number])
@@ -160,14 +150,12 @@ def register_worker(request):
                     messages.error(request, "Phone number already registered.")
                     return render(request, "register/register_worker.html")
 
-                # Insert into APP_USER
                 user_id = str(uuid.uuid4())
                 cursor.execute("""
                     INSERT INTO sijarta.app_user (id, name, sex, phonenum, pwd, dob, address, mypaybalance)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """, [user_id, name, sex, phone_number, password, dob, address, Decimal(0)])
 
-                # Insert into WORKER
                 cursor.execute("""
                     INSERT INTO sijarta.worker (id, bankname, accnumber, npwp, picurl, rate, totalfinishorder)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -190,7 +178,7 @@ def logout(request):
     return redirect('landing')
 
 def profileu(request):
-    user_id = request.session.get('user_id')  # Assuming you store user_id in session
+    user_id = request.session.get('user_id')  
     if not user_id:
         return redirect('login')
 
@@ -206,7 +194,6 @@ def profileu(request):
     if not user_data:
         return redirect('login')
 
-    # Correctly map the fetched data to `user_data` dictionary
     user_data_dict = {
         "name": user_data[0],
         "sex": user_data[1],
@@ -217,7 +204,6 @@ def profileu(request):
         "level": user_data[6],
     }
 
-    # Pass `user_data_dict` as `user_data` to the template
     return render(request, 'profile/profile_user.html', {'user_data': user_data_dict})
 
 def profileUserUpdate(request):
@@ -230,21 +216,18 @@ def profileUserUpdate(request):
         dob = request.POST.get('birth_date')
         address = request.POST.get('address')
 
-        # Ensure all required fields except password are provided
         if not (name and sex and phone_number and dob and address):
             messages.error(request, "All fields except password are required.")
             return redirect('profileUserUpdate')
 
         try:
             with connection.cursor() as cursor:
-                # Update non-password fields
                 cursor.execute("""
                     UPDATE sijarta.app_user
                     SET Name = %s, Sex = %s, PhoneNum = %s, DoB = %s, Address = %s
                     WHERE Id = %s
                 """, [name, sex, phone_number, dob, address, user_id])
 
-                # Update password if provided
                 if password:
                     cursor.execute("""
                         UPDATE sijarta.app_user
@@ -252,18 +235,13 @@ def profileUserUpdate(request):
                         WHERE Id = %s
                     """, [password, user_id])
 
-            # Update the session name
             request.session['user_name'] = name
-
-            # Redirect to the profile page after the success message
             return redirect('profileu')
 
         except Exception as e:
-            # Handle exceptions
             messages.error(request, f"An error occurred: {str(e)}")
             return redirect('profileUserUpdate')
 
-    # Fetch current user data for pre-filling the form
     user_id = request.session.get('user_id')
     with connection.cursor() as cursor:
         cursor.execute("""
@@ -284,12 +262,11 @@ def profileUserUpdate(request):
     return render(request, 'profile/profileUser_update.html', {'user_data': user_data_dict})
 
 def profilew(request):
-    worker_id = request.session.get('worker_id')  # Assuming you store worker_id in session
+    worker_id = request.session.get('worker_id')  
     if not worker_id:
         return redirect('login')
 
     with connection.cursor() as cursor:
-        # Fetch worker data
         cursor.execute("""
             SELECT Name, Sex, PhoneNum, DoB, Address, MyPayBalance, BankName, AccNumber, NPWP, PicURL, Rate, TotalFinishOrder
             FROM sijarta.app_user
@@ -298,19 +275,16 @@ def profilew(request):
         """, [worker_id])
         worker_data = cursor.fetchone()
 
-        # Fetch worker's job categories
         cursor.execute("""
             SELECT sc.CategoryName
             FROM sijarta.worker_service_category wsc
             JOIN sijarta.service_category sc ON wsc.ServiceCategoryId = sc.Id
             WHERE wsc.WorkerId = %s
         """, [worker_id])
-        job_categories = cursor.fetchall()  # Returns a list of tuples, e.g., [(Category1,), (Category2,)]
-
+        job_categories = cursor.fetchall() 
     if not worker_data:
         return redirect('login')
 
-    # Map fetched data to context
     worker_data_dict = {
         "name": worker_data[0],
         "sex": worker_data[1],
@@ -324,7 +298,7 @@ def profilew(request):
         "pic_url": worker_data[9],
         "rate": worker_data[10],
         "completed_orders": worker_data[11],
-        "job_categories": [category[0] for category in job_categories],  # Extract category names
+        "job_categories": [category[0] for category in job_categories],  
     }
 
     return render(request, 'profile/profile_worker.html', {'worker_data': worker_data_dict})
@@ -349,14 +323,12 @@ def profileWorkerUpdate(request):
 
         try:
             with connection.cursor() as cursor:
-                # Update non-password fields
                 cursor.execute("""
                     UPDATE sijarta.app_user
                     SET Name = %s, Sex = %s, PhoneNum = %s, DoB = %s, Address = %s
                     WHERE Id = %s
                 """, [name, sex, phone_number, dob, address, worker_id])
 
-                # Update password if provided
                 if password:
                     cursor.execute("""
                         UPDATE sijarta.app_user
@@ -364,7 +336,6 @@ def profileWorkerUpdate(request):
                         WHERE Id = %s
                     """, [password, worker_id])
 
-                # Update worker-specific fields
                 cursor.execute("""
                     UPDATE sijarta.worker
                     SET BankName = %s, AccNumber = %s, NPWP = %s, PicURL = %s
@@ -374,7 +345,7 @@ def profileWorkerUpdate(request):
             request.session['user_name'] = name
 
         except Exception as e:
-            messages.error(request, f"An error occurred: {str(e)}")  # Error message
+            messages.error(request, f"An error occurred: {str(e)}")  
 
         return redirect('profilew')
 

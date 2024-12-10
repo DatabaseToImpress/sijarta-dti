@@ -29,11 +29,11 @@
 
                     <!-- Centered Navigation Links -->
                     <div class="flex-1 flex justify-center space-x-4">
-                        <a href="" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Home</a>
+                        <a href="{% url 'main:home_page' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Home</a>
                         
                         {% if role == 'Customer' %}
                             <a href="{% url 'mypay' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">MyPay</a>
-                            <a href="" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Orders</a>
+                            <a href="{% url 'main:booking' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Orders</a>
                             <a href="{% url 'discount_page' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Discount</a>
                             <a href="{% url 'profileu' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Profile</a>
                         {% elif role == 'Worker' %}
