@@ -3,6 +3,7 @@ from django.db import connection
 
 def discount_page(request):
     with connection.cursor() as cursor:
+        # Fetch vouchers
         cursor.execute("""
             SELECT 
                 d.Code, 
@@ -18,6 +19,7 @@ def discount_page(request):
         """)
         vouchers = cursor.fetchall()
 
+        # Fetch promos
         cursor.execute("""
             SELECT 
                 d.Code, 
@@ -29,11 +31,20 @@ def discount_page(request):
         """)
         promos = cursor.fetchall()
 
+        # Fetch payment methods
+        cursor.execute("""
+            SELECT id, name 
+            FROM sijarta.PAYMENT_METHOD
+        """)
+        payment_methods = cursor.fetchall()
+
     context = {
         'vouchers': vouchers,
         'promos': promos,
+        'payment_methods': payment_methods,
     }
     return render(request, 'discount.html', context)
+
 
 from django.shortcuts import render, redirect
 from django.db import connection
@@ -43,14 +54,23 @@ import json
 from django.http import JsonResponse
 from django.db import connection
 from datetime import datetime, timedelta
+from django.shortcuts import render, redirect
+from django.db import connection
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime, timedelta
 
+
+@csrf_exempt
 def buy_voucher(request):
     if request.method == 'POST':
-        voucher_code = request.POST.get('voucher_code', None)
-        if not voucher_code:
+        voucher_code = request.POST.get('voucher_code')
+        payment_method = request.POST.get('payment_method')
+
+        if not voucher_code or not payment_method:
             return JsonResponse({
                 'success': False,
-                'message': 'Voucher code is missing.',
+                'message': 'Voucher code or payment method is missing.',
             })
 
         
@@ -71,6 +91,15 @@ def buy_voucher(request):
         valid_days, user_quota, price = voucher
 
         
+        if payment_method != 'MyPay':
+            return JsonResponse({
+                'success': True,
+                'message': f'Voucher {voucher_code} purchased successfully with {payment_method}!',
+                'valid_until': (datetime.now() + timedelta(days=valid_days)).strftime('%d/%m/%Y'),
+                'usage_quota': user_quota,
+            })
+
+        
         user_id = request.session.get('user_id')
         if not user_id:
             return JsonResponse({
@@ -78,50 +107,43 @@ def buy_voucher(request):
                 'message': 'User not authenticated. Please login first.',
             })
 
-        # Ambil MyPayBalance user
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT MyPayBalance
                 FROM sijarta.APP_USER
                 WHERE Id = %s
-            """, [str(user_id)])
+            """, [user_id])
             row = cursor.fetchone()
 
-        if row:
-            user_balance = float(row[0]) 
-        else:
+        if not row:
             return JsonResponse({
                 'success': False,
                 'message': 'User not found in the database.',
             })
 
+        user_balance = float(row[0])
 
         if user_balance >= float(price):
+            # Kurangi balance user
             new_balance = user_balance - float(price)
             with connection.cursor() as cursor:
                 cursor.execute("""
                     UPDATE sijarta.APP_USER
                     SET MyPayBalance = %s
                     WHERE Id = %s
-                """, [new_balance, str(user_id)])
-
-
-            valid_until = (datetime.now() + timedelta(days=valid_days)).strftime('%d/%m/%Y')
+                """, [new_balance, user_id])
 
             return JsonResponse({
                 'success': True,
-                'message': f'Voucher {voucher_code} purchased successfully!',
-                'valid_until': valid_until,
+                'message': f'Voucher {voucher_code} purchased successfully with MyPay!',
+                'valid_until': (datetime.now() + timedelta(days=valid_days)).strftime('%d/%m/%Y'),
                 'usage_quota': user_quota,
                 'remaining_balance': new_balance,
             })
         else:
             return JsonResponse({
                 'success': False,
-                'message': 'Sorry, your balance is not enough to buy this voucher.',
+                'message': 'Sorry. Your balance is not enough to buy this voucher!',
             })
 
-    return JsonResponse({
-        'success': False,
-        'message': 'Invalid request method.',
-    })
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
