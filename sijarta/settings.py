@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-r3fyzm%ow&k9^r9xi2y(s8*zdb2*uv$fc=a!w*@!c*e-dhr0v%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "samuella-putri-sijartadti.pbp.cs.ui.ac.id"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "samuella-putri-sijartadti.pbp.cs.ui.ac.id", "https://samuella-putri-sijartadti.pbp.cs.ui.ac.id"]
 
 
 # Application definition
@@ -122,7 +122,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-CSRF_TRUSTED_ORIGINS = ["http://localhost","http://127.0.0.1","http://samuella-putri-sijartadti.pbp.cs.ui.ac.id/", "https://samuella-putri-sijartadti.pbp.cs.ui.ac.id/"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost","http://127.0.0.1","http://samuella-putri-sijartadti.pbp.cs.ui.ac.id", "https://samuella-putri-sijartadti.pbp.cs.ui.ac.id"]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -134,3 +134,4 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CSRF_COOKIE_SECURE = True
