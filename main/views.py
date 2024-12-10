@@ -1,5 +1,6 @@
+from pyexpat.errors import messages
 from django.db import connection
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from collections import defaultdict
 from datetime import date, timedelta, datetime
 from django.http import JsonResponse
@@ -98,110 +99,178 @@ def home_page(request):
 
 
 def subcategory_services_user(request, id):
-    category = request.GET.get('category', None)
-    subcategory = request.GET.get('subcategory', None)
-
-    role = request.session.get('role', None)
-    worker_id = request.session.get('worker_id', None)
-
-    if request.method == "POST" and role == 'Worker' and worker_id:
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                    SELECT ServiceCategoryId 
-                    FROM sijarta.SERVICE_SUBCATEGORY
-                    WHERE Id = %s
-                """, [id])
-                service_category = cursor.fetchone()
-
-                if not service_category:
-                    return JsonResponse({'error': 'Invalid subcategory or service category does not exist'}, status=400)
-
-                service_category_id = service_category[0]
-
-                cursor.execute("""
-                    SELECT 1 FROM sijarta.WORKER_SERVICE_CATEGORY
-                    WHERE WorkerId = %s AND ServiceCategoryId = %s
-                """, [worker_id, service_category_id])
-                already_joined = cursor.fetchone()
-
-                if already_joined:
-                    return JsonResponse({'message': 'Already joined'}, status=200)
-
-                cursor.execute("""
-                    INSERT INTO sijarta.WORKER_SERVICE_CATEGORY (WorkerId, ServiceCategoryId)
-                    VALUES (%s, %s)
-                """, [worker_id, service_category_id])
-
-            return JsonResponse({'message': 'Successfully joined'}, status=200)
-
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    subcategory_query = """
-        SELECT
-            ssc.SubcategoryName, 
-            ssc.Description,
-            sc.CategoryName,
-            sc.Id AS ServiceCategoryId
-        FROM sijarta.SERVICE_SUBCATEGORY ssc
-        JOIN sijarta.SERVICE_CATEGORY sc ON ssc.ServiceCategoryId = sc.Id
-        WHERE ssc.Id = %s
-    """
-    workers_query = """
-        SELECT DISTINCT au.Name
-        FROM sijarta.WORKER_SERVICE_CATEGORY wsc
-        JOIN sijarta.WORKER w ON w.Id = wsc.WorkerId
-        JOIN sijarta.SERVICE_CATEGORY sc ON sc.Id = wsc.ServiceCategoryId
-        JOIN sijarta.APP_USER au ON au.Id = w.Id
-        WHERE sc.Id = (SELECT ServiceCategoryId FROM sijarta.SERVICE_SUBCATEGORY WHERE Id = %s)
-    """
-    sessions_query = """
-        SELECT Session, Price
-        FROM sijarta.SERVICE_SESSION
-        WHERE SubcategoryId = %s
-    """
-
-    with connection.cursor() as cursor:
-        cursor.execute(subcategory_query, [id])
-        subcategory_result = cursor.fetchall()
-
-        cursor.execute(workers_query, [id])
-        workers_result = cursor.fetchall()
-
-        cursor.execute(sessions_query, [id])
-        sessions_result = cursor.fetchall()
-
-        already_joined = False
-        if role == 'Worker' and worker_id:
+    try:
+        # Fetch subcategory details
+        with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT 1 FROM sijarta.WORKER_SERVICE_CATEGORY
-                WHERE WorkerId = %s AND ServiceCategoryId = %s
-            """, [worker_id, subcategory_result[0][3]])
-            already_joined = cursor.fetchone() is not None
+                SELECT 
+                    ssc.SubcategoryName, 
+                    ssc.Description, 
+                    sc.CategoryName
+                FROM 
+                    sijarta.SERVICE_SUBCATEGORY ssc
+                JOIN 
+                    sijarta.SERVICE_CATEGORY sc ON ssc.ServiceCategoryId = sc.Id
+                WHERE 
+                    ssc.Id = %s
+            """, [id])
+            subcategory_result = cursor.fetchone()
 
-    subcategory_data = {
-        'subcategory_name': subcategory_result[0][0],
-        'description': subcategory_result[0][1],
-        'service_category': subcategory_result[0][2],
-        'service_category_id': subcategory_result[0][3],
-    }
+            if not subcategory_result:
+                messages.error(request, "Subcategory not found.")
+                return redirect('main:home_page')
 
-    workers = list(set(worker[0] for worker in workers_result))
-    sessions = [{'session': session[0], 'price': session[1]} for session in sessions_result]
+            subcategory_data = {
+                'subcategory_name': subcategory_result[0],
+                'description': subcategory_result[1],
+                'service_category': subcategory_result[2],
+            }
+
+        # Fetch available workers
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT DISTINCT au.Name
+                FROM 
+                    sijarta.WORKER_SERVICE_CATEGORY wsc
+                JOIN 
+                    sijarta.WORKER w ON w.Id = wsc.WorkerId
+                JOIN 
+                    sijarta.SERVICE_CATEGORY sc ON sc.Id = wsc.ServiceCategoryId
+                JOIN 
+                    sijarta.APP_USER au ON au.Id = w.Id
+                WHERE 
+                    sc.Id = (SELECT ServiceCategoryId FROM sijarta.SERVICE_SUBCATEGORY WHERE Id = %s)
+            """, [id])
+            workers_result = cursor.fetchall()
+            workers = [worker[0] for worker in workers_result]
+
+        # Fetch service sessions
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    Session, 
+                    Price
+                FROM 
+                    sijarta.SERVICE_SESSION
+                WHERE 
+                    SubcategoryId = %s
+            """, [id])
+            sessions_result = cursor.fetchall()
+            sessions = [{'session': session[0], 'price': session[1]} for session in sessions_result]
+
+        # Fetch testimonials
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT 
+                    au.Name AS UserName, 
+                    t.Date AS TestimonialDate, 
+                    t.Text AS TestimonialText, 
+                    t.Rating AS TestimonialRating 
+                FROM 
+                    sijarta.TESTIMONI t
+                JOIN 
+                    sijarta.TR_SERVICE_ORDER tso ON t.serviceTrId = tso.Id
+                JOIN 
+                    sijarta.APP_USER au ON tso.customerId = au.Id
+                WHERE 
+                    tso.serviceCategoryId = %s
+                ORDER BY 
+                    t.Date DESC
+            """, [id])
+            testimonials_result = cursor.fetchall()
+            testimonials = [
+                {
+                    'user_name': testimonial[0],
+                    'date': testimonial[1],
+                    'text': testimonial[2],
+                    'rating': testimonial[3],
+                }
+                for testimonial in testimonials_result
+            ]
+
+    except Exception as e:
+        messages.error(request, f"Error fetching data: {e}")
+        return redirect('main:home_page')
 
     context = {
-        'category': category,
-        'subcategory': subcategory,
         'id': id,
         'subcategory_data': subcategory_data,
         'workers': workers,
         'sessions': sessions,
-        'role': role,
-        'already_joined': already_joined,
+        'testimonials': testimonials,
     }
-
     return render(request, 'subcategory_services_user.html', context)
+
+from django.db import IntegrityError
+def add_testimonial(request):
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        date = request.POST.get('date')
+        subcategory_id = request.POST.get('subcategoryId')
+
+        if not subcategory_id or not date:
+            messages.error(request, "Subcategory ID or date is missing.")
+            return redirect('main:home_page')
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT tso.Id
+                    FROM sijarta.TR_SERVICE_ORDER tso
+                    JOIN sijarta.SERVICE_SUBCATEGORY ssc ON tso.serviceCategoryId = ssc.Id
+                    WHERE tso.customerId = %s
+                    AND ssc.Id = %s
+                    AND EXISTS (
+                        SELECT 1
+                        FROM sijarta.TR_ORDER_STATUS os
+                        JOIN sijarta.ORDER_STATUS os_status ON os.statusId = os_status.Id
+                        WHERE os.serviceTrId = tso.Id 
+                        AND os_status.Status = 'Order completed'
+                    )
+                    LIMIT 1
+                """, [request.user.id, subcategory_id])
+
+                service_order = cursor.fetchone()
+                if not service_order:
+                    messages.error(request, "No eligible service order found to add a testimonial.")
+                    return redirect('main:subcategory_services_user', id=subcategory_id)
+
+                service_tr_id = service_order[0]
+
+                # Check if the testimonial already exists for the same serviceTrId and date
+                cursor.execute("""
+                    SELECT 1 
+                    FROM sijarta.TESTIMONI 
+                    WHERE serviceTrId = %s AND Date = %s
+                """, [service_tr_id, date])
+
+                if cursor.fetchone():
+                    messages.error(request, "A testimonial for this service on this date already exists.")
+                    return redirect('main:subcategory_services_user', id=subcategory_id)
+
+                # Insert the testimonial
+                cursor.execute("""
+                    INSERT INTO sijarta.TESTIMONI (serviceTrId, Date, Text, Rating)
+                    VALUES (%s, %s, %s, %s)
+                """, [service_tr_id, date, comment, rating])
+
+            messages.success(request, "Your testimonial has been successfully added.")
+            return redirect('main:subcategory_services_user', id=subcategory_id)
+
+        except Exception as e:
+            messages.error(request, f"An error occurred: {e}")
+            return redirect('main:subcategory_services_user', id=subcategory_id)
+
+    else:
+        subcategory_id = request.GET.get('subcategoryId')
+        if not subcategory_id:
+            messages.error(request, "Subcategory ID is missing.")
+            return redirect('main:home_page')
+        return render(request, 'add_testimonial.html', {
+            'rating_choices': range(1, 11),
+            'subcategory_id': subcategory_id
+        })
 
 def booking_view(request):
     from datetime import date, datetime
@@ -402,76 +471,7 @@ def worker_profile(request, worker_name):
     return render(request, 'worker_profile.html', context)
 
 
-def add_testimonial(request):
-    context = {
-        'rating_choices': range(1, 11) 
-    }
-    return render(request, 'add_testimonial.html', context)
 
-
-from django.shortcuts import render, redirect
-from django.db import connection
-import uuid
-from django.utils.timezone import now
-
-from django.shortcuts import render, redirect
-from django.db import connection
-from django.utils.timezone import now
-
-def add_testimonial(request):
-    if request.method == 'POST':
-        # Retrieve form data
-        rating = request.POST.get('rating')
-        comment = request.POST.get('comment')
-        current_time = now()
-
-        # Insert data into the database
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                INSERT INTO sijarta.TESTIMONI (servicetrid, date, text, rating)
-                VALUES (
-                    (SELECT Id FROM sijarta.TR_SERVICE_ORDER LIMIT 1 OFFSET %s), %s, %s, %s
-                )
-            """, [0, current_time, comment, rating])  # Replace 0 with the correct OFFSET as needed
-
-        return redirect('subcategory_services_user', id=request.user.id)  # Adjust as needed
-    else:
-        return render(request, 'add_testimonial.html', {'rating_choices': range(1, 11)})
-
-
-
-def submit_testimonial(request):
-    if request.method == 'POST':
-        # Ambil data dari form
-        rating = request.POST.get('rating')
-        comment = request.POST.get('comment')
-        servicetrid = request.POST.get('servicetrid')  # Pastikan `servicetrid` dikirim dari form
-        current_time = now()
-
-        # Masukkan data testimonial ke database
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                INSERT INTO sijarta.testimoni (servicetrid, date, text, rating)
-                VALUES (%s, %s, %s, %s)
-            """, [servicetrid, current_time, comment, rating])
-
-
-        # Redirect ke halaman yang sesuai setelah submit
-        return redirect('subcategory_services_user', id=servicetrid)
-    else:
-        # Redirect ke form testimonial jika bukan POST
-        return redirect('add_testimonial')
-
-def subcategory_services_worker(request, id):
-    category = request.GET.get('category', None)
-    subcategory = request.GET.get('subcategory', None)
-    
-    context = {
-        'category': category,
-        'subcategory': subcategory,
-        'id': id,
-    }
-    return render(request, 'subcategory_services_worker.html', context)
 
 
 def delete_order(request, pk):
