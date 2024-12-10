@@ -122,7 +122,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
+CSRF_TRUSTED_ORIGINS = ["http://localhost","http://127.0.0.1","http://samuella-putri-sijartadti.pbp.cs.ui.ac.id/", "https://samuella-putri-sijartadti.pbp.cs.ui.ac.id/"]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
