@@ -7,49 +7,91 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-[#F8EEE7] font-sans leading-normal tracking-normal">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-center mb-8 text-[#94618E]">Your Bookings</h1>
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-[#F4DECB] rounded-lg shadow-md">
-                <thead>
-                    <tr class="bg-[#49274A] text-[#F8EEE7] uppercase text-sm leading-normal">
-                        <th class="py-3 px-6 text-left">Order ID</th>
-                        <th class="py-3 px-6 text-left">Service Name</th>
-                        <th class="py-3 px-6 text-left">Order Status</th>
-                        <th class="py-3 px-6 text-left">Order Date</th>
-                        <th class="py-3 px-6 text-left">Total Payment</th>
-                        <th class="py-3 px-6 text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="text-[#49274A] text-sm font-light">
-                    {% for booking in bookings %}
-                    <tr class="border-b border-[#94618E]">
-                        <td class="py-3 px-6 text-left">{{ booking.order_id }}</td>
-                        <td class="py-3 px-6 text-left">{{ booking.service_name }}</td>
-                        <td class="py-3 px-6 text-left">
-                            <span class="py-1 px-3 rounded-full text-xs 
-                                {% if booking.order_status == 'Waiting for Payment' %}
-                                    bg-[#94618E] text-[#F8EEE7]
-                                {% elif booking.order_status == 'Order Completed' %}
-                                    bg-green-100 text-green-600
-                                {% else %}
-                                    bg-red-100 text-red-600
-                                {% endif %}">
+<header>
+    {% include "navbar/navbar.html" %}
+</header>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-8 text-[#94618E]">Your Bookings</h1>
+
+    <!-- Filters -->
+    <div class="flex justify-center mb-8">
+        <form method="get" class="flex space-x-4">
+            <div>
+                <label for="service_name" class="block text-sm font-medium text-gray-700">Service Name</label>
+                <select id="service_name" name="service_name"
+                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="">All</option>
+                    {% for category in bookings_category %}
+                        <option value="{{ category.0 }}"
+                                {% if category.0 == service_name_filter %}selected{% endif %}>{{ category.0 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="order_status" class="block text-sm font-medium text-gray-700">Order Status</label>
+                <select id="order_status" name="order_status"
+                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="">All</option>
+                    {% for status in bookings_status %}
+                        <option value="{{ status.0 }}"
+                                {% if status.0 == order_status_filter %}selected{% endif %}>{{ status.0 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button type="submit"
+                        class="bg-[#94618E] hover:bg-[#49274A] text-[#F8EEE7] font-bold py-2 px-4 rounded">Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-[#F4DECB] rounded-lg shadow-md">
+            <thead>
+            <tr class="bg-[#49274A] text-[#F8EEE7] uppercase text-sm leading-normal">
+                <th class="py-3 px-6 text-left">Order ID</th>
+                <th class="py-3 px-6 text-left">Service Name</th>
+                <th class="py-3 px-6 text-left">Order Status</th>
+                <th class="py-3 px-6 text-left">Order Date</th>
+                <th class="py-3 px-6 text-left">Total Payment</th>
+                <th class="py-3 px-6 text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="text-[#49274A] text-sm font-light">
+            {% for booking in bookings %}
+                <tr class="border-b border-[#94618E]">
+                    <td class="py-3 px-6 text-left">{{ booking.order_id }}</td>
+                    <td class="py-3 px-6 text-left">{{ booking.service_name }}</td>
+                    <td class="py-3 px-6 text-left">
+                            <span class="py-1 px-3 rounded-full text-xs
+                                         {% if booking.order_status == 'Waiting for Payment' %}
+                                             bg-[#94618E] text-[#F8EEE7]
+                                         {% elif booking.order_status == 'Order Completed' %}
+                                             bg-green-100 text-green-600
+                                         {% else %}
+                                             bg-red-100 text-red-600
+                                         {% endif %}">
                                 {{ booking.order_status }}
                             </span>
-                        </td>
-                        <td class="py-3 px-6 text-left">{{ booking.order_date }}</td>
-                        <td class="py-3 px-6 text-left">IDR {{ booking.total_payment }}</td>
-                        <td class="py-3 px-6 text-center">
-                            <button class="bg-[#94618E] hover:bg-[#49274A] text-[#F8EEE7] font-bold py-2 px-4 rounded">
+                    </td>
+                    <td class="py-3 px-6 text-left">{{ booking.order_date }}</td>
+                    <td class="py-3 px-6 text-left">IDR {{ booking.total_payment }}</td>
+                    <td class="py-3 px-6 text-center">
+                        <form method="post" action="{% url 'main:delete-order' booking.order_id %}">
+                            {% csrf_token %}
+                            <button class="bg-[#94618E] hover:bg-[#49274A] text-[#F8EEE7] font-bold py-2 px-4 rounded"
+                                    type="submit"
+                            >
                                 Cancel Order
                             </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
+</div>
 </body>
 </html>

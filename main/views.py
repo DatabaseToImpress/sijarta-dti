@@ -268,6 +268,16 @@ def booking_view(request):
                     discount_code, payment_method
                 ])
 
+                # Fetch the default order status ID
+                cursor.execute("SELECT Id FROM SIJARTA.ORDER_STATUS WHERE Status = 'Waiting for Payment'")
+                default_order_status_id = cursor.fetchone()[0]
+
+                # Insert order status
+                cursor.execute("""
+                    INSERT INTO SIJARTA.TR_ORDER_STATUS (serviceTrId, statusId, date)
+                    VALUES (%s, %s, %s)
+                """, [service_order_id, default_order_status_id, order_date])
+
                 # Commit the transaction
                 connection.commit()
 
@@ -289,61 +299,65 @@ def booking_view(request):
 
 
 def view_booking(request):
-    # Get the logged-in user's ID
+    # Get the logged-in user's ID (customer ID)
     customer_id = request.session.get('user_id')
 
-    # Query booking data from the database
+    service_name_filter = request.GET.get('service_name', '')
+    order_status_filter = request.GET.get('order_status', '')
+
     with connection.cursor() as cursor:
-        cursor.execute("""
+        query = """
             SELECT tso.Id AS order_id,
                    ssc.SubcategoryName AS service_name,
-                   COALESCE(os.Status, 'Unknown Status') AS order_status,
+                   os.status AS order_status,
                    tso.orderDate AS order_date,
                    tso.TotalPrice AS total_payment
             FROM SIJARTA.TR_SERVICE_ORDER tso
-            JOIN SIJARTA.SERVICE_SESSION ss 
-                ON tso.serviceCategoryId = ss.SubcategoryId AND tso.Session = ss.Session
-            JOIN SIJARTA.SERVICE_SUBCATEGORY ssc 
-                ON ss.SubcategoryId = ssc.Id
-            LEFT JOIN (
-                SELECT tos.serviceTrId,
-                       tos.statusId
-                FROM SIJARTA.TR_ORDER_STATUS tos
-                JOIN (
-                    SELECT serviceTrId, MAX(date) AS latest_date
-                    FROM SIJARTA.TR_ORDER_STATUS
-                    GROUP BY serviceTrId
-                ) latest_status
-                ON tos.serviceTrId = latest_status.serviceTrId 
-                   AND tos.date = latest_status.latest_date
-            ) latest_status
-                ON latest_status.serviceTrId = tso.Id
-            LEFT JOIN SIJARTA.ORDER_STATUS os 
-                ON latest_status.statusId = os.Id
+            JOIN SIJARTA.SERVICE_SESSION ss ON tso.serviceCategoryId = ss.SubcategoryId AND tso.Session = ss.Session
+            JOIN SIJARTA.SERVICE_SUBCATEGORY ssc ON ss.SubcategoryId = ssc.Id
+            LEFT JOIN SIJARTA.TR_ORDER_STATUS tos ON tso.Id = tos.serviceTrId
+            LEFT JOIN sijarta.tr_service_order t on ss.subcategoryid = t.servicecategoryid and ss.session = t.session
+            LEFT JOIN sijarta.order_status os on tos.statusid = os.id
             WHERE tso.customerId = %s
-        """, [customer_id])
+        """
+        params = [customer_id]
+
+        # Apply filters if provided
+        if service_name_filter:
+            query += " AND ssc.SubcategoryName = %s"
+            params.append(service_name_filter)
+        if order_status_filter:
+            query += " AND os.status = %s"
+            params.append(order_status_filter)
+
+        cursor.execute(query, params)
         bookings = cursor.fetchall()
 
-    # Prepare data for the template
+        cursor.execute("SELECT sc.subcategoryname FROM SIJARTA.service_subcategory sc")
+        bookings_category = cursor.fetchall()
+
+        cursor.execute("SELECT os.status FROM SIJARTA.order_status os")
+        bookings_status = cursor.fetchall()
+
     bookings_list = [
         {
             'order_id': booking[0],
             'service_name': booking[1],
-            'order_status': booking[2],
+            'order_status': booking[2] if booking[2] is not None else 'Unknown',
             'order_date': booking[3],
             'total_payment': booking[4],
         }
         for booking in bookings
     ]
 
-    # Send data to the template
     context = {
-        'bookings': bookings_list
+        'bookings': bookings_list,
+        'bookings_category': bookings_category,
+        'bookings_status': bookings_status,
+        'service_name_filter': service_name_filter,
+        'order_status_filter': order_status_filter,
     }
     return render(request, 'view_booking.html', context)
-
-
-
 
 
 def worker_profile(request, worker_name):
@@ -447,3 +461,34 @@ def submit_testimonial(request):
     else:
         # Redirect ke form testimonial jika bukan POST
         return redirect('add_testimonial')
+
+def subcategory_services_worker(request, id):
+    category = request.GET.get('category', None)
+    subcategory = request.GET.get('subcategory', None)
+    
+    context = {
+        'category': category,
+        'subcategory': subcategory,
+        'id': id,
+    }
+    return render(request, 'subcategory_services_worker.html', context)
+
+
+def delete_order(request, pk):
+    if request.method == "POST":
+        if not pk:
+            return JsonResponse({'success': False, 'error': 'Missing order_id'}, status=400)
+
+        try:
+            with connection.cursor() as cursor:
+                # Delete all foreign to service order
+                cursor.execute("DELETE FROM SIJARTA.TESTIMONI WHERE servicetrid = %s", [pk])
+                cursor.execute("DELETE FROM SIJARTA.TR_ORDER_STATUS WHERE serviceTrId = %s", [pk])
+
+                # Delete service order
+                cursor.execute("DELETE FROM SIJARTA.TR_SERVICE_ORDER WHERE Id = %s", [pk])
+                connection.commit()
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        return redirect('main:view_bookings')
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
