@@ -9,6 +9,5 @@ urlpatterns = [
     path('booking/', views.booking_view, name='booking'),
     path('worker/<str:worker_name>/', views.worker_profile, name='worker_profile'),
     path('add-testimonial/', views.add_testimonial, name='add_testimonial'),
-    path('submit-testimonial/', views.submit_testimonial, name='submit_testimonial'),
     path('view-bookings/', views.view_booking, name='view_bookings'),
 ]
