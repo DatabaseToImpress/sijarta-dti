@@ -27,19 +27,15 @@ def get_transaction_history(phone_number):
         results = cursor.fetchall()
     return results
 
-# View to handle the MyPay feature
 def mypay_view(request):
-    # Check if the user is logged in
     if not request.session.get('user'):
         return redirect('login')
 
-    # Retrieve user data from the session
     user_data = json.loads(request.session.get('user'))
     phone_number = user_data.get('PhoneNum')
     user_name = user_data.get('Name')
     role = request.session.get('role')
 
-    # Fetch balance and transaction history
     balance = get_user_balance(phone_number)
     transactions = get_transaction_history(phone_number)
 
@@ -52,6 +48,7 @@ def mypay_view(request):
     }
     return render(request, 'mypay.html', context)
 
+@csrf_exempt
 def mypay_transaction(request):
     user_data = json.loads(request.session.get('user')) 
     phone_number = user_data.get('PhoneNum')
@@ -66,11 +63,9 @@ def mypay_transaction(request):
 
     try:
         with connection.cursor() as cursor:
-            # Fetch available banks, excluding 'MyPay'
             cursor.execute("SELECT id, name FROM SIJARTA.payment_method WHERE name != 'MyPay'")
             transaction_data['banks'] = cursor.fetchall()
 
-            # Fetch service orders booked by the logged-in user (only for customers)
             if role == 'Customer':
                 cursor.execute("""
                     SELECT tso.id, sc.subcategoryname AS description, tso.totalprice, tso.session 
@@ -108,13 +103,11 @@ def mypay_transaction(request):
                     except ValueError:
                         return render(request, 'mypay_transaction.html', {'error': 'Invalid amount! Please enter a positive number.', 'data': transaction_data, 'role': role})
 
-                    # Update user's MyPay balance
                     cursor.execute(
                         "UPDATE SIJARTA.app_user SET mypaybalance = mypaybalance + %s WHERE id = %s",
                         [amount, user_id]
                     )
 
-                    # Insert transaction into TR_MYPAY
                     cursor.execute("""
                         INSERT INTO SIJARTA.tr_mypay (id, userid, date, nominal, categoryid)
                         VALUES (%s, %s, %s, %s, 
@@ -134,7 +127,6 @@ def mypay_transaction(request):
                     if not service_id:
                         return render(request, 'mypay_transaction.html', {'error': 'Please select a service!', 'data': transaction_data, 'role': role})
 
-                    # Modify query to filter only sessions with 'MyPay' payment method
                     cursor.execute("""
                         SELECT tso.totalprice 
                         FROM SIJARTA.tr_service_order tso
@@ -146,24 +138,20 @@ def mypay_transaction(request):
                     if not service_price:
                         return render(request, 'mypay_transaction.html', {'error': 'Service not found or already paid with another payment method!', 'data': transaction_data, 'role': role})
 
-                    # Check if balance is sufficient
                     if current_balance < service_price[0]:
                         return render(request, 'mypay_transaction.html', {'error': 'Insufficient balance to pay for the service!', 'data': transaction_data, 'role': role})
 
-                    # Deduct the service price from user's balance
                     cursor.execute(
                         "UPDATE SIJARTA.app_user SET mypaybalance = mypaybalance - %s WHERE id = %s",
                         [service_price[0], user_id]
                     )
 
-                    # Insert transaction into TR_MYPAY
                     cursor.execute("""
                         INSERT INTO SIJARTA.tr_mypay (id, userid, date, nominal, categoryid)
                         VALUES (%s, %s, %s, -%s, 
                             (SELECT id FROM SIJARTA.tr_mypay_category WHERE name = 'Pay for service transaction'))
                     """, [str(uuid.uuid4()), user_id, datetime.now(), service_price[0]])
 
-                    # Update order status to 'Order completed'
                     cursor.execute("""
                         INSERT INTO SIJARTA.tr_order_status (servicetrid, statusid, date)
                         VALUES (%s, 
@@ -194,11 +182,9 @@ def mypay_transaction(request):
                     except ValueError:
                         return render(request, 'mypay_transaction.html', {'error': 'Invalid amount! Please enter a positive number.', 'data': transaction_data, 'role': role})
 
-                    # Check if balance is sufficient
                     if current_balance < transfer_amount:
                         return render(request, 'mypay_transaction.html', {'error': 'Insufficient balance to complete the transfer!', 'data': transaction_data, 'role': role})
 
-                    # Check if recipient exists
                     cursor.execute("SELECT id FROM SIJARTA.app_user WHERE phonenum = %s", [recipient_phone])
                     recipient = cursor.fetchone()
                     if not recipient:
@@ -208,28 +194,24 @@ def mypay_transaction(request):
                     recipient_id = recipient[0]
                     print(f"Recipient ID: {recipient_id}")
 
-                    # Deduct from sender's balance
                     cursor.execute(
                         "UPDATE SIJARTA.app_user SET mypaybalance = mypaybalance - %s WHERE id = %s",
                         [transfer_amount, user_id]
                     )
                     print("Sender balance updated")
 
-                    # Add to recipient's balance
                     cursor.execute(
                         "UPDATE SIJARTA.app_user SET mypaybalance = mypaybalance + %s WHERE id = %s",
                         [transfer_amount, recipient_id]
                     )
                     print("Recipient balance updated")
 
-                    # Insert transaction for sender
                     cursor.execute("""
                         INSERT INTO SIJARTA.tr_mypay (id, userid, date, nominal, categoryid)
                         VALUES (%s, %s, %s, -%s, 
                             (SELECT id FROM SIJARTA.tr_mypay_category WHERE name = 'Transfer MyPay to another user'))
                     """, [str(uuid.uuid4()), user_id, datetime.now(), transfer_amount])
 
-                    # Insert transaction for recipient
                     cursor.execute("""
                         INSERT INTO SIJARTA.tr_mypay (id, userid, date, nominal, categoryid)
                         VALUES (%s, %s, %s, %s, 
@@ -266,20 +248,17 @@ def mypay_transaction(request):
                             'data': transaction_data,
                         })
 
-                    # Check if balance is sufficient
                     if current_balance < withdrawal_amount:
                         return render(request, 'mypay_transaction.html', {
                             'error': 'Insufficient balance to withdraw the requested amount!',
                             'data': transaction_data,
                         })
 
-                    # Deduct from user's balance
                     cursor.execute(
                         "UPDATE SIJARTA.app_user SET mypaybalance = mypaybalance - %s WHERE id = %s",
                         [withdrawal_amount, user_id]
                     )
 
-                    # Insert transaction into TR_MYPAY
                     cursor.execute("""
                         INSERT INTO SIJARTA.tr_mypay (id, userid, date, nominal, categoryid)
                         VALUES (%s, %s, %s, -%s, 
@@ -307,7 +286,6 @@ def service_job_status(request):
     if not user_id:
         return redirect('login')
 
-    # Extract filter parameters from GET request
     status_filter = request.GET.get('status', '').strip()
     service_name_filter = request.GET.get('order_name', '').strip()
 
@@ -379,11 +357,6 @@ def service_job_status(request):
     
 @csrf_exempt
 def update_order_status(request):
-    """
-    View to update the status of a specific service job.
-    Expects JSON POST with 'order_id' and 'new_status'.
-    Returns JSONResponse suitable for AJAX calls.
-    """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -402,7 +375,6 @@ def update_order_status(request):
 
         try:
             with connection.cursor() as cursor:
-                # Get the current latest status of the order
                 cursor.execute("""
                     SELECT os.status
                     FROM SIJARTA.tr_service_order tso
@@ -419,18 +391,15 @@ def update_order_status(request):
 
                 current_status = current_status_row[0]
 
-                # Define valid transitions
                 status_transitions = {
                     "Waiting for Worker to Depart": "Worker arrives at the location",
                     "Worker arrives at the location": "Service is being performed",
                     "Service is being performed": "Order completed"
                 }
 
-                # Check if the transition is valid
                 if current_status not in status_transitions or status_transitions[current_status] != new_status:
                     return JsonResponse({'success': False, 'error': 'Invalid status transition.'}, status=400)
 
-                # Insert a new record for the new status to maintain history
                 cursor.execute("""
                     INSERT INTO SIJARTA.tr_order_status (servicetrid, statusid, date)
                     VALUES (
@@ -454,7 +423,6 @@ def service_job(request):
     if not user_id:
         return redirect('login')
 
-    # Fetch the categories this worker can handle
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT sc.id, sc.categoryname
@@ -472,14 +440,12 @@ def service_job(request):
     formatted_subcategories = []
     with connection.cursor() as cursor:
         if category_filter:
-            # Fetch subcategories for the selected category
             cursor.execute("""
                 SELECT ssc.id, ssc.subcategoryname
                 FROM SIJARTA.service_subcategory ssc
                 WHERE ssc.servicecategoryid = %s
             """, [category_filter])
         else:
-            # If no category selected, show subcategories of all categories the worker can handle
             if worker_categories:
                 category_ids = [cat["id"] for cat in formatted_categories]
                 placeholders = ",".join(["%s"] * len(category_ids))
@@ -506,7 +472,6 @@ def service_job(request):
     if worker_categories:
         worker_category_ids = [cat["id"] for cat in formatted_categories]
         if category_filter:
-            # If category is selected, filter by that category
             query_conditions.append("sc.id = %s")
             query_params.append(category_filter)
 
@@ -595,7 +560,6 @@ def accept_order(request):
     try:
         with transaction.atomic():
             with connection.cursor() as cursor:
-                # Check the current status of the order
                 cursor.execute("""
                     SELECT os.status, tso.session
                     FROM SIJARTA.tr_service_order tso
@@ -615,7 +579,6 @@ def accept_order(request):
                 if current_status != "Searching for Nearby Workers":
                     return JsonResponse({'success': False, 'error': 'Order is not available to take.'}, status=400)
 
-                # Update TR_SERVICE_ORDER: Assign the worker and set serviceDate
                 service_date = datetime.now().date()
                 job_duration = service_date + timedelta(days=session_duration)
 
@@ -625,7 +588,6 @@ def accept_order(request):
                     WHERE id = %s
                 """, [user_id, service_date, order_id])
 
-                # Insert new order status "Waiting for Worker to Depart"
                 cursor.execute("""
                     INSERT INTO SIJARTA.tr_order_status (servicetrid, statusid, date)
                     VALUES (
