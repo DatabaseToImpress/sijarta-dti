@@ -56,7 +56,7 @@
             margin-left: auto;
             margin-right: auto;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: left;
+            text-align: center;
         }
 
         h1, h2, h3 {
@@ -70,6 +70,7 @@
             padding: 0;
         }
 
+        /* Button Styling */
         .btn {
             background-color: #94618E;
             color: #F8EEE7;
@@ -85,6 +86,7 @@
             background-color: #49274A;
         }
 
+        /* Worker Link Styling */
         .worker-link {
             color: #6B21A8;
             text-decoration: none;
@@ -95,20 +97,22 @@
             text-decoration: underline;
             color: #4C1D95;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-[#F8EEE7]">
 
-    <!-- Navbar -->
     {% include "navbar/navbar.html" %}
 
     <div class="container">
-        <!-- Subcategory Details -->
         <h1 class="text-3xl font-semibold font-bold text-[#49274A]">{{ subcategory_data.service_category }}</h1>
         <h2 class="text-2xl font-semibold font-bold text-[#49274A] mt-2">{{ subcategory_data.subcategory_name }}</h2>
         <p class="mt-4 text-lg text-[#49274A]">{{ subcategory_data.description }}</p>
 
-        <!-- Workers Section -->
+        <!-- Available Workers -->
         <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Available Workers:</h3>
         <ul>
             {% for worker in workers %}
@@ -122,7 +126,14 @@
             {% endfor %}
         </ul>
 
-        <!-- Sessions Section -->
+        <!-- Join Button for Workers -->
+        {% if role == 'Worker' and not already_joined %}
+            <button id="join-button" class="btn" onclick="joinService()">Join Now</button>
+        {% elif already_joined %}
+            <p class="text-green-500">You are already joined to this service category.</p>
+        {% endif %}
+
+        <!-- Session Prices -->
         <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Session Prices:</h3>
         <ul class="mt-4 space-y-4">
             {% for session in sessions %}
@@ -141,44 +152,51 @@
             {% endfor %}
         </ul>
 
-        <!-- Testimonials Section -->
+        <!-- Testimonials -->
         <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Customer Testimonials:</h3>
-        <div class="mt-4">
-            {% if testimonials %}
-                <ul class="space-y-4">
-                    {% for testimonial in testimonials %}
-                        <li class="bg-[#F4DECB] p-4 rounded-lg shadow-md">
-                            <p class="text-[#49274A]">
-                                <strong>{{ testimonial.user_name }}</strong> ({{ testimonial.date }}): 
-                                "{{ testimonial.text }}" 
-                                <span class="font-bold">- {{ testimonial.rating }}/10</span>
-                            </p>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
+        <ul class="mt-4 space-y-4">
+            {% for testimonial in testimonials %}
+                <li class="bg-[#F4DECB] p-4 rounded-lg shadow-md">
+                    <p>
+                        <strong>{{ testimonial.user_name }}</strong> ({{ testimonial.date }}): 
+                        "{{ testimonial.text }}" 
+                        <span class="font-bold">- {{ testimonial.rating }}/10</span>
+                    </p>
+                </li>
+            {% empty %}
                 <p class="text-[#49274A]">No testimonials available for this service.</p>
-            {% endif %}
-        </div>
+            {% endfor %}
+        </ul>
 
-        <!-- Add Testimonial Button -->
+        <!-- Add Testimonial for Customers -->
         {% if role == 'Customer' %}
-            <button 
-                class="btn mt-4" 
-                onclick="window.location.href='{% url 'main:add_testimonial' %}?subcategoryId={{ id }}'">
+            <button class="btn mt-4" onclick="window.location.href='{% url 'main:add_testimonial' %}?subcategoryId={{ id }}'">
                 Add Testimonial
             </button>
         {% endif %}
     </div>
 
     <script>
-        // Extract subcategory service ID from the current URL
-        const currentUrl = window.location.href;
-        const subcategoryId = currentUrl.split('/').filter(Boolean).pop();
+        function joinService() {
+            fetch(window.location.href, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    document.getElementById("join-button").classList.add("hidden");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
 
         function bookService(session, price) {
-            // Redirect to booking page with the subcategoryServiceId as a query parameter
-            const bookingUrl = `/main/booking/?session=${session}&price=${price}&subcategoryServiceId=${subcategoryId}`;
+            const bookingUrl = `/main/booking/?session=${session}&price=${price}&subcategoryServiceId={{ id }}`;
             window.location.href = bookingUrl;
         }
     </script>
