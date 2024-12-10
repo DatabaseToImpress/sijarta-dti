@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Service Jobs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -19,184 +19,148 @@
             },
         };
     </script>
-   <style>
-    .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 50;
-        background-color: #94618E;
-        color: #F4DECB;
-        padding: 1rem 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #49274A;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .navbar a {
-        color: #F4DECB;
-        text-decoration: none;
-        margin: 0 1rem;
-        transition: color 0.3s ease;
-    }
-
-    .navbar a:hover {
-        color: #49274A;
-    }
-
-    body {
-        margin: 0;
-        padding-top: 70px; /* Matches the navbar height */
-    }
-</style>
+    <style>
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 50;
+        }
+        body {
+            margin: 0;
+            padding-top: 120px; /* Matches navbar height */
+        }
+    </style>
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <body class="bg-shell text-eggplant font-sans min-h-screen py-8">
-
-<!-- Navbar -->
-<nav class="navbar">
-    <div class="navbar-left">
-        <span class="font-bold text-xl">SIJARTA</span>
-    </div>
-    <div class="navbar-center">
-        <ul class="flex gap-4">
-            <li><a href="">Home</a></li>
-            <li><a href="">Manage My Jobs</a></li>
-            <li><a href="">Manage Order Status</a></li>
-            <li><a href="">MyPay</a></li>
-            <li><a href="{% url 'profilew' %}">Profile</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
-        </ul>
-    </div>
-    <div class="navbar-right">
-        <span class="font-bold">Worker, Haruto</span>
-    </div>
-</nav>
+    {% include 'navbar/navbar.html' %}
 
     <div class="max-w-5xl mx-auto bg-white border-4 border-grape rounded-lg shadow-lg p-8">
         <h1 class="text-4xl font-bold text-grape text-center mb-8">Service Jobs</h1>
-        
-        <!-- Filters -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <div class="w-full md:w-1/2">
+
+        <!-- Filters Form -->
+        <form method="GET" action="{% url 'servicejob' %}" class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div class="w-full md:w-1/3">
                 <label for="category" class="block text-sm font-bold text-eggplant mb-2">Category:</label>
-                <select id="category" class="w-full bg-sand text-eggplant p-3 rounded border border-grape">
-                    <option value="" selected>Select a Category</option>
-                    <option value="home-cleaning">Home Cleaning</option>
-                    <option value="deep-cleaning">Deep Cleaning</option>
-                    <option value="ac-service">Air Conditioning Service</option>
-                    <option value="massage">Massage</option>
-                    <option value="hair-care">Hair Care</option>
+                <select id="category" name="category_id" class="w-full bg-sand text-eggplant p-3 rounded border border-grape">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
                 </select>
             </div>
-            <div class="w-full md:w-1/2">
+
+            <div class="w-full md:w-1/3">
                 <label for="subcategory" class="block text-sm font-bold text-eggplant mb-2">Subcategory:</label>
-                <select id="subcategory" class="w-full bg-sand text-eggplant p-3 rounded border border-grape" disabled>
-                    <option value="" selected>Select a Subcategory</option>
+                <select id="subcategory" name="subcategory_id" class="w-full bg-sand text-eggplant p-3 rounded border border-grape">
+                    <option value="">All Subcategories</option>
+                    {% for sub in subcategories %}
+                        <option value="{{ sub.id }}" {% if selected_subcategory == sub.id %}selected{% endif %}>
+                            {{ sub.name }}
+                        </option>
+                    {% endfor %}
                 </select>
             </div>
-            <button onclick="filterOrders()" class="bg-grape hover:bg-eggplant text-shell font-bold py-3 px-6 rounded transition">
-                Search
-            </button>
-        </div>
+
+            <div class="w-full md:w-1/3 flex justify-end">
+                <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-3 px-6 rounded transition">
+                    Search
+                </button>
+            </div>
+        </form>
 
         <!-- Order List -->
         <div id="order-list" class="space-y-6">
-            <p class="text-center text-eggplant font-medium">Use the filters to search for service jobs.</p>
+            {% if orders %}
+                {% for order in orders %}
+                    <div class="bg-sand p-6 rounded-lg shadow-md border border-grape flex items-center justify-between">
+                        <!-- Left Section: Order Details -->
+                        <div>
+                            <h3 class="font-bold text-grape text-xl mb-4">{{ order.service_subcategory_name }}</h3>
+        
+                            <p class="text-eggplant">
+                                <span class="font-bold">Customer Name:</span> {{ order.customer_name }}
+                            </p>
+                            <p class="text-eggplant">
+                                <span class="font-bold">Order Date:</span> {{ order.order_date }}
+                            </p>
+                            <p class="text-eggplant">
+                                <span class="font-bold">Session:</span> {{ order.session }}
+                            </p>
+                            <p class="text-eggplant">
+                                <span class="font-bold">Total Amount:</span> IDR {{ order.total_amount|floatformat:0 }}
+                            </p>
+                            <p class="text-eggplant">
+                                <span class="font-bold">Status:</span> {{ order.current_status }}
+                            </p>
+                        </div>
+        
+                        <!-- Right Section: Accept Order Button -->
+                        <div>
+                            <button 
+                                class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded transition accept-order-btn"
+                                data-order-id="{{ order.id }}">
+                                Accept Order
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-eggplant font-medium">No services available for the selected filters. Try changing your criteria.</p>
+            {% endif %}
         </div>
+        
     </div>
 
     <script>
-        const categoryDropdown = document.getElementById('category');
-        const subcategoryDropdown = document.getElementById('subcategory');
-        const orderList = document.getElementById('order-list');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-        const subcategories = {
-            "home-cleaning": [
-                { subcategory: "Kitchen and Refrigerator Cleaning", user: "John Doe", orderDate: "2024-11-18", workingDate: "2024-11-20", session: "Session 1", totalAmount: "IDR 65,000" },
-                { subcategory: "Daily Cleaning", user: "Jane Smith", orderDate: "2024-11-19", workingDate: "2024-11-21", session: "Session 2", totalAmount: "IDR 115,000" }
-            ],
-            "deep-cleaning": [
-                { subcategory: "Sofa Washing", user: "Alice", orderDate: "2024-11-18", workingDate: "2024-11-20", session: "Session 1", totalAmount: "IDR 98,500" },
-                { subcategory: "Carpet Washing", user: "Bob", orderDate: "2024-11-19", workingDate: "2024-11-21", session: "Session 2", totalAmount: "IDR 162,500" }
-            ],
-            "massage": [
-                { subcategory: "House Massage", user: "Nanda", orderDate: "2024-11-18", workingDate: "2024-11-19", session: "Session 1", totalAmount: "IDR 140,000" },
-                { subcategory: "Swedish Massage", user: "Rina", orderDate: "2024-11-20", workingDate: "2024-11-21", session: "Session 2", totalAmount: "IDR 500,000" }
-            ],
-            "ac-service": [
-                { subcategory: "AC Chemical Service", user: "Emma", orderDate: "2024-11-19", workingDate: "2024-11-20", session: "Session 1", totalAmount: "IDR 450,000" },
-                { subcategory: "AC Freon Fixing", user: "Chris", orderDate: "2024-11-21", workingDate: "2024-11-22", session: "Session 2", totalAmount: "IDR 300,000" }
-            ],
-            "hair-care": [
-                { subcategory: "Hairwash", user: "Sarah", orderDate: "2024-11-22", workingDate: "2024-11-23", session: "Session 1", totalAmount: "IDR 180,000" },
-                { subcategory: "Creambath", user: "Kelly", orderDate: "2024-11-24", workingDate: "2024-11-25", session: "Session 2", totalAmount: "IDR 400,000" }
-            ]
-        };
+        // Handle Accept Order button clicks
+        document.addEventListener('DOMContentLoaded', function () {
+            const acceptButtons = document.querySelectorAll('.accept-order-btn');
 
-        categoryDropdown.addEventListener('change', function () {
-            const category = this.value;
-            subcategoryDropdown.innerHTML = '<option value="">Select a Subcategory</option>';
-            if (subcategories[category]) {
-                subcategories[category].forEach(order => {
-                    const option = document.createElement('option');
-                    option.value = order.subcategory;
-                    option.textContent = order.subcategory;
-                    subcategoryDropdown.appendChild(option);
+            acceptButtons.forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    event.preventDefault();
+
+                    const orderId = button.getAttribute('data-order-id');
+                    if (!orderId) {
+                        alert("Invalid order ID.");
+                        return;
+                    }
+
+                    button.disabled = true;
+
+                    try {
+                        const response = await fetch("{% url 'accept_order' %}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: JSON.stringify({ order_id: orderId })
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            alert(`Order accepted successfully! Service Date: ${result.service_date}, Job Duration: ${result.job_duration}`);
+                            button.closest('div.bg-sand').remove();
+                        } else {
+                            alert(`Error: ${result.error}`);
+                            button.disabled = false;
+                        }
+                    } catch (error) {
+                        console.error("Error accepting order:", error);
+                        alert("An unexpected error occurred. Please try again.");
+                        button.disabled = false;
+                    }
                 });
-                subcategoryDropdown.disabled = false;
-            } else {
-                subcategoryDropdown.disabled = true;
-            }
+            });
         });
-
-        function filterOrders() {
-            const category = categoryDropdown.value;
-            const subcategory = subcategoryDropdown.value;
-
-            orderList.innerHTML = '';
-            if (category && subcategories[category]) {
-                const filteredOrders = subcategories[category].filter(order => !subcategory || order.subcategory === subcategory);
-                filteredOrders.forEach(order => {
-                    const orderCard = document.createElement('div');
-                    orderCard.classList.add(
-                        'bg-sand',
-                        'p-6',
-                        'rounded-lg',
-                        'shadow-md',
-                        'border',
-                        'border-grape',
-                        'flex',
-                        'justify-between',
-                        'items-center',
-                        'gap-4'
-                    );
-                    orderCard.innerHTML = `
-                        <div class="flex-1">
-                            <h2 class="text-lg font-bold text-grape">${order.subcategory}</h2>
-                            <p class="text-sm"><strong>User's Name:</strong> ${order.user}</p>
-                            <p class="text-sm"><strong>Order Date:</strong> ${order.orderDate}</p>
-                            <p class="text-sm"><strong>Working Date:</strong> ${order.workingDate}</p>
-                            <p class="text-sm"><strong>Session:</strong> ${order.session}</p>
-                            <p class="text-sm"><strong>Total Amount:</strong> ${order.totalAmount}</p>
-                        </div>
-                        <button class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded transition" 
-                            onclick="acceptOrder('${order.subcategory}')">Accept Order</button>
-                    `;
-                    orderList.appendChild(orderCard);
-                });
-            } else {
-                orderList.innerHTML = `
-                    <p class="text-center text-eggplant font-medium">No services available for the selected filters.</p>
-                `;
-            }
-        }
-
-        function acceptOrder(subcategory) {
-            alert(`Order for "${subcategory}" accepted!`);
-        }
     </script>
 </body>
 </html>

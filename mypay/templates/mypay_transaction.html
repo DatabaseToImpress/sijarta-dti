@@ -20,34 +20,13 @@
     };
   </script>
   <style>
-    /* Navbar styling */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 50;
-      background-color: #94618E;
-      color: #F4DECB;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #49274A;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .navbar a {
-      color: #F4DECB;
-      text-decoration: none;
-      margin: 0 1rem;
-      transition: color 0.3s ease;
-    }
-
-    .navbar a:hover {
-      color: #49274A;
-    }
-
+       nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 50; /* Ensure it stays above other elements */
+    } 
     body {
       margin: 0;
       padding-top: 70px; /* Navbar height adjustment */
@@ -55,159 +34,133 @@
   </style>
 </head>
 <body class="bg-shell text-eggplant font-sans min-h-screen flex items-center justify-center">
-  <!-- Navbar Container -->
-  <div id="navbar"></div>
+  {% include 'navbar/navbar.html' %}
 
   <div class="bg-white border-4 border-grape text-eggplant p-8 rounded-lg shadow-2xl max-w-md w-full">
     <h2 class="text-3xl font-bold text-center text-grape mb-6">MyPay Transaction</h2>
     
     <!-- User Info Section -->
     <div class="mb-6">
-      <p><strong>User's Name:</strong> Luffy</p>
-      <p><strong>Transaction Date:</strong> <span id="transactionDate"></span></p>
-      <p><strong>MyPay Balance:</strong> <span class="text-grape font-bold">IDR 1,000,000</span></p>
+      <p><strong>User's Name:</strong> {{ user_name }}</p>
+      <p><strong>Transaction Date:</strong> {{ transaction_date }}</p>
+      <p><strong>MyPay Balance:</strong> <span class="text-grape font-bold">IDR {{ mypay_balance|floatformat:0 }}</span></p>      
     </div>
 
     <!-- Transaction Form -->
-    <form method="post" action="/submit-transaction/" class="space-y-6">
+    <form method="post" action="{% url 'mypay_transaction' %}" class="space-y-6">
+      {% csrf_token %}
       <!-- Transaction Category Selection -->
       <div>
         <label for="transactionCategory" class="block text-sm font-bold">Transaction Category</label>
-        <select id="transactionCategory" name="transaction_category" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+        <select id="transactionCategory" name="category" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
           <option value="topup">Top Up</option>
-          <option value="payment">Service Payment</option>
+          {% if role == 'Customer' %}
+          <option value="service_payment">Service Payment</option>
+          {% endif %}
           <option value="transfer">Transfer</option>
           <option value="withdrawal">Withdrawal</option>
         </select>
       </div>
-
-      <!-- Top-Up Fields -->
-      <div id="topupFields" class="hidden">
-        <label for="topupAmount" class="block text-sm font-bold">Top-Up Amount</label>
-        <input type="number" id="topupAmount" name="topup_amount" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
-        <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded w-full mt-4 transition">Top Up</button>
+      <div id="feedbackMessage" class="mb-4">
+        {% if error %}
+          <p class="text-red-600 font-bold">{{ error }}</p>
+        {% endif %}
+        {% if success %}
+          <p class="text-green-600 font-bold">{{ success }}</p>
+        {% endif %}
       </div>
 
-      <!-- Service Payment Fields -->
+      <!-- Dynamic Fields -->
+      <div id="dynamicFields">
+        <!-- Top-Up -->
+        <div id="topupFields">
+          <label for="topup_amount" class="block text-sm font-bold">Top-Up Amount</label>
+          <input type="number" id="topup_amount" name="topup_amount" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+        </div>
+
+        <!-- Service Payment -->
+       <!-- Service Payment Section -->
       <div id="paymentFields" class="hidden">
+        {% if role == 'Customer' %}
         <label for="serviceSession" class="block text-sm font-bold">Service Session</label>
-        <select id="serviceSession" name="service_session" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
-          <option value="session1">Session 1</option>
-          <option value="session2">Session 2</option>
-          <option value="session3">Session 3</option>
-          <option value="session4">Session 4</option>
+        <select id="serviceSession" name="session" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+          {% for service in data.services %}
+          <option value="{{ service.0 }}" data-price="{{ service.2 }}">
+            {{ service.1 }} - Session {{ service.3 }} - IDR {{ service.2|floatformat:0 }}
+          </option>
+          {% endfor %}
         </select>
-        <label for="sessionPrice" class="block text-sm font-bold mt-4">Price</label>
-        <input type="text" id="sessionPrice" name="session_price" class="w-full bg-sand text-eggplant p-2 rounded border border-grape" readonly>
-        <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded w-full mt-4 transition">Purchase</button>
+        
+        <label for="servicePrice" class="block text-sm font-bold mt-4">Service Price</label>
+        <input type="text" id="servicePrice" class="w-full bg-sand text-eggplant p-2 rounded border border-grape" readonly>
+        {% endif %}
       </div>
 
-      <!-- Transfer Fields -->
-      <div id="transferFields" class="hidden">
-        <label for="recipientPhone" class="block text-sm font-bold">Recipient's Phone Number</label>
-        <input type="text" id="recipientPhone" name="recipient_phone" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
-        <label for="transferAmount" class="block text-sm font-bold mt-4">Transfer Amount</label>
-        <input type="number" id="transferAmount" name="transfer_amount" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
-        <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded w-full mt-4 transition">Transfer</button>
+        <!-- Transfer -->
+        <div id="transferFields" class="hidden">
+          <label for="recipientPhone" class="block text-sm font-bold">Recipient's Phone Number</label>
+          <input type="text" id="recipientPhone" name="recipient_phone" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+          <label for="transferAmount" class="block text-sm font-bold mt-4">Transfer Amount</label>
+          <input type="number" id="transferAmount" name="transfer_amount" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+        </div>
+
+        <!-- Withdrawal -->
+        <div id="withdrawalFields" class="hidden">
+          <label for="bankName" class="block text-sm font-bold">Bank Name</label>
+          <select id="bankName" name="bank_name" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+            {% for bank in data.banks %}
+            <option value="{{ bank.0 }}">{{ bank.1 }}</option>
+            {% endfor %}
+          </select>
+          <label for="bankAccountNumber" class="block text-sm font-bold mt-4">Bank Account Number</label>
+          <input type="text" id="bankAccountNumber" name="bank_account" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+          <label for="withdrawal_amount" class="block text-sm font-bold mt-4">Withdrawal Amount</label>
+          <input type="number" id="withdrawal_amount" name="amount" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
+        </div>
+
       </div>
 
-      <!-- Withdrawal Fields -->
-      <div id="withdrawalFields" class="hidden">
-        <label for="bankName" class="block text-sm font-bold">Bank Name</label>
-        <select id="bankName" name="bank_name" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
-          <option value="bca">BCA</option>
-          <option value="bni">BNI</option>
-          <option value="mandiri">Mandiri</option>
-          <option value="ovo">OVO</option>
-          <option value="gopay">GoPay</option>
-        </select>
-        <label for="bankAccountNumber" class="block text-sm font-bold mt-4">Bank Account Number</label>
-        <input type="text" id="bankAccountNumber" name="bank_account_number" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
-        <label for="withdrawalAmount" class="block text-sm font-bold mt-4">Withdrawal Amount</label>
-        <input type="number" id="withdrawalAmount" name="withdrawal_amount" class="w-full bg-sand text-eggplant p-2 rounded border border-grape">
-        <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded w-full mt-4 transition">Withdraw</button>
-      </div>
+      <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded w-full mt-4 transition">Submit</button>
     </form>
   </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const navbar = document.getElementById("navbar");
       const transactionCategory = document.getElementById("transactionCategory");
-      const serviceSession = document.getElementById("serviceSession");
-      const sessionPrice = document.getElementById("sessionPrice");
-
-      const sessionPrices = {
-        session1: "IDR 65,000",
-        session2: "IDR 115,000",
-        session3: "IDR 165,000",
-        session4: "IDR 215,000",
-      };
-
-      const isWorker = true; // Toggle this to switch between user and worker navbar
-
-      if (isWorker) {
-        navbar.innerHTML = `
-          <nav class="navbar">
-            <div class="navbar-left">
-              <span class="navbar-logo font-bold text-xl">SIJARTA</span>
-            </div>
-            <div class="navbar-center">
-              <ul class="navbar-nav flex gap-4">
-                <li><a href="">Home</a></li>
-                <li><a href="">Manage My Jobs</a></li>
-                <li><a href="">Manage Order Status</a></li>
-                <li><a href="">MyPay</a></li>
-                <li><a href="{% url 'profilew' %}">Profile</a></li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-              </ul>
-            </div>
-            <div class="navbar-right">
-              <span class="font-bold">Worker, Luffy</span>
-            </div>
-          </nav>`;
-        // Remove "Service Payment" option for workers
-        const servicePaymentOption = transactionCategory.querySelector('option[value="payment"]');
-        if (servicePaymentOption) servicePaymentOption.remove();
-      } else {
-        navbar.innerHTML = `
-          <nav class="navbar">
-            <div class="navbar-left">
-              <span class="navbar-logo font-bold text-xl">SIJARTA</span>
-            </div>
-            <div class="navbar-center">
-              <ul class="navbar-nav flex gap-4">
-                <li><a href="">Home</a></li>
-                <li><a href="">MyPay</a></li>
-                <li><a href="">Orders</a></li>
-                <li><a href="">Discount</a></li>
-                <li><a href="{% url 'profileu' %}">Profile</a></li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-              </ul>
-            </div>
-            <div class="navbar-right">
-              <span class="font-bold">User, Luffy</span>
-            </div>
-          </nav>`;
-      }
-
-      // Display current date
-      document.getElementById("transactionDate").textContent = new Date().toLocaleDateString();
-
-      // Toggle fields based on transaction category
-      transactionCategory.addEventListener("change", function () {
+      const dynamicFields = document.getElementById("dynamicFields");
+      const serviceSession = document.getElementById("serviceSession"); // Dropdown for service sessions
+      const servicePrice = document.getElementById("servicePrice"); // Input to display service price
+  
+      const toggleFields = () => {
         const category = transactionCategory.value;
-        document.getElementById("topupFields").classList.toggle("hidden", category !== "topup");
-        document.getElementById("paymentFields").classList.toggle("hidden", category !== "payment");
-        document.getElementById("transferFields").classList.toggle("hidden", category !== "transfer");
-        document.getElementById("withdrawalFields").classList.toggle("hidden", category !== "withdrawal");
-      });
-
-      // Update price field when session changes
-      serviceSession.addEventListener("change", function () {
-        sessionPrice.value = sessionPrices[serviceSession.value] || "";
-      });
+        dynamicFields.querySelectorAll("div").forEach(div => div.classList.add("hidden"));
+        if (category === "topup") document.getElementById("topupFields").classList.remove("hidden");
+        if (category === "service_payment") document.getElementById("paymentFields").classList.remove("hidden");
+        if (category === "transfer") document.getElementById("transferFields").classList.remove("hidden");
+        if (category === "withdrawal") document.getElementById("withdrawalFields").classList.remove("hidden");
+      };
+  
+      // Attach event listener
+      transactionCategory.addEventListener("change", toggleFields);
+  
+      // Trigger on page load
+      toggleFields();
+  
+      // Update service price dynamically based on selected session
+      if (serviceSession && servicePrice) {
+        serviceSession.addEventListener("change", function () {
+          const selectedOption = serviceSession.options[serviceSession.selectedIndex];
+          const price = selectedOption.getAttribute("data-price");
+          servicePrice.value = `IDR ${parseFloat(price).toLocaleString()}`;
+        });
+  
+        // Trigger price update on page load (if a service is already selected)
+        if (serviceSession.options.length > 0) {
+          serviceSession.dispatchEvent(new Event("change"));
+        }
+      }
     });
   </script>
+  
 </body>
 </html>

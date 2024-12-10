@@ -20,31 +20,12 @@
         };
     </script>
     <style>
-        .navbar {
+        nav {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 50;
-            background-color: #94618E;
-            color: #F4DECB;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #49274A;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar a {
-            color: #F4DECB;
-            text-decoration: none;
-            margin: 0 1rem;
-            transition: color 0.3s ease;
-        }
-
-        .navbar a:hover {
-            color: #49274A;
         }
 
         body {
@@ -54,174 +35,130 @@
     </style>
 </head>
 <body class="bg-shell text-eggplant font-sans min-h-screen py-8">
-
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-left">
-            <span class="font-bold text-xl">SIJARTA</span>
-        </div>
-        <div class="navbar-center">
-            <ul class="flex gap-4">
-                <li><a href="">Home</a></li>
-                <li><a href="">Manage My Jobs</a></li>
-                <li><a href="">Manage Order Status</a></li>
-                <li><a href="">MyPay</a></li>
-                <li><a href="{% url 'profilew' %}">Profile</a></li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-            </ul>
-        </div>
-        <div class="navbar-right">
-            <span class="font-bold">Worker, Haruto</span>
-        </div>
-    </nav>
+    {% include 'navbar/navbar.html' %}
 
     <div class="max-w-5xl mx-auto bg-white border-4 border-grape rounded-lg shadow-lg p-8">
         <h1 class="text-4xl font-bold text-grape text-center mb-8">Service Job Status</h1>
         
         <!-- Filters -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <input type="text" id="service-name" placeholder="Service Name" class="w-full md:w-1/2 bg-sand text-eggplant p-3 rounded-lg border border-grape">
-            <select id="service-status" class="w-full md:w-1/2 bg-sand text-eggplant p-3 rounded-lg border border-grape">
+        <form method="GET" action="{% url 'servicejobstatus' %}" class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <input 
+                type="text" 
+                name="order_name" 
+                value="{{ service_name_filter }}" 
+                placeholder="Service Name" 
+                class="w-full md:w-1/2 bg-sand text-eggplant p-3 rounded-lg border border-grape"
+            >
+            <select 
+                name="status" 
+                class="w-full md:w-1/2 bg-sand text-eggplant p-3 rounded-lg border border-grape"
+            >
                 <option value="">All Status</option>
-                <option value="Waiting for Worker to Depart">Waiting for Worker to Depart</option>
-                <option value="Worker Arrived at Location">Worker Arrived at Location</option>
-                <option value="Service in Progress">Service in Progress</option>
-                <option value="Order Completed">Order Completed</option>
-                <option value="Order Canceled">Order Canceled</option>
+                <option value="Waiting for Worker to Depart" {% if status_filter == "Waiting for Worker to Depart" %}selected{% endif %}>
+                    Waiting for Worker to Depart
+                </option>
+                <option value="Worker arrives at the location" {% if status_filter == "Worker arrives at the location" %}selected{% endif %}>
+                    Worker arrives at the location
+                </option>
+                <option value="Service is being performed" {% if status_filter == "Service is being performed" %}selected{% endif %}>
+                    Service is being performed
+                </option>
+                <option value="Order completed" {% if status_filter == "Order completed" %}selected{% endif %}>
+                    Order completed
+                </option>
+                <option value="Order canceled" {% if status_filter == "Order canceled" %}selected{% endif %}>
+                    Order canceled
+                </option>
             </select>
-            <button onclick="filterOrders()" class="bg-grape hover:bg-eggplant text-shell font-bold py-3 px-6 rounded-lg transition">
+            <button type="submit" class="bg-grape hover:bg-eggplant text-shell font-bold py-3 px-6 rounded-lg transition">
                 Search
             </button>
-        </div>
+        </form>
 
         <!-- Order List -->
-        <div id="order-list" class="space-y-6">
-            <!-- Orders will be dynamically populated here -->
-            <p class="text-center text-eggplant font-medium">Use the filters to search for service jobs.</p>
+        <div class="space-y-6" id="order-list">
+            {% if orders %}
+                {% for order in orders %}
+                    <div class="flex justify-between items-center bg-sand p-6 rounded-lg shadow-md border border-grape" data-order-id="{{ order.id }}">
+                        <div class="flex-1">
+                            <h2 class="text-lg font-bold text-grape">{{ order.service_subcategory_name }}</h2>
+                            <p class="text-sm"><strong>Customer Name:</strong> {{ order.customer_name }}</p>
+                            <p class="text-sm"><strong>Order Date:</strong> {{ order.order_date }}</p>
+                            <p class="text-sm"><strong>Session:</strong> {{ order.session }}</p>
+                            <p class="text-sm"><strong>Total Amount:</strong> IDR {{ order.total_amount|floatformat:0 }}</p>
+                            <p class="text-sm"><strong>Status:</strong> <span class="current-status">{{ order.current_status }}</span></p>
+                        </div>
+                        {% if order.current_status == "Waiting for Worker to Depart" %}
+                            <button data-new-status="Worker arrives at the location"
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded update-status">
+                                Arrived at Location
+                            </button>
+                        {% elif order.current_status == "Worker arrives at the location" %}
+                            <button data-new-status="Service is being performed"
+                                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded update-status">
+                                Providing Service
+                            </button>
+                        {% elif order.current_status == "Service is being performed" %}
+                            <button data-new-status="Order completed"
+                                class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded update-status">
+                                Service Completed
+                            </button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-eggplant font-medium">No orders match the selected filters.</p>
+            {% endif %}
         </div>
     </div>
 
     <script>
-        const orders = [
-            {
-                subcategoryName: "Kitchen and Refrigerator Cleaning",
-                userName: "Luffy",
-                orderDate: "2024-10-01",
-                workingDate: "2024-10-02",
-                session: "1",
-                totalAmount: "65,000 IDR",
-                status: "Waiting for Worker to Depart"
-            },
-            {
-                subcategoryName: "Daily Cleaning",
-                userName: "Matsuzaki",
-                orderDate: "2024-10-02",
-                workingDate: "2024-10-03",
-                session: "2",
-                totalAmount: "65,000 IDR",
-                status: "Worker Arrived at Location"
-            },
-            {
-                subcategoryName: "House Massage",
-                userName: "Aleo",
-                orderDate: "2024-10-03",
-                workingDate: "2024-10-04",
-                session: "1",
-                totalAmount: "140,000 IDR",
-                status: "Service in Progress"
-            },
-            {
-                subcategoryName: "Hairwash",
-                userName: "Nanda",
-                orderDate: "2024-10-04",
-                workingDate: "2024-10-05",
-                session: "2",
-                totalAmount: "180,000 IDR",
-                status: "Order Completed"
-            }
-        ];
+        document.addEventListener('DOMContentLoaded', () => {
+            const updateButtons = document.querySelectorAll('.update-status');
+            
+            updateButtons.forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    event.preventDefault();
 
-        function renderOrders(filteredOrders) {
-            const orderList = document.getElementById("order-list");
-            orderList.innerHTML = "";
+                    const parentDiv = button.closest('[data-order-id]');
+                    const orderId = parentDiv.dataset.orderId;
+                    const newStatus = button.dataset.newStatus;
 
-            if (filteredOrders.length === 0) {
-                orderList.innerHTML = `<p class="text-center text-eggplant font-medium">No orders match the selected filters.</p>`;
-                return;
-            }
+                    try {
+                        const response = await fetch("{% url 'update_order_status' %}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}',
+                            },
+                            body: JSON.stringify({
+                                order_id: orderId,
+                                new_status: newStatus,
+                            }),
+                        });
 
-            filteredOrders.forEach(order => {
-                const isFinalState = order.status === "Order Completed" || order.status === "Order Canceled";
-                const buttonLabel = isFinalState
-                    ? "Status Finalized"
-                    : {
-                          "Waiting for Worker to Depart": "Arrived at Location",
-                          "Worker Arrived at Location": "Providing Service",
-                          "Service in Progress": "Service Completed"
-                      }[order.status];
+                        const result = await response.json();
 
-                const nextStatus = {
-                    "Waiting for Worker to Depart": "Worker Arrived at Location",
-                    "Worker Arrived at Location": "Service in Progress",
-                    "Service in Progress": "Order Completed"
-                }[order.status];
+                        if (response.ok && result.success) {
+                            // Update the status text in the UI
+                            const statusSpan = parentDiv.querySelector('.current-status');
+                            statusSpan.textContent = newStatus;
 
-                const orderDiv = document.createElement("div");
-                orderDiv.classList.add(
-                    "flex",
-                    "justify-between",
-                    "items-center",
-                    "bg-sand",
-                    "p-6",
-                    "rounded-lg",
-                    "shadow-md",
-                    "border",
-                    "border-grape"
-                );
+                            // Remove the current button(s)
+                            parentDiv.querySelectorAll('.update-status').forEach(btn => btn.remove());
 
-                orderDiv.innerHTML = `
-                    <div class="flex-1">
-                        <h2 class="text-lg font-bold text-grape">${order.subcategoryName}</h2>
-                        <p class="text-sm"><strong>User's Name:</strong> ${order.userName}</p>
-                        <p class="text-sm"><strong>Order Date:</strong> ${order.orderDate}</p>
-                        <p class="text-sm"><strong>Working Date:</strong> ${order.workingDate}</p>
-                        <p class="text-sm"><strong>Session:</strong> ${order.session}</p>
-                        <p class="text-sm"><strong>Total Amount:</strong> ${order.totalAmount}</p>
-                        <p class="text-sm"><strong>Status:</strong> ${order.status}</p>
-                    </div>
-                    <button class="bg-grape hover:bg-eggplant text-shell font-bold py-2 px-4 rounded-lg transition ${isFinalState ? "opacity-50 cursor-not-allowed" : ""}" 
-                        ${isFinalState ? "disabled" : `onclick="updateStatus('${order.subcategoryName}', '${nextStatus}')"`}>
-                        ${buttonLabel}
-                    </button>
-                `;
-
-                orderList.appendChild(orderDiv);
+                            alert('Order status updated successfully!');
+                            location.reload();
+                        } else {
+                            alert(`Error: ${result.error || 'Failed to update status.'}`);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred while updating the status.');
+                    }
+                });
             });
-        }
-
-        function filterOrders() {
-            const serviceName = document.getElementById("service-name").value.toLowerCase();
-            const serviceStatus = document.getElementById("service-status").value;
-
-            const filteredOrders = orders.filter(order => {
-                const matchesName = order.subcategoryName.toLowerCase().includes(serviceName);
-                const matchesStatus = !serviceStatus || order.status === serviceStatus;
-                return matchesName && matchesStatus;
-            });
-
-            renderOrders(filteredOrders);
-        }
-
-        function updateStatus(subcategoryName, nextStatus) {
-            const order = orders.find(order => order.subcategoryName === subcategoryName);
-            if (order) {
-                order.status = nextStatus;
-                filterOrders();
-            }
-        }
-
-        // Render all orders initially
-        renderOrders(orders);
+        });
     </script>
 </body>
 </html>

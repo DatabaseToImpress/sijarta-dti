@@ -32,14 +32,14 @@
                         <a href="" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Home</a>
                         
                         {% if role == 'Customer' %}
-                            <a href="" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">MyPay</a>
+                            <a href="{% url 'mypay' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">MyPay</a>
                             <a href="" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Orders</a>
                             <a href="" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Discount</a>
                             <a href="{% url 'profileu' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Profile</a>
                         {% elif role == 'Worker' %}
-                            <a href="" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Manage My Jobs</a>
-                            <a href="" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Manage Order Status</a>
-                            <a href="" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">MyPay</a>
+                            <a href="{% url 'servicejob' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Manage My Jobs</a>
+                            <a href="{% url 'servicejobstatus' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Manage Order Status</a>
+                            <a href="{% url 'mypay' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">MyPay</a>
                             <a href="{% url 'profilew' %}" class="text-[#F4DECB] hover:text-white px-3 py-2 rounded-md text-lg font-sans">Profile</a>
                         {% endif %}
                         
