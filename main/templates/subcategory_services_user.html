@@ -1,7 +1,6 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    {% include "navbar/navbar.html" %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ subcategory_data.service_category }} - Subcategory Services</title>
@@ -57,7 +56,7 @@
             margin-left: auto;
             margin-right: auto;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            text-align: left;
         }
 
         h1, h2, h3 {
@@ -71,45 +70,45 @@
             padding: 0;
         }
 
-        /* Button Styling */
-        .join-button {
-            background-color: #7D4B6C;
+        .btn {
+            background-color: #94618E;
             color: #F8EEE7;
             font-weight: bold;
             padding: 10px 20px;
             border-radius: 5px;
             border: none;
-            margin: 20px 0;
             cursor: pointer;
             transition: background-color 0.3s ease-in-out;
         }
 
-        .join-button:hover {
+        .btn:hover {
             background-color: #49274A;
         }
 
-        /* Worker Link Styling */
         .worker-link {
-            color: #6B21A8; /* Purple color */
+            color: #6B21A8;
             text-decoration: none;
             font-weight: bold;
         }
 
         .worker-link:hover {
             text-decoration: underline;
-            color: #4C1D95; /* Darker purple on hover */
+            color: #4C1D95;
         }
     </style>
 </head>
 <body class="bg-[#F8EEE7]">
 
+    <!-- Navbar -->
     {% include "navbar/navbar.html" %}
 
     <div class="container">
+        <!-- Subcategory Details -->
         <h1 class="text-3xl font-semibold font-bold text-[#49274A]">{{ subcategory_data.service_category }}</h1>
         <h2 class="text-2xl font-semibold font-bold text-[#49274A] mt-2">{{ subcategory_data.subcategory_name }}</h2>
         <p class="mt-4 text-lg text-[#49274A]">{{ subcategory_data.description }}</p>
 
+        <!-- Workers Section -->
         <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Available Workers:</h3>
         <ul>
             {% for worker in workers %}
@@ -123,15 +122,7 @@
             {% endfor %}
         </ul>
 
-        <!-- Success Message -->
-        <div id="success-message" class="text-green-500 mt-4 hidden"></div>
-
-        {% if role == 'Worker' and not already_joined %}
-            <button id="join-button" class="join-button" onclick="joinService()">Join Now</button>
-        {% elif already_joined %}
-            <p class="text-green-500">You are already joined to this service category.</p>
-        {% endif %}
-
+        <!-- Sessions Section -->
         <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Session Prices:</h3>
         <ul class="mt-4 space-y-4">
             {% for session in sessions %}
@@ -141,7 +132,7 @@
                     </span>
                     {% if role == 'Customer' %}
                         <button 
-                            class="bg-[#94618E] text-white px-4 py-2 rounded hover:bg-[#49274A]" 
+                            class="btn" 
                             onclick="bookService('{{ session.session }}', '{{ session.price }}')">
                             Book Now
                         </button>
@@ -149,35 +140,41 @@
                 </li>
             {% endfor %}
         </ul>
+
+        <!-- Testimonials Section -->
+        <h3 class="mt-6 text-xl font-semibold font-bold text-[#49274A]">Customer Testimonials:</h3>
+        <div class="mt-4">
+            {% if testimonials %}
+                <ul class="space-y-4">
+                    {% for testimonial in testimonials %}
+                        <li class="bg-[#F4DECB] p-4 rounded-lg shadow-md">
+                            <p class="text-[#49274A]">
+                                <strong>{{ testimonial.user_name }}</strong> ({{ testimonial.date }}): 
+                                "{{ testimonial.text }}" 
+                                <span class="font-bold">- {{ testimonial.rating }}/10</span>
+                            </p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-[#49274A]">No testimonials available for this service.</p>
+            {% endif %}
+        </div>
+
+        <!-- Add Testimonial Button -->
+        {% if role == 'Customer' %}
+            <button 
+                class="btn mt-4" 
+                onclick="window.location.href='{% url 'main:add_testimonial' %}?subcategoryId={{ id }}'">
+                Add Testimonial
+            </button>
+        {% endif %}
     </div>
 
     <script>
         // Extract subcategory service ID from the current URL
         const currentUrl = window.location.href;
         const subcategoryId = currentUrl.split('/').filter(Boolean).pop();
-
-        function joinService() {
-            fetch(window.location.href, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}"
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    const successMessage = document.getElementById("success-message");
-                    const joinButton = document.getElementById("join-button");
-                    successMessage.innerText = data.message;
-                    successMessage.classList.remove("hidden");
-                    if (joinButton) joinButton.style.display = "none";
-                } else if (data.error) {
-                    alert(data.error);
-                }
-            })
-            .catch(error => console.error("Error:", error));
-        }
 
         function bookService(session, price) {
             // Redirect to booking page with the subcategoryServiceId as a query parameter

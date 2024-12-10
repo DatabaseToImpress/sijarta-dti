@@ -3,43 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Testimonial Form</title>
+    <title>Add Testimonial</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --grape: #94618E;
-            --eggplant: #49274A;
-            --sand: #F4DECB;
-            --shell: #F8EEE7;
-        }
-    </style>
-    {% include "navbar/navbar.html" %}
 </head>
-<body class="bg-[var(--shell)] min-h-screen flex flex-col items-center">
-    <!-- Include Navbar -->
-
-
-    <!-- Main Content -->
-    <div class="bg-white shadow-lg rounded-lg max-w-md w-full p-8 mt-16">
-        <h1 class="text-center text-xl font-bold text-[var(--eggplant)] mb-6">Give us your Testimony!</h1>
-        <form method="POST" action="/submit-testimonial/" class="space-y-4">
+<body class="bg-gray-100 text-gray-800">
+    {% include "navbar/navbar.html" %}
+    <div class="max-w-lg mx-auto bg-white p-8 mt-16 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold text-center text-purple-700 mb-6">Add a Testimonial</h1>
+        {% if form_errors %}
+        <div class="bg-red-100 text-red-700 p-4 rounded-lg mb-4">{{ form_errors }}</div>
+        {% endif %}
+        {% if success_message %}
+        <div class="bg-green-100 text-green-700 p-4 rounded-lg mb-4">{{ success_message }}</div>
+        {% endif %}
+        <form method="POST">
             {% csrf_token %}
-            <div>
-                <label for="rating" class="block text-sm font-semibold text-[var(--grape)] mb-1">Rating:</label>
-                <select name="rating" id="rating" class="w-full border border-[var(--sand)] rounded-md p-2 focus:ring-2 focus:ring-[var(--grape)] focus:outline-none" required>
-                    <option value="" disabled selected>Choose Rating</option>
-                    {% for rating in rating_choices %}
-                    <option value="{{ rating }}">{{ rating }}</option>
+            <input type="hidden" name="servicetrid" value="{{ servicetrid }}">
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Rating:</label>
+                <select name="rating" class="w-full border p-2 rounded-lg" required>
+                    <option value="" disabled selected>Select Rating</option>
+                    {% for r in rating_choices %}
+                    <option value="{{ r }}">{{ r }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div>
-                <label for="comment" class="block text-sm font-semibold text-[var(--grape)] mb-1">Comment:</label>
-                <textarea name="comment" id="comment" placeholder="Give us your comments" class="w-full border border-[var(--sand)] rounded-md p-2 focus:ring-2 focus:ring-[var(--grape)] focus:outline-none resize-none" required></textarea>
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Comment:</label>
+                <textarea name="comment" class="w-full border p-2 rounded-lg" rows="4" required></textarea>
             </div>
-            <button type="submit" class="w-full bg-[var(--grape)] text-white py-2 rounded-md hover:bg-[var(--eggplant)] transition">
-                Submit
-            </button>
+            <button class="w-full bg-purple-600 text-white py-2 rounded-lg">Submit</button>
         </form>
     </div>
 </body>
